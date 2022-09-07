@@ -24,7 +24,7 @@ class PurviewCollections():
 
     def list_collections(self, only_names: bool = False, api_version: str = None) -> dict:
         """
-        Returns a dictionary of the collections you have access to in Purview. Default will display all of the collection info .
+        Returns a dictionary of the collections you have access to in Purview. Default will display all of the collection info.
 
         :param only_names: (optional) Bool. Default is False. 
                 If True, will return a dictionary of all the collections with the key being the 
