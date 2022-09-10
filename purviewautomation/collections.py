@@ -334,7 +334,7 @@ class PurviewCollections():
 
     # Delete collections/assets
 
-    def delete_collections(self, collection_names: list[str], force_actual_name: bool = False, api_version: str = None, safe_delete: str = None):
+    def delete_collections(self, collection_names: list[str], safe_delete: str = None, force_actual_name: bool = False, api_version: str = None):
         """ Can delete one or more collections. Can pass in either the actual or friendly collection name."""
 
         if not api_version:
@@ -342,24 +342,27 @@ class PurviewCollections():
 
         if safe_delete:
                 collections = self.list_collections(only_names=True)
-                new_list = []
+                create_colls_list = []
                 for name in collection_names:
                     if len(collection_names) == 1:
-                        start_coll = self._return_real_collection_name(name)
-                        parent_name = collections[start_coll]['parentCollection']
+                        collection_name = self._return_real_collection_name(name)
+                        parent_name = collections[collection_name]['parentCollection']
                         create_collection_string = f"create_collections('{parent_name}', ['{name}'])"
+                        print("Run the below code in your program to recreate the collections:", '\n')
                         print(create_collection_string)
+                        print('end of code')
+                        print('\n')
                     
                     else:
-                        start_coll = self._return_real_collection_name(name)
-                        parent_name = collections[start_coll]['parentCollection']
-                        new_string1 = f"create_collections('{parent_name}', ['{name}'])"
-                        new_list.append(new_string1)
+                        collection_name = self._return_real_collection_name(name)
+                        parent_name = collections[collection_name]['parentCollection']
+                        create_collection_string = f"create_collections('{parent_name}', ['{name}'])"
+                        create_colls_list.append(create_collection_string)
                 
                 print("Run the below code in your program to recreate the collections:", '\n')
-                for item in new_list:
-                    line2 = f"{safe_delete}.{item}"
-                    print(line2)
+                for item in create_colls_list:
+                    create_coll_final_string = f"{safe_delete}.{item}"
+                    print(create_coll_final_string)
                 print('end of code')
                 print('\n')
 
@@ -404,8 +407,10 @@ class PurviewCollections():
     def delete_collections_recursively(self, collection_names: list[str], also_delete_first_collection: bool = False, api_version: str = None):
         if not api_version:
             api_version = self.collections_api_version
+
         delete_list = []
         recursive_list = []
+        
         for name in collection_names:
             name = self._return_real_collection_name(name)
             self._recursive_append(name, delete_list)
