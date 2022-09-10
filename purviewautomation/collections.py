@@ -99,7 +99,15 @@ class PurviewCollections():
 
 
 
-    def get_real_collection_name(self, collection_name: str, api_version: str = None):
+    def get_real_collection_name(self, collection_name: str, api_version: str = None) -> str:
+        """
+        Pass in a collection name (friendly name or real name) and it returns either no collection found, the real collection name 
+        or if there are multiple friendly names, it will print the them as tuples. 
+        
+        :param collection_name. String. 
+        :return:
+        :rtype:  
+        """
         
         if not api_version:
             api_version = self.collections_api_version
@@ -108,7 +116,6 @@ class PurviewCollections():
         friendly_names = ([(name, collections[name])
                                     for name, value in collections.items()
                                     if collection_name == value['friendlyName']])
-
         
         if collection_name not in collections and len(friendly_names) == 0:
             err_msg = f" The collection '{collection_name}' either doesn't exist or you don't have access to check it."
@@ -135,7 +142,8 @@ class PurviewCollections():
 
             newline = '\n'
             message = (f"Multiple collections exist with the friendly name '{collection_name}'. "
-                       f"{newline}Below are tuples displaying the real collection name followed by the friendly name and the parent collection friendly name: "
+                       f"{newline}Below are tuples displaying the real collection name followed by "
+                       "the friendly name and the parent collection friendly name (real_name, friendly_name, parent_friendly_name): "
                        f"{newline}{newline.join(map(str, multiple_friendly_list))} {newline}")
             return message
 
@@ -326,14 +334,35 @@ class PurviewCollections():
 
     # Delete collections/assets
 
-
-
-
-    def delete_collections(self, collection_names: list[str], force_actual_name: bool = False, api_version: str = None):
+    def delete_collections(self, collection_names: list[str], force_actual_name: bool = False, api_version: str = None, safe_delete: str = None):
         """ Can delete one or more collections. Can pass in either the actual or friendly collection name."""
 
         if not api_version:
             api_version = self.collections_api_version
+
+        if safe_delete:
+                collections = self.list_collections(only_names=True)
+                new_list = []
+                for name in collection_names:
+                    if len(collection_names) == 1:
+                        start_coll = self._return_real_collection_name(name)
+                        parent_name = collections[start_coll]['parentCollection']
+                        create_collection_string = f"create_collections('{parent_name}', ['{name}'])"
+                        print(create_collection_string)
+                    
+                    else:
+                        start_coll = self._return_real_collection_name(name)
+                        parent_name = collections[start_coll]['parentCollection']
+                        new_string1 = f"create_collections('{parent_name}', ['{name}'])"
+                        new_list.append(new_string1)
+                
+                print("Run the below code in your program to recreate the collections:", '\n')
+                for item in new_list:
+                    line2 = f"{safe_delete}.{item}"
+                    print(line2)
+                print('end of code')
+                print('\n')
+
         for name in collection_names:
             coll_name = self._return_real_collection_name(name, force_actual_name)   
             url = f"{self.collections_endpoint}/{coll_name}?api-version={api_version}"
@@ -345,6 +374,7 @@ class PurviewCollections():
                     print(delete_collections_request.content)
             except Exception as e:
                 raise e
+
     
 
     def get_child_collection_names(self, collection_name: str, api_version: str = None):
@@ -436,18 +466,147 @@ class PurviewCollections():
                     request2 = requests.delete(url, headers=self.header)
                     print(request2.content)
 
+        
+    
 
 
-   
 
-    def test2(self):
+    def test2(self): # request Session was either same time or even slower for larger operations
         import json
-        url = f'https://{self.purview_account_name}.purview.azure.com/account/collections/test8889-?api-version=2019-11-01-preview'
-        data = {"parentCollection": {"referenceName": "sap"}, "friendlyName": "test-8889"}
-        print(data)
-        coll_request = requests.put(url=url, headers=self.header, data=json.dumps(data))
-        print(coll_request.content)
+        names = ['test' + str(i) for i in range(260,320)]
+       
+        for name in names:
+            url = f'https://{self.purview_account_name}.purview.azure.com/account/collections/{name}?api-version=2019-11-01-preview'
+            data = f'{{"parentCollection": {{"referenceName": "nblple"}}, "friendlyName": "{name}"}}'
+
+            # s = requests.Session()
+
+            coll_request = coll_request = requests.put(url=url, headers=self.header, data=data)
+            print(coll_request.content)
+
+
+        # s.close()
+
+            # with requests.Session() as s:
+            #     coll_request = s.put(url=url, headers=self.header, data=data)
+            #     print(coll_request.content)
+        
+        # coll_request = requests.put(url=url, headers=self.header, data=json.dumps(data))
+        # print(coll_request.content)
+
+
+
+    # def delete_collections(self, collection_names: list[str], force_actual_name: bool = False, api_version: str = None):
+    #     """ Can delete one or more collections. Can pass in either the actual or friendly collection name."""
+
+    #     if not api_version:
+    #         api_version = self.collections_api_version
+    #     for name in collection_names:
+    #         coll_name = self._return_real_collection_name(name, force_actual_name)   
+    #         url = f"{self.collections_endpoint}/{coll_name}?api-version={api_version}"
+    #         try:
+    #             delete_collections_request = requests.delete(url=url, headers=self.header)
+    #             if not delete_collections_request.content:
+    #                 print(f"The collection '{name}' was successfully deleted")
+    #             else:
+    #                 print(delete_collections_request.content)
+    #         except Exception as e:
+    #             raise e
+
+
+    # def create_collections2(self, start_collection: str, collection_names: list[str], force_actual_name: bool = False, api_version: str = None): 
+    #     """
+    #     Create a collection or several collections in Purview. Can do any of following:
+    #         -Create one collection
+    #         -Create multiple collections
+    #         -Create one collection hierarchy (multiple parent child relationships)
+    #         -Create multiple collection hierarchies
+        
+    #     :param start_collection: String. Existing collection name to start creating the collections from. 
+    #             Can either pass in the actual Purview collection name or the friendly collection name.
+    #             If you pass in the friendly name and duplicate friendly names exist, you'll receive a friendly error
+    #             asking which collection you'd like to use. This collection has to exist already in Purview.  
+    #     :param collection_names: List of Strings list[str]. As mentioned above, you can pass in as many as needed.
+    #             examples:
+    #             -One collection: pur.create_collections('startcollname', ['mynewcollection'])
+    #             -Multiple collections: pur.create_collections('startcollname', ['mynewcollection', 'mynewcollectiontwo'])
+    #             -Create one collection hierarchy: pur.create_collections('startcollname', ['mynewcollection/mysubcoll1/mysubcoll2'])
+    #                 The / is the parent child relationship. mysubcoll1 would be a child of mynewcollection. 
+    #                 mysubcoll2 would be a child of mysubcoll1.
+    #             -Create multiple collection hierarchies: pur.create('startcollname', ['mynewcollection/mysubcoll1', 'mysecondcollection/mysubcoll2'])
+    #                 The internal code will handle any Purview name requirements. my new collection is a valid name to pass in.
+    #     :param force_actual_name: String. Edge Case. If a friendly name is passed in the start_collection parameter 
+    #             and that name is duplicated across multiple hierarchies and one of those names is the actual passed in name, if True, this will force
+    #             the method to use the actual name you pass in if it finds it.
+    #             examples:
+    #             -If startcollname is passed in the start_collection parameter and that name exists under multiple hierarchies (friendly names)
+    #             if one of the actual names (not friendly name) is startcollname, then it will force the code to use the startcollname. 
+    #     :param api_version (optional): String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
+    #     :return: None
+    #     :rtype None
+    #     """
+
+    #     if not api_version:
+    #         api_version = self.collections_api_version
+        
+    #     coll_dict = self.list_collections(only_names=True, api_version=api_version)
+    #     start_collection = self._return_real_collection_name(start_collection, api_version, force_actual_name)
+    
+    #     collection_names_list = [[name] for name in collection_names]
+    #     collection_list = []
+    #     for item in collection_names_list:
+    #         for name in item:
+    #             if "/" in name:
+    #                 names = name.split("/")
+    #                 names = [name.strip() for name in names]
+    #                 collection_list.append(names)
+    #             else:
+    #                 names = [name.strip() for name in item]
+    #                 collection_list.append(names)
+        
+    #     for colls in collection_list:
+    #         updated_collection_list = self._return_updated_collection_list(start_collection, colls, coll_dict, api_version)
+    #         for index, name in enumerate(updated_collection_list):
+    #             if index == 0:
+    #                 if name in coll_dict and coll_dict[name]['parentCollection'].lower() == start_collection.lower():
+    #                     continue
+    #                 else:
+    #                     friendly_name = colls[index]
+
+    #                 try:
+    #                     request = self._return_request_info2(name=name, friendly_name=friendly_name, parent_collection=start_collection, api_version=api_version)
+    #                     print(request.content)
+    #                     print('\n')
+    #                 except Exception as e:
+    #                     raise e
+
+    #             else:
+    #                 if name in coll_dict and coll_dict[name]['parentCollection'].lower() == updated_collection_list[index - 1].lower():
+    #                     continue
+                      
+    #                 else:
+    #                     friendly_name = colls[index]
+    #                     parent_collection = updated_collection_list[index - 1]
+                
+    #                 try:
+
+    #                     request = self._return_request_info2(name=name, friendly_name=friendly_name, parent_collection=parent_collection, api_version=api_version)
+    #                     print(request.content)
+    #                     print('\n')
+    #                 except Exception as e:
+    #                     raise e
 
 
 
 
+    # def _return_request_info2(self, name, friendly_name, parent_collection, api_version):
+    #     """
+    #     Internal helper function. Do not call directly.
+    #     """
+    #     with requests.Session() as s:
+
+    #         url = f'{self.collections_endpoint}/{name}?api-version={api_version}'
+    #         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
+    #         request = s.put(url=url, headers=self.header, data=data)
+        
+    #         return request
