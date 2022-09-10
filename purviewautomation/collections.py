@@ -24,9 +24,9 @@ class PurviewCollections():
 
     def list_collections(self, only_names: bool = False, api_version: str = None) -> dict:
         """
-        Returns a dictionary of the collections you have access to in Purview. Default will display all of the collection info.
+        Returns a list of dictionaries of the collections you have access to in Purview. Default will display all of the collection info.
 
-        :param only_names: (optional) Bool. Default is False. 
+        :param only_names: (optional) Bool. Default is False. Returns a dictionary of the actual collection name, friendly name, and parent name.
                 If True, will return a dictionary of all the collections with the key being the 
                 actual collection name followed by the friendly name and parent collection name.
                 If you wish to print the dictionary to the screen in a formatted way and still maintain the hierarcy, 
@@ -35,6 +35,7 @@ class PurviewCollections():
         :return: Dict of the collections 
         :rtype: Dict 
         """
+
         if not api_version:
             api_version = self.collections_api_version
 
@@ -58,6 +59,7 @@ class PurviewCollections():
             return coll_dict
         
         return collections
+
 
 
     def _return_real_collection_name(self, collection_name: str, api_version, force_actual_name: bool = False):
@@ -100,11 +102,12 @@ class PurviewCollections():
         Internal helper function. Do not call directly.
         """
 
-        url = f'https://{self.purview_account_name}.purview.azure.com/account/collections/{name}?api-version={api_version}'
+        url = f'{self.collections_endpoint}/{name}?api-version={api_version}'
         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
         request = requests.put(url=url, headers=self.header, data=data)
         
         return request
+
 
 
 
@@ -182,13 +185,16 @@ class PurviewCollections():
 
         updated_list = []
         friendly_names = [v['friendlyName'] for v in collection_dict.values()]
+
         for index, name in enumerate(collection_list):
             if index == 0:
                 name = self._return_updated_collection_name(name, collection_dict, start_collection, friendly_names, api_version)
             else:
                 name = self._return_updated_collection_name(name, collection_dict, updated_list[index - 1], friendly_names, api_version)
             updated_list.append(name)
+        
         return updated_list
+
 
 
 
@@ -228,7 +234,6 @@ class PurviewCollections():
             api_version = self.collections_api_version
         
         coll_dict = self.list_collections(only_names=True, api_version=api_version)
-
         start_collection = self._return_real_collection_name(start_collection, api_version, force_actual_name)
     
         collection_names_list = [[name] for name in collection_names]
@@ -278,35 +283,6 @@ class PurviewCollections():
     # Delete collections/assets
 
 
-    def _return_real_collection_name(self, collection_name: str, api_version, force_actual_name: bool = False): # this one is best to use. 
-            collections = self.list_collections(only_names=True, api_version=api_version)
-            friendly_names = ([(name, collections[name])
-                                        for name, value in collections.items()
-                                        if collection_name == value['friendlyName']])
-
-            if collection_name not in collections and len(friendly_names) == 0:
-                err_msg = ("start_collection parameter value error. "
-                            f"The collection '{collection_name}' either doesn't exist or your don't have permission to start on it. "
-                            "Would need to be a collection admin on that collection if it exists. Name is case sensitive.")
-                raise ValueError(err_msg)
-            elif collection_name not in collections and len(friendly_names) == 1:
-                return friendly_names[0][0]
-            elif collection_name in collections and len(friendly_names) <= 1:
-                return collection_name
-            if force_actual_name:
-                for i in range(len(friendly_names)):
-                    if friendly_names[i][0] == collection_name:
-                        return collection_name
-            else:
-                newline = '\n'
-                err_msg = ("collection_name parameter value error. "
-                            f"Multiple collections exist with the friendly name '{collection_name}'. "
-                            "Please choose and re-enter the first item from one of the tuples below to the collection_name parameter: "
-                            f"{newline}{newline.join(map(str,friendly_names))} {newline}"
-                            f"If you want to use the collection name '{collection_name}' add the force_actual_name parameter to True. "
-                            "Ex: force_actual_name=True")
-                raise ValueError(err_msg)
-
 
 
     def delete_collections(self, collection_names: list[str], force_actual_name: bool = False, api_version: str = None):
@@ -316,7 +292,7 @@ class PurviewCollections():
             api_version = self.collections_api_version
         for name in collection_names:
             coll_name = self._return_real_collection_name(name, force_actual_name)   
-            url = f"{self.collections_endpoint}/{coll_name}?api-version={self.api_version}"
+            url = f"{self.collections_endpoint}/{coll_name}?api-version={api_version}"
             try:
                 delete_collections_request = requests.delete(url=url, headers=self.header)
                 if not delete_collections_request.content:
@@ -330,7 +306,7 @@ class PurviewCollections():
     def get_child_collection_names(self, collection_name: str, api_version: str = None):
         if not api_version:
             api_version = self.collections_api_version
-        url = f"{self.collections_endpoint}/{collection_name}/getChildCollectionNames?api-version={self.api_version}"
+        url = f"{self.collections_endpoint}/{collection_name}/getChildCollectionNames?api-version={api_version}"
         try:
             get_collections_request = requests.get(url=url, headers=self.header)
         except Exception as e:
@@ -351,10 +327,13 @@ class PurviewCollections():
                             append_list.append(v[index]['name'])
 
 
-    def delete_collections_recursively(self, collection_names: list[str], also_delete_first_collection: bool = False):
+    def delete_collections_recursively(self, collection_names: list[str], also_delete_first_collection: bool = False, api_version: str = None):
+        if not api_version:
+            api_version = self.collections_api_version
         delete_list = []
         recursive_list = []
         for name in collection_names:
+            name = self._return_real_collection_name(name)
             self._recursive_append(name, delete_list)
             if delete_list[0] is not None:
                 for item in delete_list:
