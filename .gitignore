@@ -2,4 +2,5 @@ purautorealvenv
 __pycache__/
 test.py
 current.py
+CurrentWay.py
 oldCodetoDelete.py 

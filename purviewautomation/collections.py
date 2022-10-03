@@ -1,6 +1,5 @@
 
 from sys import api_version
-from tracemalloc import start
 import requests
 import random
 import re 
@@ -83,6 +82,7 @@ class PurviewCollections():
             return friendly_names[0][0]
         elif collection_name in collections and len(friendly_names) <= 1:
             return collection_name
+
         if force_actual_name:
             for i in range(len(friendly_names)):
                 if friendly_names[i][0] == collection_name:
@@ -366,8 +366,44 @@ class PurviewCollections():
 
 
 
+
+    def _safe_delete2(self, collection_names: list[str], safe_delete_name: str):
+        """Helper function. Do not run directly."""
+
+        collections = self.list_collections(only_names=True)
+
+        create_colls_list = []
+        for name in collection_names:
+            if len(collection_names) == 1:
+                collection_name = self._return_real_collection_name(name)
+                parent_name = collections[collection_name]['parentCollection']
+                create_collection_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{name}'])"
+            
+            else:
+                collection_name = self._return_real_collection_name(name)
+                parent_name = collections[collection_name]['parentCollection']
+                create_collection_string = f"create_collections('{parent_name}', ['{name}'])"
+                create_colls_list.append(create_collection_string)
+        
+        print("Copy and run the below code in your program to recreate the collections:", '\n')
+        if len(collection_names) == 1:
+            print(create_collection_string)
+        else:
+            initial_list = []
+            clean_list = []
+            for item in create_colls_list:
+                create_coll_final_string = f"{safe_delete_name}.{item}"
+                create_coll_final_string.append(initial_list)
+            clean_list = [clean_list.append(create_coll_string) for create_coll_string in initial_list if create_coll_string not in clean_list]
+                # print(create_coll_final_string)
+        print('\n')
+        print('end of code')
+        print('\n')
+
+
+
     def delete_collections(self, collection_names: list[str], safe_delete: str = None, force_actual_name: bool = False, api_version: str = None):
-        """ Can delete one or more collections. Can pass in either the actual or friendly collection name."""
+        """ Delete one or more collections. Can pass in either the actual or friendly collection name. No collections that have children"""
 
         if not api_version:
             api_version = self.collections_api_version
@@ -376,7 +412,15 @@ class PurviewCollections():
                 self._safe_delete(collection_names=collection_names, safe_delete_name=safe_delete)
 
         for name in collection_names:
-            coll_name = self._return_real_collection_name(name, force_actual_name)   
+            coll_name = self._return_real_collection_name(name, force_actual_name)
+            
+            child_collections_check = self.get_child_collection_names(coll_name)
+            if child_collections_check['count'] > 0:
+                err_msg = (f"The collection '{name}' has children collections. Can only delete collections that have no children. "
+                           "To delete collections and all of their children recursively, " 
+                           f"use: delete_collections_recursively(['{name}'])")
+                raise ValueError(err_msg)   
+            
             url = f"{self.collections_endpoint}/{coll_name}?api-version={api_version}"
             try:
                 delete_collections_request = requests.delete(url=url, headers=self.header)
@@ -482,7 +526,279 @@ class PurviewCollections():
                     print(request2.content)
 
         
-    
+
+
+    def test_delete_collections_recursively(self, collection_names: list[str], safe_delete: str = None, also_delete_first_collection: bool = False, api_version: str = None):
+        # ['test1']
+        
+        if not api_version:
+            api_version = self.collections_api_version
+
+        delete_list = []
+        recursive_list = []
+        collections = self.list_collections(only_names=True)
+
+        for name in collection_names:
+            parent_name = self._return_real_collection_name(name)
+            name = self._return_real_collection_name(name)
+            self._recursive_append(name, delete_list)
+            if delete_list[0] is not None:
+                for item in delete_list:
+                        self._recursive_append(item, recursive_list)
+                for item2 in recursive_list:
+                    if item2 is not None:
+                        delete_list.append(item2)
+                        self._recursive_append(item2, recursive_list)
+        
+        if delete_list[0] is not None:
+            if also_delete_first_collection:
+                delete_list.insert(0, collection_names[0])
+        
+            
+        # if recursive_list[0] is None:
+        #     pass
+        #     # for coll in delete_list:
+        #     #     friendly_name = collections[coll]['friendlyName']
+        #     #     create_collection_string = f"{safe_delete}.create_collections('{parent_name}', ['{friendly_name}'])"
+        #     #     print(create_collection_string)
+        
+        else:
+            for index, (item, item2) in enumerate(zip(delete_list, recursive_list)):
+                if index == 0:
+                    # print(parent_name, collections[item]['friendlyName'], collections[item2]['friendlyName'])
+                    first_string = f"{safe_delete}.create_collections('{parent_name}', ['{collections[item]['friendlyName']}'])"
+                    print(first_string)
+                    # print(collections[item]['friendlyName'], collections[item2]['friendlyName'])
+            
+                else:
+                    friendly_parent = collections[delete_list[index - 1]]['friendlyName']
+                    coll2 = collections[item]['friendlyName']
+                    # print(collections[item]['friendlyName'], collections[delete_list[index - 1]]['friendlyName'])
+                    new_string = f"{safe_delete}.create_collections('{friendly_parent}', ['{coll2}'])"
+                    print(new_string)
+            
+
+
+
+    def test_test_delete_collections_recursively(self, collection_names: list[str], safe_delete: str = None, also_delete_first_collection: bool = False, api_version: str = None):
+            # ['test1']
+            
+            if not api_version:
+                api_version = self.collections_api_version
+
+            delete_list = []
+            recursive_list = []
+
+            for name in collection_names:
+                # parent_name = self._return_real_collection_name(name)
+                name = self._return_real_collection_name(name)
+                self._recursive_append(name, delete_list)
+                if delete_list[0] is not None:
+                    for item in delete_list:
+                            self._recursive_append(item, recursive_list)
+                    for item2 in recursive_list:
+                        if item2 is not None:
+                            delete_list.append(item2)
+                            self._recursive_append(item2, recursive_list)
+            
+
+            if safe_delete:
+                self._safe_delete_recursivly2(delete_list, recursive_list, collection_names, safe_delete, name)
+
+            if delete_list[0] is not None:
+                if also_delete_first_collection:
+                    delete_list.insert(0, collection_names[0])
+                for coll in delete_list[::-1]: # starting from the most child collection
+                    self.delete_collections([coll])
+            
+
+
+
+    def _safe_delete_recursivly(self, delete_list: list[str], recursive_list, collection_names: list[str], safe_delete_name: str, parent_name: str):
+
+        collections = self.list_collections(only_names=True)
+        print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
+        
+        for index, name in enumerate(delete_list):
+            if index == 0:
+                first_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
+                print(first_string)
+
+            # if collections[name]['parentCollection'].lower() == parent_name.lower():
+            #     print(True)
+            child_test = self.get_child_collection_names(name)
+                # print(child_test)
+            if child_test['count'] == 1:
+                print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
+                # friendly_parent = collections[child_test['value'][0]['name']]
+
+            elif child_test['count'] > 1:
+                for index, name2 in enumerate(child_test['value']):
+                    # print(name2['name'])
+                    print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
+            else:
+                # print(name)
+                parent_name = collections[name]['parentCollection']
+                # print(collections[name]['friendlyName'], collections[parent_name]['friendlyName'])
+                print(f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])")
+            
+            
+            
+    def _safe_delete_recursivly2(self, delete_list: list[str], recursive_list, collection_names: list[str], safe_delete_name: str, parent_name: str):
+        initial_list = []
+        clean_list = []
+
+        collections = self.list_collections(only_names=True)
+        print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
+        
+        for index, name in enumerate(delete_list):
+            if index == 0:
+                first_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
+                initial_list.append(first_string)
+
+            child_test = self.get_child_collection_names(name)
+                # print(child_test)
+            if child_test['count'] == 1:
+                initial_list.append(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['friendlyName']}'])")
+                # print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
+                # friendly_parent = collections[child_test['value'][0]['name']]
+
+            elif child_test['count'] > 1:
+                for index, name2 in enumerate(child_test['value']):
+                    initial_list.append(f"{safe_delete_name}.create_collections('{name}', ['{name2['friendlyName']}'])")
+
+                    # print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
+            else:
+                parent_name = collections[name]['parentCollection']
+                initial_list.append(f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])")
+        
+        default_set = set()
+        for item in initial_list:
+            if item not in default_set:
+                default_set.add(item)
+                clean_list.append(item)
+        for item in clean_list:
+            print(item)
+            
+            
+            
+            
+            
+            
+            # if index == 0:
+            #     print(name)
+            #     # # print(parent_name, collections[item]['friendlyName'], collections[item2]['friendlyName'])
+            #     # first_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
+            #     # print(first_string)
+            #     # child_test = self.get_child_collection_names(name)
+            #     # if child_test['count'] == 1:
+            #     #     print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
+            #     # elif child_test['count'] > 1:
+            #     #     for index, name2 in enumerate(child_test['value']):
+            #     #         # print(name2['name'])
+            #     #         print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
+            #     # else:
+            #     #     f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
+
+            # else:
+            #     child_test = self.get_child_collection_names(name)
+            #     # print(child_test)
+            #     if child_test['count'] == 1:
+            #         print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
+            #         # friendly_parent = collections[child_test['value'][0]['name']]
+
+            #     elif child_test['count'] > 1:
+            #         for index, name2 in enumerate(child_test['value']):
+            #             # print(name2['name'])
+            #             print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
+            #     else:
+            #         # print(name)
+            #         parent_name = collections[name]['parentCollection']
+            #         # print(collections[name]['friendlyName'], collections[parent_name]['friendlyName'])
+            #         print(f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])")
+        print('\n')
+        print('end code', '\n')
+
+
+
+
+                    # print(child_test['value'][0]['friendlyName'])
+                # print(collections[name]['parentCollection'], delete_list[index - 1], 'herererere')
+                # friendly_parent = collections[delete_list[index - 1]]['friendlyName']
+                # coll2 = collections[name]['friendlyName']
+                # print(collections[item]['friendlyName'], collections[delete_list[index - 1]]['friendlyName'])
+                # new_string = f"{safe_delete_name}.create_collections('{friendly_parent}', ['{coll2}'])"
+                # print(new_string)        
+        # print('\n')
+        # print('end code')
+        # print('\n')
+
+
+        
+
+            
+
+
+        # create_colls_list = []
+        # for name in collection_names:
+        #     if len(collection_names) == 1:
+        #         collection_name = self._return_real_collection_name(name)
+        #         parent_name = collections[collection_name]['parentCollection']
+        #         create_collection_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{name}'])"
+            
+        #     else:
+        #         collection_name = self._return_real_collection_name(name)
+        #         parent_name = collections[collection_name]['parentCollection']
+        #         create_collection_string = f"create_collections('{parent_name}', ['{name}'])"
+        #         create_colls_list.append(create_collection_string)
+        
+        # print("Copy and run the below code in your program to recreate the collections:", '\n')
+        # if len(collection_names) == 1:
+        #     print(create_collection_string)
+        # else:
+        #     for item in create_colls_list:
+        #         create_coll_final_string = f"{safe_delete_name}.{item}"
+        #         print(create_coll_final_string)
+        # print('\n')
+        # print('end of code')
+        # print('\n')
+
+
+        # delete_list = []
+        # recursive_list = []
+
+        # for name in collection_names:
+        #     name = self._return_real_collection_name(name)
+        #     self._recursive_append(name, delete_list)
+        #     if delete_list[0] is not None:
+        #         for item in delete_list:
+        #                 self._recursive_append(item, recursive_list)
+        #         for item2 in recursive_list:
+        #             if item2 is not None:
+        #                 delete_list.append(item2)
+        #                 self._recursive_append(item2, recursive_list)
+        
+        # if delete_list[0] is not None:
+        #     if also_delete_first_collection:
+        #         delete_list.insert(0, collection_names[0])
+        #     # for coll in delete_list[::-1]: # starting from the most child collection
+        #     #     self.delete_collections([coll])
+
+
+        # if recursive_list[0] is None:
+        #     create_collection_string = f"{safe_delete}.create_collections('{parent_name}', ['{name}'])"
+        #     print(create_collection_string)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
