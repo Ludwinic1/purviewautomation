@@ -5,9 +5,10 @@ import random
 import re 
 import random 
 import string
+from pprint import pprint 
 
 class PurviewCollections():
-    def __init__(self, purview_account_name, auth=None):
+    def __init__(self, purview_account_name, auth):
         self.purview_account_name = purview_account_name
         self.auth = auth.get_access_token()
         self.header = {
@@ -20,8 +21,8 @@ class PurviewCollections():
         self.catalog_api_version = "2022-03-01-preview"
 
         
-
-    def list_collections(self, only_names: bool = False, api_version: str = None) -> dict:
+    
+    def list_collections(self, only_names: bool = False, pretty_print: bool = False, api_version: str = None) -> dict:
         """
         Returns a list of dictionaries of the collections you have access to in Purview. Default will display all of the collection info.
 
@@ -30,6 +31,7 @@ class PurviewCollections():
                 actual collection name followed by the friendly name and parent collection name.
                 If you wish to print the dictionary to the screen in a formatted way and still maintain the hierarcy, 
                 import pprint and use: pprint(list_collections, only_names=True), sort_dicts=False) 
+        :param pretty_print: (optional) Bool. Default is False. If True, prints out the collections in a sorted order (starting at the root).
         :param api_version (optional) String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
         :return: Dict of the collections 
         :rtype: Dict 
@@ -55,8 +57,14 @@ class PurviewCollections():
                         "friendlyName": coll['friendlyName'],
                         "parentCollection": coll["parentCollection"]['referenceName']
                     }
+            if pretty_print:
+                pprint(coll_dict, sort_dicts=True)
+
             return coll_dict
         
+        if pretty_print:
+            pprint(collections, sort_dicts=True)
+
         return collections
 
 
@@ -162,7 +170,6 @@ class PurviewCollections():
 
 
 
-
     def _return_friendly_collection_names(self, collection_name: str, api_version: str = None):
         """
         Internal helper function. Do not call directly.
@@ -177,7 +184,7 @@ class PurviewCollections():
 
     def _verify_collection_name(self, collection_name: str) -> str:
         """
-        Checks to see if the collection_name meets the Purview naming requirements.
+        Checks to see if the new collection_name meets the Purview naming requirements.
         If not, it generates a six character lowercase string (matches what the Purview UI does).
         
         :param collection_name: String.
@@ -262,11 +269,11 @@ class PurviewCollections():
                 Can either pass in the actual Purview collection name or the friendly collection name.
                 If you pass in the friendly name and duplicate friendly names exist, you'll receive a friendly error
                 asking which collection you'd like to use. This collection has to exist already in Purview.  
-        :param collection_names: List of Strings list[str]. As mentioned above, you can pass in as many as needed.
+        :param collection_names: Either a string or a List of Strings list[str]. As mentioned above, you can pass in as many as needed.
                 examples:
-                -One collection: pur.create_collections('startcollname', ['mynewcollection'])
+                -One collection: pur.create_collections('startcollname', 'mynewcollection')
                 -Multiple collections: pur.create_collections('startcollname', ['mynewcollection', 'mynewcollectiontwo'])
-                -Create one collection hierarchy: pur.create_collections('startcollname', ['mynewcollection/mysubcoll1/mysubcoll2'])
+                -Create one collection hierarchy: pur.create_collections('startcollname', 'mynewcollection/mysubcoll1/mysubcoll2')
                     The / is the parent child relationship. mysubcoll1 would be a child of mynewcollection. 
                     mysubcoll2 would be a child of mysubcoll1.
                 -Create multiple collection hierarchies: pur.create('startcollname', ['mynewcollection/mysubcoll1', 'mysecondcollection/mysubcoll2'])
@@ -287,9 +294,14 @@ class PurviewCollections():
         
         coll_dict = self.list_collections(only_names=True, api_version=api_version)
         start_collection = self._return_real_collection_name(start_collection, api_version, force_actual_name)
-    
-        collection_names_list = [[name] for name in collection_names]
+
         collection_list = []
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+     
+        collection_names_list = [[name] for name in collection_names]
         for item in collection_names_list:
             for name in item:
                 if "/" in name:
@@ -465,6 +477,11 @@ class PurviewCollections():
         delete_list = []
         recursive_list = []
 
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+        
         for name in collection_names:
             name = self._return_real_collection_name(name)
             self._recursive_append(name, delete_list)
@@ -481,6 +498,25 @@ class PurviewCollections():
                 delete_list.insert(0, collection_names[0])
             for coll in delete_list[::-1]: # starting from the most child collection
                 self.delete_collections([coll])
+
+
+
+        # for name in collection_names:
+        #     name = self._return_real_collection_name(name)
+        #     self._recursive_append(name, delete_list)
+        #     if delete_list[0] is not None:
+        #         for item in delete_list:
+        #                 self._recursive_append(item, recursive_list)
+        #         for item2 in recursive_list:
+        #             if item2 is not None:
+        #                 delete_list.append(item2)
+        #                 self._recursive_append(item2, recursive_list)
+        
+        # if delete_list[0] is not None:
+        #     if also_delete_first_collection:
+        #         delete_list.insert(0, collection_names[0])
+        #     for coll in delete_list[::-1]: # starting from the most child collection
+        #         self.delete_collections([coll])
         
         
     
@@ -648,6 +684,9 @@ class PurviewCollections():
         initial_list = []
         clean_list = []
 
+        print('rec', recursive_list)
+        print('delete', delete_list)
+
         collections = self.list_collections(only_names=True)
         print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
         
@@ -680,10 +719,7 @@ class PurviewCollections():
         for item in clean_list:
             print(item)
             
-            
-            
-            
-            
+        
             
             # if index == 0:
             #     print(name)
