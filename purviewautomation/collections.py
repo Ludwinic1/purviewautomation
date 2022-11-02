@@ -6,6 +6,7 @@ import re
 import random 
 import string
 from pprint import pprint 
+from typing import Union
 
 class PurviewCollections():
     def __init__(self, purview_account_name, auth):
@@ -257,7 +258,7 @@ class PurviewCollections():
 
 
 
-    def create_collections(self, start_collection: str, collection_names: list[str], force_actual_name: bool = False, api_version: str = None): 
+    def create_collections(self, start_collection: str, collection_names: Union[str, list], force_actual_name: bool = False, api_version: str = None): 
         """
         Create a collection or several collections in Purview. Can do any of following:
             -Create one collection
@@ -414,11 +415,16 @@ class PurviewCollections():
 
 
 
-    def delete_collections(self, collection_names: list[str], safe_delete: str = None, force_actual_name: bool = False, api_version: str = None):
+    def delete_collections(self, collection_names: Union[str, list], safe_delete: str = None, force_actual_name: bool = False, api_version: str = None):
         """ Delete one or more collections. Can pass in either the actual or friendly collection name. No collections that have children"""
 
         if not api_version:
             api_version = self.collections_api_version
+
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
 
         if safe_delete:
                 self._safe_delete(collection_names=collection_names, safe_delete_name=safe_delete)
@@ -428,7 +434,7 @@ class PurviewCollections():
             
             child_collections_check = self.get_child_collection_names(coll_name)
             if child_collections_check['count'] > 0:
-                err_msg = (f"The collection '{name}' has children collections. Can only delete collections that have no children. "
+                err_msg = (f"The collection '{name}' has child collections. Can only delete collections that have no children. "
                            "To delete collections and all of their children recursively, " 
                            f"use: delete_collections_recursively(['{name}'])")
                 raise ValueError(err_msg)   
