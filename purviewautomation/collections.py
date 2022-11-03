@@ -21,7 +21,6 @@ class PurviewCollections():
         self.catalog_endpoint = f"https://{self.purview_account_name}.purview.azure.com/catalog"
         self.catalog_api_version = "2022-03-01-preview"
 
-        
     
     def list_collections(self, only_names: bool = False, pretty_print: bool = False, api_version: str = None) -> dict:
         """
@@ -59,15 +58,14 @@ class PurviewCollections():
                         "parentCollection": coll["parentCollection"]['referenceName']
                     }
             if pretty_print:
-                pprint(coll_dict, sort_dicts=True)
+                pprint(coll_dict, sort_dicts=False)
 
             return coll_dict
         
         if pretty_print:
-            pprint(collections, sort_dicts=True)
+            pprint(collections, sort_dicts=False)
 
         return collections
-
 
 
     def _return_real_collection_name(self, collection_name: str, api_version: str = None, force_actual_name: bool = False):
@@ -82,11 +80,10 @@ class PurviewCollections():
                                     for name, value in collections.items()
                                     if collection_name == value['friendlyName']])
         
-
         if collection_name not in collections and len(friendly_names) == 0:
             err_msg = ("start_collection parameter value error. "
                         f"The collection '{collection_name}' either doesn't exist or your don't have permission to start on it. "
-                        "Would need to be a collection admin on that collection if it exists. Name is case sensitive.")
+                        "If you're trying to create a child collection, would need to be a collection admin on that collection if it exists. Name is case sensitive.")
             raise ValueError(err_msg)
         elif collection_name not in collections and len(friendly_names) == 1:
             return friendly_names[0][0]
@@ -112,58 +109,6 @@ class PurviewCollections():
                         f"If you want to use the collection name '{collection_name}' and it's listed as an option above as a first item (actual_name), add the force_actual_name parameter to True. "
                         "Ex: force_actual_name=True")
             raise ValueError(err_msg)
-
-
-
-    def get_real_collection_name(self, collection_name: str, api_version: str = None) -> str:
-        """
-        Pass in a collection name (friendly name or real name) and it returns either no collection found, the real collection name 
-        or if there are multiple friendly names, it will print the them as tuples. 
-        
-        :param collection_name. String. 
-        :return:
-        :rtype:  
-        """
-        
-        if not api_version:
-            api_version = self.collections_api_version
-        
-        collections = self.list_collections(only_names=True, api_version=api_version)
-        friendly_names = ([(name, collections[name])
-                                    for name, value in collections.items()
-                                    if collection_name == value['friendlyName']])
-        
-        if collection_name not in collections and len(friendly_names) == 0:
-            err_msg = f" The collection '{collection_name}' either doesn't exist or you don't have access to check it."
-            raise ValueError(err_msg)
-        
-        elif collection_name not in collections and len(friendly_names) == 1:
-            return friendly_names[0][0]
-
-        elif collection_name in collections and len(friendly_names) <= 1:
-            return collection_name
-        
-        else:
-            friendly_parent_names = []
-            parent_list = [item[1]['parentCollection'] for item in friendly_names]
-            
-            for parent in parent_list:
-                for name, value in collections.items():
-                    if parent == name.lower():
-                        friendly_parent_names.append(value['friendlyName'])
-            
-            multiple_friendly_list = []
-            for name, parent in zip(friendly_names, friendly_parent_names):
-                multiple_friendly_list.append((name[0], name[1]['friendlyName'], parent))
-
-            newline = '\n'
-            message = (f"Multiple collections exist with the friendly name '{collection_name}'. "
-                       f"{newline}Below are tuples displaying the real collection name followed by "
-                       "the friendly name and the parent collection friendly name (real_name, friendly_name, parent_friendly_name): "
-                       f"{newline}{newline.join(map(str, multiple_friendly_list))} {newline}")
-            return message
-
-
 
     def _return_request_info(self, name, friendly_name, parent_collection, api_version):
         """
@@ -518,7 +463,7 @@ class PurviewCollections():
             
 
             if safe_delete:
-                self._safe_delete_recursivly2(delete_list, recursive_list, collection_names, safe_delete, name)
+                self._safe_delete_recursivly(delete_list, recursive_list, collection_names, safe_delete, name)
 
             if delete_list[0] is not None:
                 if also_delete_first_collection:
@@ -527,7 +472,7 @@ class PurviewCollections():
                     self.delete_collections([coll])
             
             
-    def _safe_delete_recursivly2(self, delete_list: list[str], recursive_list, collection_names: list[str], safe_delete_name: str, parent_name: str):
+    def _safe_delete_recursivly(self, delete_list: list[str], recursive_list, collection_names: list[str], safe_delete_name: str, parent_name: str):
         initial_list = []
         clean_list = []
 
@@ -566,40 +511,6 @@ class PurviewCollections():
                 clean_list.append(item)
         for item in clean_list:
             print(item)
-            
-        
-            
-            # if index == 0:
-            #     print(name)
-            #     # # print(parent_name, collections[item]['friendlyName'], collections[item2]['friendlyName'])
-            #     # first_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
-            #     # print(first_string)
-            #     # child_test = self.get_child_collection_names(name)
-            #     # if child_test['count'] == 1:
-            #     #     print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
-            #     # elif child_test['count'] > 1:
-            #     #     for index, name2 in enumerate(child_test['value']):
-            #     #         # print(name2['name'])
-            #     #         print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
-            #     # else:
-            #     #     f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
-
-            # else:
-            #     child_test = self.get_child_collection_names(name)
-            #     # print(child_test)
-            #     if child_test['count'] == 1:
-            #         print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
-            #         # friendly_parent = collections[child_test['value'][0]['name']]
-
-            #     elif child_test['count'] > 1:
-            #         for index, name2 in enumerate(child_test['value']):
-            #             # print(name2['name'])
-            #             print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
-            #     else:
-            #         # print(name)
-            #         parent_name = collections[name]['parentCollection']
-            #         # print(collections[name]['friendlyName'], collections[parent_name]['friendlyName'])
-            #         print(f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])")
         print('\n')
         print('end code', '\n')
 
@@ -616,6 +527,70 @@ class PurviewCollections():
         # print('\n')
         # print('end code')
         # print('\n')
+
+
+
+
+
+# def get_real_collection_name(self, collection_name: str, api_version: str = None) -> str:
+#         """
+#         Pass in a collection name (friendly name or real name) and it returns either no collection found, the real collection name 
+#         or if there are multiple friendly names, it will print the them as tuples. 
+        
+#         :param collection_name. String. 
+#         :return:
+#         :rtype:  
+#         """
+        
+#         if not api_version:
+#             api_version = self.collections_api_version
+        
+#         collections = self.list_collections(only_names=True, api_version=api_version)
+#         friendly_names = ([(name, collections[name])
+#                                     for name, value in collections.items()
+#                                     if collection_name == value['friendlyName']])
+        
+#         if collection_name not in collections and len(friendly_names) == 0:
+#             err_msg = f" The collection '{collection_name}' either doesn't exist or you don't have access to check it."
+#             raise ValueError(err_msg)
+        
+#         elif collection_name not in collections and len(friendly_names) == 1:
+#             return friendly_names[0][0]
+
+#         elif collection_name in collections and len(friendly_names) <= 1:
+#             return collection_name
+        
+#         else:
+#             friendly_parent_names = []
+#             parent_list = [item[1]['parentCollection'] for item in friendly_names]
+            
+#             for parent in parent_list:
+#                 for name, value in collections.items():
+#                     if parent == name.lower():
+#                         friendly_parent_names.append(value['friendlyName'])
+            
+#             multiple_friendly_list = []
+#             for name, parent in zip(friendly_names, friendly_parent_names):
+#                 multiple_friendly_list.append((name[0], name[1]['friendlyName'], parent))
+
+#             newline = '\n'
+#             message = (f"Multiple collections exist with the friendly name '{collection_name}'. "
+#                        f"{newline}Below are tuples displaying the real collection name followed by "
+#                        "the friendly name and the parent collection friendly name (real_name, friendly_name, parent_friendly_name): "
+#                        f"{newline}{newline.join(map(str, multiple_friendly_list))} {newline}")
+#             return message
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         
