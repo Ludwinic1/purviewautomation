@@ -258,7 +258,7 @@ class PurviewCollections():
 
 
 
-    def create_collections(self, start_collection: str, collection_names: Union[str, list], force_actual_name: bool = False, api_version: str = None, friendly_name: str = None): 
+    def create_collections(self, start_collection: str, collection_names: Union[str, list], force_actual_name: bool = False, api_version: str = None): 
         """
         Create a collection or several collections in Purview. Can do any of following:
             -Create one collection
@@ -286,7 +286,6 @@ class PurviewCollections():
                 -If startcollname is passed in the start_collection parameter and that name exists under multiple hierarchies (friendly names)
                 if one of the actual names (not friendly name) is startcollname, then it will force the code to use the startcollname. 
         :param api_version (optional): String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
-        :param friendly_name (optonal): String. Default is None. Optional name to use as the friendly name in Purview. If not passed, the collection_names name will be used.
         :return: None
         :rtype None
         """
@@ -314,6 +313,7 @@ class PurviewCollections():
                     names = [name.strip() for name in item]
                     collection_list.append(names)
         
+
         for colls in collection_list:
             updated_collection_list = self._return_updated_collection_list(start_collection, colls, coll_dict, api_version)
             for index, name in enumerate(updated_collection_list):
@@ -321,10 +321,7 @@ class PurviewCollections():
                     if name in coll_dict and coll_dict[name]['parentCollection'].lower() == start_collection.lower():
                         continue
                     else:
-                        if friendly_name:
-                            friendly_name = friendly_name
-                        else:
-                            friendly_name = colls[index]
+                        friendly_name = colls[index]
 
                     try:
                         request = self._return_request_info(name=name, friendly_name=friendly_name, parent_collection=start_collection, api_version=api_version)
@@ -337,11 +334,8 @@ class PurviewCollections():
                     if name in coll_dict and coll_dict[name]['parentCollection'].lower() == updated_collection_list[index - 1].lower():
                         continue
                     else:
-                        if friendly_name:
-                            friendly_name = friendly_name
-                        else:
-                            friendly_name = colls[index]
-                            parent_collection = updated_collection_list[index - 1]
+                        friendly_name = colls[index]
+                        parent_collection = updated_collection_list[index - 1]
                 
                     try:
                         request = self._return_request_info(name=name, friendly_name=friendly_name, parent_collection=parent_collection, api_version=api_version)
@@ -708,8 +702,8 @@ class PurviewCollections():
         initial_list = []
         clean_list = []
 
-        # print('rec', recursive_list)
-        # print('delete', delete_list)
+        print('rec', recursive_list)
+        print('delete', delete_list)
 
         collections = self.list_collections(only_names=True)
         print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
@@ -723,7 +717,7 @@ class PurviewCollections():
                 # print(child_test)
             if child_test['count'] == 1:
                 print(child_test) # need to fix this statement. Collection_names
-                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{child_test['value'][0]['name']}', collection_names='{name}', friendly_name='{child_test['value'][0]['friendlyName']}')")
+                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{child_test['value'][0]['name']}', friendly_name='{child_test['value'][0]['friendlyName']}')")
                 # print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
                 # friendly_parent = collections[child_test['value'][0]['name']]
 
@@ -744,7 +738,7 @@ class PurviewCollections():
                 default_set.add(item)
                 clean_list.append(item)
         for item in clean_list:
-            print(item, 'from clean_list')
+            print(item)
             
         
             
