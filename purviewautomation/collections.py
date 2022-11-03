@@ -258,7 +258,7 @@ class PurviewCollections():
 
 
 
-    def create_collections(self, start_collection: str, collection_names: Union[str, list], force_actual_name: bool = False, api_version: str = None): 
+    def create_collections(self, start_collection: str, collection_names: Union[str, list], force_actual_name: bool = False, api_version: str = None, **kwargs): 
         """
         Create a collection or several collections in Purview. Can do any of following:
             -Create one collection
@@ -321,8 +321,10 @@ class PurviewCollections():
                     if name in coll_dict and coll_dict[name]['parentCollection'].lower() == start_collection.lower():
                         continue
                     else:
-                        friendly_name = colls[index]
-
+                        if 'safe_delete_friendly_name' in kwargs:
+                            friendly_name = kwargs['safe_delete_friendly_name']
+                        else:
+                            friendly_name = colls[index]
                     try:
                         request = self._return_request_info(name=name, friendly_name=friendly_name, parent_collection=start_collection, api_version=api_version)
                         print(request.content)
@@ -709,28 +711,29 @@ class PurviewCollections():
         print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
         
         for index, name in enumerate(delete_list):
-            if index == 0:
-                first_string = f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', friendly_name='{collections[name]['friendlyName']}')"
+            if index == 0 or collections[name]['parentCollection'].lower() == parent_name.lower():
+                print(name)
+                first_string = f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', safe_delete_friendly_name='{collections[name]['friendlyName']}')"
                 initial_list.append(first_string)
 
             child_test = self.get_child_collection_names(name)
                 # print(child_test)
             if child_test['count'] == 1:
                 print(child_test) # need to fix this statement. Collection_names
-                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{child_test['value'][0]['name']}', friendly_name='{child_test['value'][0]['friendlyName']}')")
+                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{child_test['value'][0]['name']}', safe_delete_friendly_name='{child_test['value'][0]['friendlyName']}')")
                 # print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
                 # friendly_parent = collections[child_test['value'][0]['name']]
 
             elif child_test['count'] > 1:
                 print('child equals more than 1')
                 for index, name2 in enumerate(child_test['value']):
-                    initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{name2} '{name2['friendlyName']}'])")
+                    initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{name2}, safe_delete_friendly_name='{name2['friendlyName']}'])")
 
                     # print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
             else:
                 parent_name = collections[name]['parentCollection']
                 friendly_name = collections[name]['friendlyName']
-                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', friendly_name='{friendly_name}')")
+                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', safe_delete_friendly_name='{friendly_name}')")
         
         default_set = set()
         for item in initial_list:
