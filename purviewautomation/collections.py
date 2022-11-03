@@ -578,7 +578,7 @@ class PurviewCollections():
         
 
 
-    def test_delete_collections_recursively(self, collection_names: list[str], safe_delete: str = None, also_delete_first_collection: bool = False, api_version: str = None):
+    def test_delete_collections_recursively(self, collection_names: Union[str, list], safe_delete: str = None, also_delete_first_collection: bool = False, api_version: str = None):
         # ['test1']
         
         if not api_version:
@@ -587,6 +587,11 @@ class PurviewCollections():
         delete_list = []
         recursive_list = []
         collections = self.list_collections(only_names=True)
+
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
 
         for name in collection_names:
             parent_name = self._return_real_collection_name(name)
@@ -638,6 +643,11 @@ class PurviewCollections():
 
             delete_list = []
             recursive_list = []
+
+            if not isinstance(collection_names, (str, list)):
+                raise ValueError("The collection_names parameter has to either be a string or a list type.")
+            elif isinstance(collection_names, str):
+                collection_names = [collection_names]
 
             for name in collection_names:
                 # parent_name = self._return_real_collection_name(name)
@@ -698,32 +708,35 @@ class PurviewCollections():
         initial_list = []
         clean_list = []
 
-        print('rec', recursive_list)
-        print('delete', delete_list)
+        # print('rec', recursive_list)
+        # print('delete', delete_list)
 
         collections = self.list_collections(only_names=True)
         print("Safe Delete. Copy and run the below code in your program to recreate the collections and collection hierarchies:", '\n')
         
         for index, name in enumerate(delete_list):
             if index == 0:
-                first_string = f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])"
+                first_string = f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', friendly_name='{collections[name]['friendlyName']}')"
                 initial_list.append(first_string)
 
             child_test = self.get_child_collection_names(name)
                 # print(child_test)
             if child_test['count'] == 1:
-                initial_list.append(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['friendlyName']}'])")
+                print(child_test) # need to fix this statement. Collection_names
+                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{child_test['value'][0]['name']}', collection_names='{name}', friendly_name='{child_test['value'][0]['friendlyName']}')")
                 # print(f"{safe_delete_name}.create_collections('{name}', ['{child_test['value'][0]['name']}'])")
                 # friendly_parent = collections[child_test['value'][0]['name']]
 
             elif child_test['count'] > 1:
+                print('child equals more than 1')
                 for index, name2 in enumerate(child_test['value']):
-                    initial_list.append(f"{safe_delete_name}.create_collections('{name}', ['{name2['friendlyName']}'])")
+                    initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{name2} '{name2['friendlyName']}'])")
 
                     # print(f"{safe_delete_name}.create_collections('{name}', ['{name2['name']}'])")
             else:
                 parent_name = collections[name]['parentCollection']
-                initial_list.append(f"{safe_delete_name}.create_collections('{parent_name}', ['{collections[name]['friendlyName']}'])")
+                friendly_name = collections[name]['friendlyName']
+                initial_list.append(f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{name}', friendly_name='{friendly_name}')")
         
         default_set = set()
         for item in initial_list:
@@ -731,7 +744,7 @@ class PurviewCollections():
                 default_set.add(item)
                 clean_list.append(item)
         for item in clean_list:
-            print(item)
+            print(item, 'from clean_list')
             
         
             
@@ -785,6 +798,38 @@ class PurviewCollections():
 
 
         
+
+
+
+    #  """Helper function. Do not run directly."""
+
+    #     collections = self.list_collections(only_names=True)
+
+    #     create_colls_list = []
+    #     for name in collection_names:
+    #         if len(collection_names) == 1:
+    #             collection_name = self._return_real_collection_name(name)
+    #             parent_name = collections[collection_name]['parentCollection']
+    #             friendly_name = collections[collection_name]['friendlyName']
+    #             create_collection_string = f"{safe_delete_name}.create_collections(start_collection='{parent_name}', collection_names='{collection_name}', friendly_name='{friendly_name}')"
+            
+    #         else:
+    #             collection_name = self._return_real_collection_name(name)
+    #             parent_name = collections[collection_name]['parentCollection']
+    #             friendly_name = collections[collection_name]['friendlyName']
+    #             create_collection_string = f"create_collections(start_collection='{parent_name}', collection_names='{collection_name}', friendly_name='{friendly_name}')"
+    #             create_colls_list.append(create_collection_string)
+        
+    #     print("Copy and run the below code in your program to recreate the collection/collections:", '\n')
+    #     if len(collection_names) == 1:
+    #         print(create_collection_string)
+    #     else:
+    #         for item in create_colls_list:
+    #             create_coll_final_string = f"{safe_delete_name}.{item}"
+    #             print(create_coll_final_string)
+    #     print('\n')
+    #     print('end of code')
+    #     print('\n')
 
             
 
