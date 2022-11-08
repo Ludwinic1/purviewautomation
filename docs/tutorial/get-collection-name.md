@@ -1,0 +1,1 @@
+::: purviewautomation.collections.PurviewCollections.get_real_collection_name

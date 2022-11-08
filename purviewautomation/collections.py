@@ -40,25 +40,22 @@ class PurviewCollections():
     def list_collections(
         self, 
         only_names: bool = False, 
-        pretty_print: bool = False, 
-        api_version: Optional[str] = None
-        ) -> Union[list[dict], dict]:
-        """ Return the Purview collections.
+        pprint: bool = False, 
+        api_version: str = "2019-11-01-preview"
+        ) -> Union[list[dict], dict, None]:
+        """Return the Purview collections.
         
         Args:
             only_names: If True will return only the actual, friendly, and parent collection names.
-            pretty_print: If True will print out the collections using the pprint method. 
+            pprint: If True will print out the collections using the pretty print module. 
                 If only_names is also True will print out only the names using the pprint method. 
-            api_version: List collections API version. Default is 2019-11-01-preview.
+            api_version: List collections API version.
 
         Returns:
             List of dictionaries with each dictionary containing all of the info for that collection.
                 If only_names is True will return a dictionary of only the names (actual, friendly, parent).
-                If pretty_print is True, will print the values to the screen and no object is returned.  
+                If pprint is True, will print the values to the screen and no object is returned.  
         """
-        
-        if not api_version:
-            api_version = self.collections_api_version
 
         url = f"{self.collections_endpoint}?api-version={api_version}"
         collection_request = requests.get(url=url, headers=self.header)
@@ -77,12 +74,12 @@ class PurviewCollections():
                         "friendlyName": coll['friendlyName'],
                         "parentCollection": coll["parentCollection"]['referenceName']
                     }
-            if pretty_print:
+            if pprint:
                 pprint(coll_dict, sort_dicts=False)
 
             return coll_dict
         
-        if pretty_print:
+        if pprint:
             pprint(collections, sort_dicts=False)
 
         return collections
@@ -91,20 +88,21 @@ class PurviewCollections():
     def get_real_collection_name(
             self, 
             collection_name: str, 
-            api_version: str = None, 
+            api_version: str = "2019-11-01-preview", 
             force_actual_name: bool = False
-    ) -> str:
+    ) -> Union[str, list]: # TODO need to check and update this
+        """Returns the real under the hood collection name.
+
+        Args:
+            collection_name: Name to check. Can pass in a friendly name or a real name. 
+            api_version: Collections API version.
+            force_actual_name: Edge case. If True it will check if the real name is the name passed in. 
+                This is used if there are multiple friendly names. 
+        
+        Returns:
+            If a friendly name is passed in and there's multiple friendly names, all will display.
+                If the collection doesn't exist, it will return mentioning no collection exists.  
         """
-        Returns the real collection name. If a friendly names is passed in and there's multiple friendly names, all will display.
-        If the collection doesn't exist, it will display that.
-
-        :param collection_name: String. Collection name to check.
-        :param api_version (optional) String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
-        :param force_actual_name (optional) Bool. Default is False. Edge case. If there are multiple friendly names and you want to try forcing the name.  
-        """  
-
-        if not api_version:
-            api_version = self.collections_api_version
 
         collections = self.list_collections(only_names=True, api_version=api_version)
         friendly_names = ([(name, collections[name])
@@ -258,42 +256,33 @@ class PurviewCollections():
         start_collection: str, 
         collection_names: Union[str, list], 
         force_actual_name: bool = False, 
-        api_version: str = None, 
+        api_version: str = "2019-11-01-preview", 
         **kwargs
-    ): 
-        """
-        Create a collection or several collections in Purview. Can do any of following:
-            -Create one collection
-            -Create multiple collections
-            -Create one collection hierarchy (multiple parent child relationships)
-            -Create multiple collection hierarchies
-        
-        :param start_collection: String. Existing collection name to start creating the collections from. 
-                Can either pass in the actual Purview collection name or the friendly collection name.
-                If you pass in the friendly name and duplicate friendly names exist, you'll receive a friendly error
-                asking which collection you'd like to use. This collection has to exist already in Purview.  
-        :param collection_names: Either a string or a List of Strings list[str]. As mentioned above, you can pass in as many as needed.
-                examples:
-                -One collection: pur.create_collections('startcollname', 'mynewcollection')
-                -Multiple collections: pur.create_collections('startcollname', ['mynewcollection', 'mynewcollectiontwo'])
-                -Create one collection hierarchy: pur.create_collections('startcollname', 'mynewcollection/mysubcoll1/mysubcoll2')
-                    The / is the parent child relationship. mysubcoll1 would be a child of mynewcollection. 
-                    mysubcoll2 would be a child of mysubcoll1.
-                -Create multiple collection hierarchies: pur.create('startcollname', ['mynewcollection/mysubcoll1', 'mysecondcollection/mysubcoll2'])
-                    The internal code will handle any Purview name requirements. my new collection is a valid name to pass in.
-        :param force_actual_name: String. Edge Case. If a friendly name is passed in the start_collection parameter 
-                and that name is duplicated across multiple hierarchies and one of those names is the actual passed in name, if True, this will force
-                the method to use the actual name you pass in if it finds it.
-                examples:
-                -If startcollname is passed in the start_collection parameter and that name exists under multiple hierarchies (friendly names)
-                if one of the actual names (not friendly name) is startcollname, then it will force the code to use the startcollname. 
-        :param api_version (optional): String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
-        :return: None
-        :rtype None
-        """
+    ) -> None: # TODO Need to update this
+        """Create collections.
 
-        if not api_version:
-            api_version = self.collections_api_version
+            Can create any of the following:
+            -One collection
+            -Multiple Collections
+            -One collection hierarchy (multiple parent/child relationships)
+            -Multiple collection hierarchies
+
+        Args:
+            start_collection: Existing collection name to start creating the collections from.
+                Use list_collections(only_names, pprint=True) to see all of the collection names.
+                Can pass in a friendly or real name. 
+            collection_names: collection name/names and the parent/child items if needed. 
+            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Collection API version. 
+            **kwargs: 
+                safe_delete_friendly_name: Used during the safe delete functionality. Don't call directly.
+        
+        Returns:
+            None. Prints the successful created collections.
+            """
         
         coll_dict = self.list_collections(only_names=True, api_version=api_version)
         start_collection = self.get_real_collection_name(start_collection, api_version, force_actual_name)
@@ -390,12 +379,22 @@ class PurviewCollections():
         collection_names: Union[str, list], 
         safe_delete: str = None, 
         force_actual_name: bool = False, 
-        api_version: str = None
-    ):
-        """ Delete one or more collections. Can pass in either the actual or friendly collection name. No collections that have children"""
-
-        if not api_version:
-            api_version = self.collections_api_version
+        api_version: str = "2019-11-01-preview"
+    ) -> None: #TODO need to update this
+        """Delete one or more collections. 
+        
+            Can pass in either the real or friendly collection name. 
+            Can't pass in collections that have chidren. Use delete_collection_recursively instead.
+        
+        Args:
+            collection_names: Collections to be deleted. 
+            safe_delete: The client name to be used when printing the safe delete commands.
+            force_actual_name:  Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Collections API version.
+        """
 
         if not isinstance(collection_names, (str, list)):
             raise ValueError("The collection_names parameter has to either be a string or a list type.")
@@ -513,10 +512,23 @@ class PurviewCollections():
         collection_names: list[str], 
         safe_delete: str = None, 
         also_delete_first_collection: bool = False, 
-        api_version: str = None
-    ):
-        if not api_version:
-            api_version = self.collections_api_version
+        api_version: str = "2019-11-01-preview"
+    ) -> None: #TODO need to update this and add force_actual_name
+        """Delete one or multiple collection hierarchies.
+        
+        Args:
+            collection_names: One or more collection hierarchies to delete
+            safe_delete: The client name to be used when printing the safe delete commands.
+            also_delete_first_collection: Deletes the start collection along with the children collections.
+            force_actual_name:  Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Collections API version. 
+        
+        Returns:
+            None. Will print out the collections being deleted.
+        """
 
         delete_list = []
         recursive_list = []
