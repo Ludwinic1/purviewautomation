@@ -1,0 +1,18 @@
+site_name: Purview Automation
+
+theme:
+  name: material
+
+nav:
+  - index.md
+  - Tutorial  - User Guide:
+    - tutorial/authenticate.md
+    - List Collections: tutorial/list-collections.md
+    - Create Collections: tutorial/create-collections.md
+    - Delete Collections: tutorial/delete-collections.md
+    - Delete Collections Recursively: tutorial/delete-collections-recursively.md
+    - Get Collection Name: tutorial/get-collection-name.md
+    
+
+
+
