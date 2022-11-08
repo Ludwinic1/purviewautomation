@@ -6,11 +6,24 @@ import re
 import random 
 import string
 from pprint import pprint 
-from typing import Union
+from typing import Union, Optional
 
 class PurviewCollections():
-    def __init__(
-        self, purview_account_name: str, auth: str 
+    """Work with Purview Collections.
+    
+    Longer description 
+
+    Attributes:
+        purview_account_name: Name of the Purview account. 
+        auth: Access token generated automatically from the ServicePrincipalAuthentication class.
+        header: Headers to be sent when calling the Purview APIs.
+        collections_endpoint: The endpoint when calling collection APIs.
+        collections_api_version: API version for the collection APIs.
+        catalog_endpoint: The endpoint when calling the catalog APIs.
+        catalog_api_version: API version for the catalog APIs. 
+    """
+
+    def __init__(self, purview_account_name: str, auth: str 
     ) -> None:
         self.purview_account_name = purview_account_name
         self.auth = auth.get_access_token()
@@ -28,22 +41,22 @@ class PurviewCollections():
         self, 
         only_names: bool = False, 
         pretty_print: bool = False, 
-        api_version: str = None
-        ) -> Union[dict, list]:
-        """
-        Returns a list of dictionaries of the collections you have access to in Purview. Default will display all of the collection info.
+        api_version: Optional[str] = None
+        ) -> Union[list[dict], dict]:
+        """ Return the Purview collections.
+        
+        Args:
+            only_names: If True will return only the actual, friendly, and parent collection names.
+            pretty_print: If True will print out the collections using the pprint method. 
+                If only_names is also True will print out only the names using the pprint method. 
+            api_version: List collections API version. Default is 2019-11-01-preview.
 
-        :param only_names: (optional) Bool. Default is False. Returns a dictionary of the actual collection name, friendly name, and parent name.
-                If True, will return a dictionary of all the collections with the key being the 
-                actual collection name followed by the friendly name and parent collection name.
-                If you wish to print the dictionary to the screen in a formatted way and still maintain the hierarcy, 
-                import pprint and use: pprint(list_collections, only_names=True), sort_dicts=False) 
-        :param pretty_print: (optional) Bool. Default is False. If True, prints out the collections in a sorted order (starting at the root).
-        :param api_version (optional) String. Default is None. If None, it uses the self.collections_api_version which is "2019-11-01-preview".
-        :return: Dict of the collections 
-        :rtype: Dict 
+        Returns:
+            List of dictionaries with each dictionary containing all of the info for that collection.
+                If only_names is True will return a dictionary of only the names (actual, friendly, parent).
+                If pretty_print is True, will print the values to the screen and no object is returned.  
         """
-
+        
         if not api_version:
             api_version = self.collections_api_version
 

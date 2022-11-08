@@ -2,6 +2,7 @@ site_name: Purview Automation
 
 theme:
   name: material
+  language: en
 
 nav:
   - index.md
@@ -13,6 +14,9 @@ nav:
     - Delete Collections Recursively: tutorial/delete-collections-recursively.md
     - Get Collection Name: tutorial/get-collection-name.md
     
+plugins:
+  - search
+  - mkdocstrings
 
 
 

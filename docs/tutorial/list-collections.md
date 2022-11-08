@@ -1,0 +1,1 @@
+::: purviewautomation.collections.PurviewCollections.list_collections
