@@ -6,6 +6,7 @@ theme:
 
 nav:
   - index.md
+  - Why This Library: why-this-library.md
   - Tutorial  - User Guide:
     - tutorial/authenticate.md
     - List Collections: tutorial/list-collections.md
