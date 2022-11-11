@@ -186,7 +186,7 @@ class PurviewCollections():
         Returns:
             The original collection_name or a random six character lowercase string if the name doesn't meet the requirements.
         """
-
+        
         pattern = "[a-zA-Z0-9]+"
         collection_check_pattern = re.search(pattern, collection_name)
         if collection_check_pattern:
@@ -487,7 +487,7 @@ class PurviewCollections():
         collection_names: list[str], 
         safe_delete_name: str, 
         parent_name: str,
-        delete_root_collection: str = False
+        also_delete_first_collection: bool = False
     ):
         initial_list = []
         clean_list = []
@@ -522,12 +522,11 @@ class PurviewCollections():
             if item not in default_set:
                 default_set.add(item)
                 clean_list.append(item)
-        if delete_root_collection:
+        if also_delete_first_collection:
             print(f"{safe_delete_name}.create_collections(start_collection='{collections[parent_name]['parentCollection']}', collection_names='{parent_name}', safe_delete_friendly_name='{collections[parent_name]['friendlyName']}')")
         for item in clean_list:
             print(item)
-        # if delete_root_collection:
-        #     print(f"{safe_delete_name}.create_collections(start_collection='{collections[parent_name]['parentCollection']}', collection_names='{parent_name}', safe_delete_friendly_name='{collections[parent_name]['friendlyName']}'")
+
         print('\n')
         print('end code', '\n')
     
