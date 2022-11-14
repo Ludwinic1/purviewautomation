@@ -49,6 +49,10 @@ jobs:
           pip install tox tox-gh-actions 
       - name: Test with tox 
         run: tox -vv
+        env:
+          purviewautomation-tenant-id: ${{ secrets.TENANT_ID }}
+          purviewautomation-sp-client-id: ${{ secrets.SP_CLIENT_ID }}
+          purviewautomation-sp-secret: ${{ secrets.SP_SECRET }}
   
   # delete-purview-account:
   #   needs: [create-purview-account, test]
