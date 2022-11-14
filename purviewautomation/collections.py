@@ -6,7 +6,7 @@ import re
 import random 
 import string
 from pprint import pprint as pretty_print
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 
 class PurviewCollections():
     """Interact with Purview Collections.
@@ -223,7 +223,7 @@ class PurviewCollections():
     def _return_updated_collection_name(
         self, 
         name: str, 
-        collection_dict: dict[dict], 
+        collection_dict: Dict[Dict], 
         parent_collection: str, 
         friendly_names: list[str], 
         api_version: str
@@ -263,8 +263,8 @@ class PurviewCollections():
     def _return_updated_collection_list(
         self, 
         start_collection: str, 
-        collection_list: list[str], 
-        collection_dict: dict[dict], 
+        collection_list: List[str], 
+        collection_dict: Dict[Dict], 
         api_version: str
     ) -> List[str]:
         """Internal method. Do not call directly. 
