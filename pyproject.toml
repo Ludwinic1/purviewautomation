@@ -10,7 +10,7 @@ authors = [
     { name = "Nick Ludwig", email = "nick.ludwig223@gmail.com" },
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 readme = "README.md"
 classifiers = [
     "Operating System :: OS Independent",
