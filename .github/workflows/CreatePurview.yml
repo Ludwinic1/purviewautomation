@@ -17,7 +17,7 @@ jobs:
         with:
           azPSVersion: latest 
           inlineScript: |
-            [string] $RG_NAME = "${{ secrets.RG_NAME }}"
+            [string] $RG_NAME = "{{ secrets.RG_NAME }}"
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             Install-Module Az.Purview -Force
