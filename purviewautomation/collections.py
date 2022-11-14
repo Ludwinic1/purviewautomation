@@ -225,7 +225,7 @@ class PurviewCollections():
         name: str, 
         collection_dict: Dict[str, str], 
         parent_collection: str, 
-        friendly_names: list[str], 
+        friendly_names: List[str], 
         api_version: str
     ) -> str:
         """Internal helper function. Do not call directly. 
@@ -382,7 +382,7 @@ class PurviewCollections():
 
     def _safe_delete(
         self, 
-        collection_names: list[str], 
+        collection_names: List[str], 
         safe_delete_name: str
     ) -> None:
         """Helper function. Do not run directly."""
@@ -509,9 +509,9 @@ class PurviewCollections():
     
     def _safe_delete_recursivly(
         self, 
-        delete_list: list[str], 
+        delete_list: List[str], 
         recursive_list, 
-        collection_names: list[str], 
+        collection_names: List[str], 
         safe_delete_name: str, 
         parent_name: str,
         also_delete_first_collection: bool = False
@@ -560,7 +560,7 @@ class PurviewCollections():
     
     def delete_collections_recursively(
         self, 
-        collection_names: list[str], 
+        collection_names: List[str], 
         safe_delete: str = None, 
         also_delete_first_collection: bool = False, 
         api_version: str = None
@@ -618,7 +618,7 @@ class PurviewCollections():
 
     def delete_collection_assets(
         self, 
-        collection_names: list[str], 
+        collection_names: List[str], 
         api_version: str, 
         force_actual_name: bool = False
     ):
