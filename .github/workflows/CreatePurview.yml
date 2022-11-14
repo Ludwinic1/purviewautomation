@@ -37,7 +37,11 @@ jobs:
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4.3.0
         with:
+          purviewautomation-tenant-id: ${{ secrets.TENANT_ID }}
+          purviewautomation-sp-client-id: ${{ secrets.SP_CLIENT_ID }}
+          purviewautomation-sp-secret: ${{ secrets.SP_SECRET }}
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies 
         run: |
           python -m pip install --upgrade pip 
