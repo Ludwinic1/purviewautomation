@@ -37,11 +37,24 @@ class PurviewCollections():
         self.catalog_api_version = "2022-03-01-preview"
 
     
+    # def return_api_version(self, api_version, api_type):
+    #     if api_type == 'collections':
+    #         if not api_version:
+    #             api_version = self.collections_api_verison
+    #         return api_version 
+    #     elif api_type == 'catalog':
+    #         if not api_version:
+    #             api_version = self.catalog_api_version
+    #         return api_version 
+    #     else:
+    #         raise ValueError('api_type has to be either "catalog" or "collections"')
+
+    
     def list_collections(
         self, 
         only_names: bool = False, 
         pprint: bool = False, 
-        api_version: str = "2019-11-01-preview"
+        api_version: str = None
         ) -> Union[list[dict], dict, None]:
         """Returns the Purview collections.
         
@@ -56,7 +69,9 @@ class PurviewCollections():
                 If only_names is True will return a dictionary of only the names (actual, friendly, parent).
                 If pprint is True, will print the values to the screen.  
         """
-
+        if not api_version:
+            api_version = self.collections_api_version
+        
         url = f"{self.collections_endpoint}?api-version={api_version}"
         collection_request = requests.get(url=url, headers=self.header)
         collections = collection_request.json()['value']
@@ -88,7 +103,7 @@ class PurviewCollections():
     def get_real_collection_name(
             self, 
             collection_name: str, 
-            api_version: str = "2019-11-01-preview", 
+            api_version: str = None, 
             force_actual_name: bool = False
     ) -> Union[str, list]: # TODO need to check and update this
         """Returns the real under the hood collection name.
@@ -106,6 +121,9 @@ class PurviewCollections():
             If the collection doesn't exist, it will raise the error mentioning no collection exists.
             If a friendly name is passed and there's multiple friendly names, the error will display the friendly names.
         """
+
+        if not api_version:
+            api_version = self.collections_api_version
 
         collections = self.list_collections(only_names=True, api_version=api_version)
         friendly_names = ([(name, collections[name])
@@ -148,11 +166,14 @@ class PurviewCollections():
         name: str, 
         friendly_name: str, 
         parent_collection: str, 
-        api_version: str
+        api_version: str = None
     ) -> requests.request:
         """
         Internal helper function. Do not call directly.
         """
+        if not api_version:
+            api_version = self.collections_api_version
+
         url = f'{self.collections_endpoint}/{name}?api-version={api_version}'
         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
         request = requests.put(url=url, headers=self.header, data=data)
@@ -259,14 +280,14 @@ class PurviewCollections():
                 name = self._return_updated_collection_name(name, collection_dict, updated_list[index - 1], friendly_names, api_version)
             updated_list.append(name)
         return updated_list
-
+                        
 
     def create_collections(
         self, 
         start_collection: str, 
         collection_names: Union[str, list], 
         force_actual_name: bool = False, 
-        api_version: str = "2019-11-01-preview", 
+        api_version: str = None, 
         **kwargs
     ) -> None: # TODO Need to update this
         """Create collections.
@@ -294,6 +315,9 @@ class PurviewCollections():
             None. Prints the successful created collections.
             """
         
+        if not api_version:
+            api_version = self.collections_api_version
+
         coll_dict = self.list_collections(only_names=True, api_version=api_version)
         start_collection = self.get_real_collection_name(start_collection, api_version, force_actual_name)
 
@@ -416,7 +440,7 @@ class PurviewCollections():
         collection_names: Union[str, list], 
         safe_delete: str = None, 
         force_actual_name: bool = False, 
-        api_version: str = "2019-11-01-preview"
+        api_version: str = None
     ) -> None: #TODO need to update this
         """Delete one or more collections. 
         
@@ -432,6 +456,9 @@ class PurviewCollections():
                 the method to use the actual name you pass in if it finds it.
             api_version: Collections API version.
         """
+
+        if not api_version:
+            api_version = self.collections_api_version
 
         if not isinstance(collection_names, (str, list)):
             raise ValueError("The collection_names parameter has to either be a string or a list type.")
@@ -536,7 +563,7 @@ class PurviewCollections():
         collection_names: list[str], 
         safe_delete: str = None, 
         also_delete_first_collection: bool = False, 
-        api_version: str = "2019-11-01-preview"
+        api_version: str = None
     ) -> None: #TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
         
@@ -553,6 +580,10 @@ class PurviewCollections():
         Returns:
             None. Will print out the collections being deleted.
         """
+
+        if not api_version:
+            api_version = self.collections_api_version
+
         delete_list = []
         recursive_list = []
 
