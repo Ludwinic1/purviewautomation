@@ -6,7 +6,7 @@ from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 tenant_id = os.environ['purviewautomation-tenant-id']
 client_id = os.environ['purviewautomation-sp-client-id']
 client_secret = os.environ['purviewautomation-sp-secret']
-
+purview_account_name = os.environ['purview-account-name']
 # purview_account_name = os.environ['purview_account_name'] # to be used in github action input
 # purview_account_name = ''.join(random.choices(string.ascii_lowercase, k=10)) # Use in github actions
 
@@ -24,7 +24,7 @@ client_secret = os.environ['purviewautomation-sp-secret']
 
 auth = ServicePrincipalAuthentication(tenant_id, client_id, client_secret)
 
-client = PurviewCollections('purview-test-2', auth=auth)
+client = PurviewCollections(purview_account_name, auth=auth)
 
 # Helper function
 def collection_check_helper(collection_names: str) -> list[list]:
