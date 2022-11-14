@@ -19,9 +19,8 @@ jobs:
           inlineScript: |
             $L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
             $PurviewAccountName = (Get-Random -Count 10 -InputObject $L) -join ''
-            New-AzResourceGroup -Name "{{ secrets.RG_NAME }}" -Location "{{ secrets.PURVIEW_LOCATION }}"
             New-AzPurviewAccount -Name "$PurviewAccountName" -ResourceGroupName "{{ secrets.RG_NAME }}" -Location "{{ secrets.PURVIEW_LOCATION }}" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess {{ secrets.NETWORK_ACCESS }}
-            
+
 
 
 
