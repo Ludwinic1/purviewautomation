@@ -6,7 +6,7 @@ import re
 import random 
 import string
 from pprint import pprint as pretty_print
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 class PurviewCollections():
     """Interact with Purview Collections.
@@ -105,7 +105,7 @@ class PurviewCollections():
             collection_name: str, 
             api_version: str = None, 
             force_actual_name: bool = False
-    ) -> Union[str, list]: # TODO need to check and update this
+    ) -> Union[str, List]: # TODO need to check and update this
         """Returns the real under the hood collection name.
 
         Args:
@@ -184,7 +184,7 @@ class PurviewCollections():
         self, 
         collection_name: str, 
         api_version: str
-    ) -> list[str]:
+    ) -> List[str]:
         """
         Internal helper function. Do not call directly.
         """
@@ -266,7 +266,7 @@ class PurviewCollections():
         collection_list: list[str], 
         collection_dict: dict[dict], 
         api_version: str
-    ) -> list[str]:
+    ) -> List[str]:
         """Internal method. Do not call directly. 
         
             Returns a collection list with the collection names to be used to call the APIs.
