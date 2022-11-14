@@ -55,7 +55,7 @@ class PurviewCollections():
         only_names: bool = False, 
         pprint: bool = False, 
         api_version: str = None
-        ) -> Union[list[dict], dict, None]:
+        ):
         """Returns the Purview collections.
         
         Args:
