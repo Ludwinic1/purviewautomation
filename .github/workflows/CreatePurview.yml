@@ -3,30 +3,30 @@ name: Create Purview Run Tests
 on: workflow_dispatch
 
 jobs:
-  create-purview-account:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true 
+  # create-purview-account:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Login to Azure
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #         enable-AzPSSession: true 
       
-      - name: Create Purview Account 
-        uses: azure/powershell@v1 
-        with:
-          azPSVersion: latest 
-          inlineScript: |
-            [string] $RG_NAME = "${{ secrets.RG_NAME }}"
-            [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
-            [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
-            [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force
-            Import-Module Az.Purview
-            New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
+  #     - name: Create Purview Account 
+  #       uses: azure/powershell@v1 
+  #       with:
+  #         azPSVersion: latest 
+  #         inlineScript: |
+  #           [string] $RG_NAME = "${{ secrets.RG_NAME }}"
+  #           [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
+  #           [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
+  #           [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
+  #           Install-Module Az.Purview -Force
+  #           Import-Module Az.Purview
+  #           New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
 
   pytest2:
-    needs: create-purview-account
+    # needs: create-purview-account
     runs-on: ${{ matrix.os }}
     env:
       purviewautomation-tenant-id: ${{ secrets.TENANT_ID }}
