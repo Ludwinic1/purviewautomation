@@ -2,6 +2,7 @@ import os
 import random 
 import string 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
+from typing import List
 
 tenant_id = os.environ['purviewautomation-tenant-id']
 client_id = os.environ['purviewautomation-sp-client-id']
@@ -27,7 +28,7 @@ auth = ServicePrincipalAuthentication(tenant_id, client_id, client_secret)
 client = PurviewCollections(purview_account_name, auth=auth)
 
 # Helper function
-def collection_check_helper(collection_names: str) -> list[list]:
+def collection_check_helper(collection_names: str) -> List[str]:
     names = [name.strip() for name in collection_names.split('/')]
     collections = client.list_collections(only_names=True)
     friendly_names = [coll['friendlyName'] for coll in collections.values()]
