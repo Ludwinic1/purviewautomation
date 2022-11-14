@@ -1,4 +1,4 @@
-name: Create Purview Run Tests
+name: Test
 
 on: workflow_dispatch
 
