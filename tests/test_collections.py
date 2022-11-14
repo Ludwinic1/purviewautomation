@@ -3,7 +3,6 @@ import random
 import string 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 
-
 tenant_id = os.environ['purviewautomation-tenant-id']
 client_id = os.environ['purviewautomation-sp-client-id']
 client_secret = os.environ['purviewautomation-sp-secret']
@@ -51,7 +50,8 @@ def test_list_colls_only_names_pprint():
 
 # Create collections
 def test_create_single_collection():
-    client.create_collections()
+    # Change this to be dynamic to use purview account name
+    client.create_collections(start_collection='purview-test-2', collection_names='My-Company') 
     client.create_collections(start_collection='My-Company', collection_names='mytest1')
     name, friendly_names = collection_check_helper('mytest1')
     assert name[0] in friendly_names
@@ -90,8 +90,20 @@ def test_delete_collection():
 
 
 def test_delete_collections_recursively():
-    pass
+    client.delete_collections_recursively('My-Company')
+    real_name = client.get_real_collection_name('My-Company')
+    child_collections = client.get_child_collection_names(real_name)
+    assert child_collections['count'] == 0
 
+def test_delete_collections_recursively02():
+    client.create_collections(start_collection='My-Company', collection_names='test 1')
+    client.delete_collections_recursively('My-Company', also_delete_first_collection=True)
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll['friendlyName'] for coll in collections.values()]
+    assert 'My-Company' not in friendly_names
+
+
+    
 
 # client.delete_collections_recursively('My-Company', safe_delete='client')
 

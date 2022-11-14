@@ -1,4 +1,4 @@
-name: Create Purview 
+name: Create Purview Run Tests
 
 on: workflow_dispatch
 
@@ -20,11 +20,32 @@ jobs:
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
+            [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             Install-Module Az.Purview -Force
             Import-Module Az.Purview
-            $L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
-            $PurviewAccountName = (Get-Random -Count 10 -InputObject $L) -join ''
-            New-AzPurviewAccount -Name "$PurviewAccountName" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
+            New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
+
+  test:
+    needs: create-purview-account
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # add windows-latest later
+        python-version: ['3.6', '3.7', '3.8', '3.9']
+    
+    steps:
+      - uses: actions/checkout@v3 
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies 
+        run: |
+          python -m pip install --upgrade pip 
+          pip install tox tox-gh-actions 
+      - name: Test with tox 
+        run: tox
+              
 
       # RUN THE PYTEST SCRIPT
       # Then delete the Purview account. 
