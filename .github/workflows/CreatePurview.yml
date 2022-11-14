@@ -45,7 +45,28 @@ jobs:
           pip install tox tox-gh-actions 
       - name: Test with tox 
         run: tox -vv
-              
+  
+  delete-Purview:
+    needs: [create-purview-account, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+      - name: Delete Purview Account 
+        uses: azure/powershell@v1 
+        with: 
+          azPSVersion: latest
+          inlineScript: |
+            [string] $RG_NAME = "${{ secrets.RG_NAME }}"
+            [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
+            Install-Module Az.Purview -Force
+            Import-Module Az.Purview
+            Remove-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME"
+
+
 
       # RUN THE PYTEST SCRIPT
       # Then delete the Purview account. 
