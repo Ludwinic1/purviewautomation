@@ -52,7 +52,7 @@ def test_list_colls_only_names_pprint():
 # Create collections
 def test_create_single_collection():
     # Change this to be dynamic to use purview account name
-    client.create_collections(start_collection='purview-test-2', collection_names='My-Company') 
+    client.create_collections(start_collection=purview_account_name, collection_names='My-Company') 
     client.create_collections(start_collection='My-Company', collection_names='mytest1')
     name, friendly_names = collection_check_helper('mytest1')
     assert name[0] in friendly_names
