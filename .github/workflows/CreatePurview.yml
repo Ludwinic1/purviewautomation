@@ -17,6 +17,7 @@ jobs:
         with:
           azPSVersion: latest 
           inlineScript: |
+            Install-Module Az.Purview
             Import-Module Az.Purview
             $L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
             $PurviewAccountName = (Get-Random -Count 10 -InputObject $L) -join ''
