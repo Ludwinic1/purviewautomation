@@ -223,7 +223,7 @@ class PurviewCollections():
     def _return_updated_collection_name(
         self, 
         name: str, 
-        collection_dict: Dict[str], 
+        collection_dict: Dict[str, str], 
         parent_collection: str, 
         friendly_names: list[str], 
         api_version: str
@@ -264,7 +264,7 @@ class PurviewCollections():
         self, 
         start_collection: str, 
         collection_list: List[str], 
-        collection_dict: Dict[str], 
+        collection_dict: Dict[str, str], 
         api_version: str
     ) -> List[str]:
         """Internal method. Do not call directly. 
