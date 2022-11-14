@@ -46,7 +46,7 @@ jobs:
       - name: Test with tox 
         run: tox -vv
   
-  delete-Purview:
+  delete-purview-account:
     needs: [create-purview-account, test]
     runs-on: ubuntu-latest
     steps:
