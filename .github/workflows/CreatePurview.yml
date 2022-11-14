@@ -21,7 +21,7 @@ jobs:
             Import-Module Az.Purview
             $L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
             $PurviewAccountName = (Get-Random -Count 10 -InputObject $L) -join ''
-            New-AzPurviewAccount -Name "$PurviewAccountName" -ResourceGroupName {{ secrets.RG_NAME }} -Location {{ secrets.PURVIEW_LOCATION }} -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess {{ secrets.NETWORK_ACCESS }}
+            New-AzPurviewAccount -Name "$PurviewAccountName" -ResourceGroupName "{{ secrets.RG_NAME }}" -Location "{{ secrets.PURVIEW_LOCATION }}" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "{{ secrets.NETWORK_ACCESS }}"
 
       # RUN THE PYTEST SCRIPT
       # Then delete the Purview account. 
