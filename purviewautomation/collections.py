@@ -8,6 +8,7 @@ import string
 from pprint import pprint as pretty_print
 from typing import Union, Optional, List, Dict
 
+
 class PurviewCollections():
     """Interact with Purview Collections.
     
@@ -22,8 +23,10 @@ class PurviewCollections():
         catalog_endpoint: The endpoint when calling the catalog APIs.
         catalog_api_version: API version for the catalog APIs. 
     """
-
-    def __init__(self, purview_account_name: str, auth: str 
+    def __init__(
+        self, 
+        purview_account_name: str, 
+        auth: str 
     ) -> None:
         self.purview_account_name = purview_account_name
         self.auth = auth.get_access_token()
@@ -99,29 +102,27 @@ class PurviewCollections():
 
         return collections
 
-
     def get_real_collection_name(
             self, 
             collection_name: str, 
             api_version: str = None, 
             force_actual_name: bool = False
-    ) -> Union[str, List]: # TODO need to check and update this
-        """Returns the real under the hood collection name.
+    ) -> str:
+        """Returns the actual under the hood collection name.
 
         Args:
             collection_name: Name to check. Can pass in a friendly name or a real name. 
             api_version: Collections API version.
             force_actual_name: Edge case. If True it will check if the real name is the name passed in. 
-                This is used if there are multiple friendly names. 
+                Useful if there are multiple friendly names. 
         
         Returns:
             The real name of the collection. 
         
         Raises:
-            If the collection doesn't exist, it will raise the error mentioning no collection exists.
-            If a friendly name is passed and there's multiple friendly names, the error will display the friendly names.
+            If the collection doesn't exist, it will raise an error mentioning no collection exists.
+            If multiple friendly names exist, an error will display listing the multiple friendly names.
         """
-
         if not api_version:
             api_version = self.collections_api_version
 
@@ -196,7 +197,10 @@ class PurviewCollections():
 
 
 
-    def _verify_collection_name(self, collection_name: str) -> str:
+    def _verify_collection_name(
+        self, 
+        collection_name: str
+    ) -> str:
         """Checks to see if the new collection_name meets the Purview naming requirements.
         
             If not, it generates a six character lowercase string (matches what the Purview UI does).
@@ -264,7 +268,7 @@ class PurviewCollections():
         self, 
         start_collection: str, 
         collection_list: List[str], 
-        collection_dict: Dict[str, str], 
+        collection_dict: Dict[str, str], # Need to check this 
         api_version: str
     ) -> List[str]:
         """Internal method. Do not call directly. 
@@ -285,7 +289,7 @@ class PurviewCollections():
     def create_collections(
         self, 
         start_collection: str, 
-        collection_names: Union[str, list], 
+        collection_names: Union[str, List[str]], 
         force_actual_name: bool = False, 
         api_version: str = None, 
         **kwargs
@@ -312,7 +316,7 @@ class PurviewCollections():
                 safe_delete_friendly_name: Used during the safe delete functionality. Don't call directly.
         
         Returns:
-            None. Prints the successful created collections.
+            None. Prints the successfully created collection or collections.
             """
         
         if not api_version:
@@ -493,7 +497,7 @@ class PurviewCollections():
     def _recursive_append(
         self, 
         name: str, 
-        append_list
+        append_list: List[str]
     ):
         child_collections = self.get_child_collection_names(name)
         if child_collections['count'] == 0:
