@@ -612,7 +612,6 @@ class PurviewCollections():
 
 
 
-
     def extract_collections(
         self,
         start_collection_name: str,
@@ -628,7 +627,6 @@ class PurviewCollections():
 
         start_collection_name = [start_collection_name]
         for name in start_collection_name:
-            # parent_name = self.get_real_collection_name(name)
             name = self.get_real_collection_name(name)
             self._recursive_append(name, delete_list)
             if delete_list[0] is not None:
