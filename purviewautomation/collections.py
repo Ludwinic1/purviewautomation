@@ -1,32 +1,31 @@
-
-from sys import api_version
 import requests
+import re
 import random
-import re 
-import random 
 import string
 from pprint import pprint as pretty_print
-from typing import Union, Optional, List, Dict
+from typing import Union, List, Dict, Optional, Tuple
+from .auth import ServicePrincipalAuthentication
 
 
 class PurviewCollections():
     """Interact with Purview Collections.
-    
-        Longer description 
+
+        Longer description
 
     Attributes:
-        purview_account_name: Name of the Purview account. 
-        auth: Access token generated automatically from the ServicePrincipalAuthentication class.
+        purview_account_name: Name of the Purview account.
+        auth: Access token automatically generated
+                from the ServicePrincipalAuthentication class.
         header: Headers to be sent when calling the Purview APIs.
         collections_endpoint: The endpoint when calling collection APIs.
         collections_api_version: API version for the collection APIs.
         catalog_endpoint: The endpoint when calling the catalog APIs.
-        catalog_api_version: API version for the catalog APIs. 
+        catalog_api_version: API version for the catalog APIs.
     """
     def __init__(
-        self, 
-        purview_account_name: str, 
-        auth: str 
+        self,
+        purview_account_name: str,
+        auth: ServicePrincipalAuthentication
     ) -> None:
         self.purview_account_name = purview_account_name
         self.auth = auth.get_access_token()
@@ -34,30 +33,16 @@ class PurviewCollections():
             "Authorization": f"Bearer {self.auth}",
             "Content-Type": "application/json"
         }
-        self.collections_endpoint = f"https://{self.purview_account_name}.purview.azure.com/account/collections"
+        self.collections_endpoint = f"https://{self.purview_account_name}.purview.azure.com/account/collections" 
         self.collections_api_version = "2019-11-01-preview"
         self.catalog_endpoint = f"https://{self.purview_account_name}.purview.azure.com/catalog"
         self.catalog_api_version = "2022-03-01-preview"
 
-    
-    # def return_api_version(self, api_version, api_type):
-    #     if api_type == 'collections':
-    #         if not api_version:
-    #             api_version = self.collections_api_verison
-    #         return api_version 
-    #     elif api_type == 'catalog':
-    #         if not api_version:
-    #             api_version = self.catalog_api_version
-    #         return api_version 
-    #     else:
-    #         raise ValueError('api_type has to be either "catalog" or "collections"')
-
-    
     def list_collections(
         self, 
         only_names: bool = False, 
         pprint: bool = False, 
-        api_version: str = None
+        api_version: Optional[str] = None
         ):
         """Returns the Purview collections.
         
@@ -103,9 +88,9 @@ class PurviewCollections():
         return collections
 
     def get_real_collection_name(
-            self, 
-            collection_name: str, 
-            api_version: str = None, 
+            self,
+            collection_name: str,
+            api_version: Optional[str] = None,
             force_actual_name: bool = False
     ) -> str:
         """Returns the actual under the hood collection name.
@@ -128,8 +113,8 @@ class PurviewCollections():
 
         collections = self.list_collections(only_names=True, api_version=api_version)
         friendly_names = ([(name, collections[name])
-                                    for name, value in collections.items()
-                                    if collection_name == value['friendlyName']])
+                          for name, value in collections.items()
+                          if collection_name == value['friendlyName']])
         
         if collection_name not in collections and len(friendly_names) == 0:
             err_msg = ("collection_name parameter value error. "
@@ -167,7 +152,7 @@ class PurviewCollections():
         name: str, 
         friendly_name: str, 
         parent_collection: str, 
-        api_version: str = None
+        api_version: Optional[str] = None
     ) -> requests.request:
         """
         Internal helper function. Do not call directly.
@@ -185,7 +170,7 @@ class PurviewCollections():
         self, 
         collection_name: str, 
         api_version: str
-    ) -> List[str]:
+    ) -> List[Tuple[str, Dict[str, str]]]:
         """
         Internal helper function. Do not call directly.
         """
@@ -227,7 +212,7 @@ class PurviewCollections():
     def _return_updated_collection_name(
         self, 
         name: str, 
-        collection_dict: Dict[str, str], 
+        collection_dict: Dict[str, Dict[str, str]], 
         parent_collection: str, 
         friendly_names: List[str], 
         api_version: str
@@ -268,7 +253,7 @@ class PurviewCollections():
         self, 
         start_collection: str, 
         collection_list: List[str], 
-        collection_dict: Dict[str, str], # Need to check this 
+        collection_dict: Dict[str, Dict], # Need to check this 
         api_version: str
     ) -> List[str]:
         """Internal method. Do not call directly. 
@@ -291,7 +276,7 @@ class PurviewCollections():
         start_collection: str, 
         collection_names: Union[str, List[str]], 
         force_actual_name: bool = False, 
-        api_version: str = None, 
+        api_version: Optional[str] = None, 
         **kwargs
     ) -> None: # TODO Need to update this
         """Create collections.
@@ -427,7 +412,7 @@ class PurviewCollections():
     def get_child_collection_names(
         self, 
         collection_name: str, 
-        api_version: str = None
+        api_version: Optional[str] = None
     ):
         if not api_version:
             api_version = self.collections_api_version
@@ -442,9 +427,9 @@ class PurviewCollections():
     def delete_collections(
         self, 
         collection_names: Union[str, list], 
-        safe_delete: str = None, 
+        safe_delete: Optional[str] = None, 
         force_actual_name: bool = False, 
-        api_version: str = None
+        api_version: Optional[str] = None
     ) -> None: #TODO need to update this
         """Delete one or more collections. 
         
@@ -497,7 +482,7 @@ class PurviewCollections():
     def _recursive_append(
         self, 
         name: str, 
-        append_list: List[str]
+        append_list: List[Union[str, None]]
     ):
         child_collections = self.get_child_collection_names(name)
         if child_collections['count'] == 0:
@@ -565,9 +550,9 @@ class PurviewCollections():
     def delete_collections_recursively(
         self, 
         collection_names: List[str], 
-        safe_delete: str = None, 
+        safe_delete: Optional[str] = None, 
         also_delete_first_collection: bool = False, 
-        api_version: str = None
+        api_version: Optional[str] = None
     ) -> None: #TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
         
@@ -631,7 +616,7 @@ class PurviewCollections():
         
         # delete all assets in a collection
         for name in collection_names:
-            collection = self.get_real_collection_name(name, force_actual_name)
+            collection = self.get_real_collection_name(collection_name=name, force_actual_name=force_actual_name)
             # url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
             # data = f'{{"keywords": null, "limit": 1, "filter": {{"collectionId": "{collection}"}}}}'       
             # asset_request = requests.post(url=url, data=data, headers=self.header)
