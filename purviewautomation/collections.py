@@ -554,7 +554,7 @@ class PurviewCollections():
 
     def delete_collections_recursively(
         self, 
-        collection_names: List[str], 
+        collection_names: Union[str, List[str]], 
         safe_delete: Optional[str] = None, 
         also_delete_first_collection: bool = False, 
         api_version: Optional[str] = None
@@ -609,6 +609,40 @@ class PurviewCollections():
                 delete_list.insert(0, collection_names[0])
             for coll in delete_list[::-1]: # starting from the most child collection
                 self.delete_collections([coll])
+
+
+
+
+    def extract_collections(
+        self,
+        start_collection_name: str,
+        safe_delete_name: str,  
+        api_version: Optional[str] = None
+    ) -> None:
+
+        if not api_version:
+            api_version = self.collections_api_version
+        
+        delete_list = []
+        recursive_list = []
+
+        start_collection_name = [start_collection_name]
+        for name in start_collection_name:
+            # parent_name = self.get_real_collection_name(name)
+            name = self.get_real_collection_name(name)
+            self._recursive_append(name, delete_list)
+            if delete_list[0] is not None:
+                for item in delete_list:
+                        self._recursive_append(item, recursive_list)
+                for item2 in recursive_list:
+                    if item2 is not None:
+                        delete_list.append(item2)
+                        self._recursive_append(item2, recursive_list)
+        
+        self._safe_delete_recursivly(delete_list, recursive_list, start_collection_name, safe_delete_name, name, True)
+
+
+
 
 
 
