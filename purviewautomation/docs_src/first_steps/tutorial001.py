@@ -1,3 +1,2 @@
-import requests 
+import purviewautomation
 
-test = 'first test'

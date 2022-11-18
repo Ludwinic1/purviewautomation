@@ -8,7 +8,9 @@ nav:
   - index.md
   - Why This Library: why-this-library.md
   - Tutorial  - User Guide:
-    - tutorial/authenticate.md
+    - Test: tutorial/test.md
+    - Step by Step Walkthrough: tutorial/step-by-step-walkthrough.md
+    - Authenticate: tutorial/authenticate.md
     - List Collections: tutorial/list-collections.md
     - Create Collections: tutorial/create-collections.md
     - Delete Collections: tutorial/delete-collections.md
