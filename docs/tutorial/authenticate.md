@@ -1,3 +1,12 @@
+![Screenshot2](image01.png)
+
+![Screenshot2](img2/image01.png)
+
+
+
+![Nav tabs enabled](../img/create-purview/image01.png)
+
+
 ### Overview 
 
 There are two main ways to authenticate to Purview:

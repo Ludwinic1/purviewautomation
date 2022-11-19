@@ -12,4 +12,6 @@ Go to **[portal.azure.com](https://portal.azure.com)** and sign into your accoun
 
 Click on the search bar, type in purview and click on Microsoft Purview accounts:
 
-![testthis](https://github.com/Ludwinic1/purviewautomation/docs/img/create-purview/image01.png)
+![Nav tabs enabled](../img/create-purview/image01.png)
+
+

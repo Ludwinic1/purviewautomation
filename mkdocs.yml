@@ -9,7 +9,6 @@ nav:
   - Why This Library: why-this-library.md
   - How to Create a Purview Resource: tutorial/create-purview.md
   - Tutorial  - User Guide:
-    - Test: tutorial/test.md
     - Step by Step Walkthrough: tutorial/step-by-step-walkthrough.md
     - Authenticate: tutorial/authenticate.md
     - List Collections: tutorial/list-collections.md
@@ -21,6 +20,8 @@ nav:
 plugins:
   - search
   - mkdocstrings
+
+repo_url: https://github.com/Ludwinic1/purviewautomation
 
 
 
