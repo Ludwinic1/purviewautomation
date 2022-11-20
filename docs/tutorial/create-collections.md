@@ -73,7 +73,7 @@ If the Purview collections look like this:
 
 ![Collections](../img/tutorial/create-collections/image06.png)
 
-Example1: Create two collection hierarchies under `My-Company`, pass in a list of hierarchies:
+Example 1: Create two collection hierarchies under `My-Company`, pass in a list of hierarchies:
 ```Python
 first_hierarchy = "test 1/test 2/test 3/test4"
 second_hierarchy = "second test 1/secondtest2/second test 3/ second test4"
@@ -83,4 +83,14 @@ client.create_collections(start_collection="My-Company",
 ```
 ![Collections](../img/tutorial/create-collections/image08.png)
 
+Hierarchies can be of different length:
+Example 2:
+```Python
+short_hierarchy = "First Collection/Second Collection"
+longer_hierarchy = "Longer Hierarhcy/Longer Hierarchy2/Another Collection"
+even_longer_hierarchy = "long hier1/long hier2/long hier3/long hier4/long hier5"
 
+client.create_collections("My-Company", 
+                          [short_hierarchy, longer_hierarchy, even_longer_hierarchy]
+                        )
+```
