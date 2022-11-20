@@ -4,25 +4,35 @@
     options:
         heading_level: 0
 
-### Examples
+!!! important
+  - Code will automatically trim leading and trailing whitespaces in the collection names. 
+      - Ex: `" test1"`, `"test1 "`, `"    test1    "` would all equal `"test1"`
+      - When creating a collection hierarchy [See: Collection Hierarchies](#create-one-collection-hierarcy), the code trims leading/training whitespaces after the `/`. Ex: `"test1 / test 2"` would equal `"test1/test2"` (test1 is one collection and test2 is another collection). 
+  - Spaces in names are allowed: `"my collection"` is different than `"mycollection"`. 
+  - Multiple spaces are allowed: `"my new collection"`  
+  - Collection names are case sensitive. `"My-Company"` and `"my-company"` are two different names.
+
+### **Examples**
 The start_collection has to already exist in Purview. Pass in either the friendly name or the real name of the collection.
 
-Code will automatically trim an leading or training whitespaces.
-Collection names are case sensitive. My-Company and my-company are two different names.
+
+   
 
 # **Create One Collection**
 If the Purview collections look like this:
 
 ![Collections](../img/tutorial/create-collections/image01.png)
 
-** Example 1: Create one collection starting from any of the three listed (purview-test-2, My-Company, test 1):**
+**Example 1: Create one collection starting from any of the three listed (purview-test-2, My-Company, test 1):**
 ```Python
-client.create_collections(start_collection="purview-test-2", collection_names="new collection 1")
+client.create_collections(start_collection="purview-test-2", 
+                          collection_names="new collection 1"
+                        )
 ```
 This will create a collection under purview-test-2 (same level as the My-Company collection):
 ![Collections](../img/tutorial/create-collections/image02.png)
 
-**Example 2: Create from `test 1`. As you can see, `sub test coll` is listed as a child of `test 1`. The keyword arguments can be ommited if desired:**
+**Example 2: Create from `test 1`. `sub test coll` will be listed as a child of `test 1`. The keyword arguments can be ommited if desired:**
 ```Python
 client.create_collections("test 1", "sub test coll")
 ```
@@ -50,10 +60,27 @@ If the Purview collections look like this:
 
 ![Collections](../img/tutorial/create-collections/image06.png)
 
-Example 1: Create a collection hierarchy under `My-Company`. `subcoll1` would be a child under `My-Company`, `subcoll2` would be a child under `subcoll1` (referenced by the `/`), and `sub coll 3` would be a child under `subcoll 2`
+Example 1: Create a collection hierarchy under `My-Company`. `subcoll1` would be a child under `My-Company` (referenced by the `/`), `subcoll2` would be a child under `subcoll1`, and `sub coll 3` would be a child under `subcoll 2`
 ```Python
 client.create_collections(start_collection="My-Company", 
                           collection_names="subcoll1/subcoll2/sub coll 3"
                         )
 ```
 ![Collections](../img/tutorial/create-collections/image07.png)
+
+# **Create Multiple Collection Hierarchies**
+If the Purview collections look like this:
+
+![Collections](../img/tutorial/create-collections/image06.png)
+
+Example1: Create two collection hierarchies under `My-Company`, pass in a list of hierarchies:
+```Python
+first_hierarchy = "test 1/test 2/test 3/test4"
+second_hierarchy = "second test 1/secondtest2/second test 3/ second test4"
+
+client.create_collections(start_collection="My-Company",
+                          collection_names=[first_hierarchy, second_hierarchy])
+```
+![Collections](../img/tutorial/create-collections/image08.png)
+
+

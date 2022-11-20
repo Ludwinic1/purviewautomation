@@ -6,7 +6,7 @@
 
 ### **Overview **
 
-There are two main ways to authenticate to Purview:
+There are two main ways to authenticate/connect to Purview:
 
 1. [Authenticating with a Service Principal](#authenticating-with-a-service-principal)
 2. [Authenticating with the azure-identity Python package](#authenticating-with-the-azure-identity-python-package) 

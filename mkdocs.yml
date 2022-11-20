@@ -7,10 +7,10 @@ theme:
 nav:
   - index.md
   - Why This Library: why-this-library.md
-  - How to Create a Purview Resource: tutorial/create-purview.md
   - Tutorial  - User Guide:
-    - Step by Step Walkthrough: tutorial/step-by-step-walkthrough.md
-    - Authenticate: tutorial/authenticate.md
+    - First Steps: tutorial/first-steps.md
+    - Create a Purview Resource: tutorial/create-purview.md
+    - Authenticate and Connect with Purview: tutorial/authenticate-connect.md
     - List Collections: tutorial/list-collections.md
     - Create Collections: tutorial/create-collections.md
     - Delete Collections: tutorial/delete-collections.md
@@ -22,6 +22,9 @@ plugins:
   - mkdocstrings
 
 repo_url: https://github.com/Ludwinic1/purviewautomation
+
+markdown_extensions:
+  - admonition
 
 
 
