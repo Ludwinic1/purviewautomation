@@ -25,7 +25,7 @@ theme:
 nav:
   - Purview Automation: index.md
   - Why This Library: why-this-library.md
-  - How Purview Collection Names Work and are Stored: how-purview-names-work.md
+  - Purview Collection Names Intro and Important Info: how-purview-names-work.md
   - Tutorial  - User Guide:
     - First Steps: tutorial/first-steps.md
     - Create a Purview Resource: tutorial/create-purview.md
@@ -37,6 +37,9 @@ nav:
     - Delete Collections Recursively: tutorial/delete-collections-recursively.md
     - Extract Collections: tutorial/extract-collections.md
     - Get Collection Name: tutorial/get-collection-name.md
+  
+  - Handeling Multiple Duplicate Friendly Name Scenarios and Edge Cases: handeling-multiple-duplicate-friendly-names.md
+  
     
 plugins:
   - search

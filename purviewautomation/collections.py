@@ -138,9 +138,8 @@ class PurviewCollections():
                 friendly_output = f"{item[0]}: [collection info: actual_name: {item[0]}, friendlyName: {item[1]['friendlyName']}, parentCollection: {parent_friendly_name}]"
                 multiple_friendly_names.append(friendly_output)
             newline = '\n'
-            err_msg = ("collection_name parameter value error. "
-                       f"Multiple collections exist with the friendly name '{collection_name}'. "
-                       "Please choose and re-enter the first item from one of the options below to the collection_name parameter: "
+            err_msg = (f"Multiple collections exist with the friendly name '{collection_name}'. "
+                       f"Please choose and re-enter the first item from one of the options below in place of '{collection_name}': "
                        f"{newline}{newline.join(map(str, multiple_friendly_names))} {newline}"
                        f"If you want to use the collection name '{collection_name}' and it's listed as an option above as a first item (actual_name), add the force_actual_name parameter to True. "
                        "Ex: force_actual_name=True")
