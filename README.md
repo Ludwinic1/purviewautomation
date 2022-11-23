@@ -18,18 +18,18 @@ See this **5 minute video** on why this library was created, what problems it so
 Create a Python file `main.py` (can be called anything) and gather the Azure Service Principal information to use and replace the tenantid, clientid, client secret and Purview account name per below:
 
 ```Python
-    from purviewautomation import (ServicePrincipalAuthentication, 
-                                   PurviewCollections)
+from purviewautomation import (ServicePrincipalAuthentication, 
+                                PurviewCollections)
 
-    auth = ServicePrincipalAuthentication(tenantid="yourtenantid",
-                                          clientid="yourclientid",
-                                          clientsecret="yourclientsecret")
-    
-    client = PurviewCollections(purview_account_name="yourpurviewaccountname",
-                                auth=auth)
-    
-    # Now interact and print the collections
-    print(client.list_collections())
+auth = ServicePrincipalAuthentication(tenantid="yourtenantid",
+                                        clientid="yourclientid",
+                                        clientsecret="yourclientsecret")
+
+client = PurviewCollections(purview_account_name="yourpurviewaccountname",
+                            auth=auth)
+
+# Now interact and print the collections
+print(client.list_collections())
 ```
 
 ## **Create a Collection**
