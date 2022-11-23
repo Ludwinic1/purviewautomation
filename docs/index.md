@@ -7,7 +7,7 @@ Purview Automation is a Python library that's a wrapper around Purview APIs that
 See this **5 minute video** on why this library was created, what problems it solves and how it can help you save time!  
 <br>
 
-**For a detailed step-by-step walkthrough, see: [Full Walkthrough](./tutorial/first-steps.md)**
+**For a detailed step-by-step walkthrough and full reference guide, see: [Full Walkthrough](./tutorial/first-steps.md)**
 
 
 ## **Installation**
