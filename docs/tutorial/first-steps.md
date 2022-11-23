@@ -1,14 +1,13 @@
 
 ### Welcome
-Welcome to Purview Automation! 
+Welcome to the user guide for Purview Automation! This is a step-by-step walkthrough of how to get start and use the library. For a shortened quick startup, see: [Quick Startup](../index.md#quick-start)
 
 
 ### Install purviewautomation
 
 The first step is to install purviewautomation on your favorite code editor (Visual Studio Code, PyCharm, etc.) or add the library to a Synapse Spark Pool or a Databricks cluster.
-!!! note 
-    As an optional suggestion, ensure pip is updated first by opening a terminal and typing the following:
-
+!!! tip 
+    As an optional suggestion, ensure pip is updated first by opening a terminal and running the following:
     ```
     python -m pip install --upgrade pip
     ```
@@ -24,7 +23,7 @@ pip install purviewautomation
 
 
 
-Now that the library is installed, we can move to the next section to how to authenticate and connect with Purview. Click on the bottom right of the screen to move to the next section.
+Now that the library is installed, we either need to create a new Purview resource or use an existing one. Click on the bottom right of the screen to move to the next section to see how to create a Purview resource.
 
 
 

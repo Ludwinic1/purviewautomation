@@ -12,7 +12,7 @@ There are two main ways to authenticate/connect to Purview:
 2. [Authenticating with the azure-identity Python package](#authenticating-with-the-azure-identity-python-package) 
 
 ### **Authenticating with a Service Principal** 
-**Not sure how to create a Service Principal or why it's used? See # link to how to create SPN**
+**Not sure how to create a Service Principal or why it's used? See: [Create a Service Principal](../create-a-service-principal.md)**
 
 To authenticate with a Service Principal, import the ServicePrincipalAuthentication and PurviewCollection classes: 
 ```Python

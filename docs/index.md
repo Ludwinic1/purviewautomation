@@ -7,12 +7,12 @@ Purview Automation is a Python wrapper library around Purview APIs that's design
 Key benefits:
 
 - **Easy**: Create, delete and list collections and collection hierarchies with one line of code
-- **Rollback**: Rollback to previous hierarchy states and save versions for later use
+- **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
 - **Deploy**: Extract and deploy collections to upper environments (UAT/PROD) so the collection hierarchy structures are consistent across all Purviews 
 - **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
 - **Delete Assets**: Delete assets in collections or all assets in a collection hierarchy   
  
-- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual collection name. See: [Purview Names Overview](how-purview-names-work.md)
+- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual collection name. See: [Purview Collection Names Overview](how-purview-names-work.md)
   
 
 <br>
@@ -46,7 +46,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 ```
 
 !!! important
-    Make sure the Service Principal is assigned the Collection Admin role in Purview. See here for more info:  
+    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info:  
 
 
 Now interact with the Purview collections:
