@@ -25,9 +25,11 @@ theme:
 nav:
   - Purview Automation: index.md
   - Why This Library: why-this-library.md
+  - How Purview Collection Names Work and are Stored: how-purview-names-work.md
   - Tutorial  - User Guide:
     - First Steps: tutorial/first-steps.md
     - Create a Purview Resource: tutorial/create-purview.md
+    - How to Create a Service Principal: tutorial/create-a-service-principal.md
     - Authenticate and Connect with Purview: tutorial/authenticate-connect.md
     - List Collections: tutorial/list-collections.md
     - Create Collections: tutorial/create-collections.md

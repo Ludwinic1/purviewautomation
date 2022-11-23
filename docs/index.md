@@ -117,8 +117,8 @@ client.create_collections(start_collection="My First Collection",
 ## **Extract Collections**
 ```Python
 # Useful for recreating entire collection hierarchies in a new Purview
-# or saving the output as a version to rollback later.
-# Will output the exact script needed to recreate the entire hierarchy. 
+# or saving the output as a version to rollback later
+# Will output the exact script needed to recreate the entire hierarchy
 
 client.extract_collections("My First Collection")
 ```
@@ -136,8 +136,8 @@ client.delete_collections(collection_names="Random Collection 2",
 ```                    
 ## ** Delete a Collection Hierarchy with Rollback Enabled**
 ```Python
-# Will delete all of the children and output the exact script 
-# needed to recreate the entire hierarchy or deploy to another Purview
+# Will delete all of the children and their children and output the exact script 
+# needed to recreate the entire hierarchy to rollback or deploy to another Purview
 
 client.delete_collections_reursively("My First Collection", safe_delete="client")
 ```
