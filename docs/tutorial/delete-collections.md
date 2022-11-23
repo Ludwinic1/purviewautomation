@@ -3,5 +3,81 @@
     options:
         heading_level: 0
 
+!!! important
+    - This method only deletes collections that have no children. To delete collections with children (recursive delete), see [Delete Collections Recursively](delete-collections-recursively.md) 
+    - Collection names are case sensitive. `My-Company` is different than `my-Company`.
+    
+
 ### Examples
-Here are some examples. 
+If the Purview collections look like this:
+
+![Collections](../img/tutorial/delete-collections/image01.png)
+
+Delete `Sub Collection 1`:
+```Python
+client.delete_collections(collection_names="Sub Collection 1")
+```
+The output will be printed to the screen:
+![Collections](../img/tutorial/delete-collections/image02.png)
+
+Deleting multiple collections under different hierarchies is also allowed. If the Purview collections look like this:
+
+
+![Collections](../img/tutorial/delete-collections/image03.png)
+
+Delete `Sub Collection 2` and `Sub Collection 1` by passing in a list:
+```Python
+client.delete_collections(["Sub Collection 2", "Sub Collection 1"])
+```
+
+
+### Rollback/Safe Delete
+When deleting collections, passing in the safe_delete parameter will output the collection/s that were deleted in order to recreate the collections. Think of this as a rollback option.
+
+If Purview looked like this:
+![Collections](../img/tutorial/delete-collections/image10.png)
+
+
+
+
+
+### Handling Duplicate Friendly Names
+In Purview, the real name (under the hood name) of a collection has to be unique but there can be duplicate friendly names under different hierarchies:
+![Collections](../img/tutorial/delete-collections/image04.png)
+
+In the above example, the friendly name `Sub Finance Team` appears under two different hierarchies. Under the hood, the two names will be different (different real names).
+
+When trying to delete a collection (or collections) with multiple friendly names, a friendly error will be raised showing the info of the collections and to choose which real name to use:
+```Python
+client.delete_collections("Sub Finance Team")
+```
+Will raise a friendly error:
+![Collections](../img/tutorial/delete-collections/image05.png)
+
+From the above options, you can see the collection info and choose the real name of one of them (or both). Either `zgnm71` or `bn2azu`. Below the `Sub Finance Team` collection under `Finance` will be deleted:
+
+```Python
+client.delete_collections(collection_names="zgnm71")
+```
+![Collections](../img/tutorial/delete-collections/image06.png)
+
+
+
+
+### Edge Case Using the force_actual_name parameter
+This is used when there are duplicate friendly names across different hierarchies and the real name of one of them is the name you're using. For example, in the below Purview there's two friendly names named `test1`:
+
+![Collections](../img/tutorial/delete-collections/image07.png)
+
+Running the command below:
+```Python
+client.delete_collections("test1")
+```
+Could output the following (collections were created specifically under the hood in this example to raise this error.):
+![Collections](../img/tutorial/delete-collections/image08.png)
+
+In the above image, `test1` is listed as a real name. When this rare edge case occurs, set the force_actual_name to True to delete the real `test1` collection (under `My-Company`):
+```Python
+client.delete_collections("test1", force_actual_name=True)
+```
+![Collections](../img/tutorial/delete-collections/image09.png)

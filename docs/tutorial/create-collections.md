@@ -5,12 +5,12 @@
         heading_level: 0
 
 !!! important
-  - Code will automatically trim leading and trailing whitespaces in the collection names. 
-      - Ex: `" test1"`, `"test1 "`, `"    test1    "` would all equal `"test1"`
-      - When creating a collection hierarchy [See: Collection Hierarchies](#create-one-collection-hierarcy), the code trims leading/training whitespaces after the `/`. Ex: `"test1 / test 2"` would equal `"test1/test2"` (test1 is one collection and test2 is another collection). 
-  - Spaces in names are allowed: `"my collection"` is different than `"mycollection"`. 
-  - Multiple spaces are allowed: `"my new collection"`  
-  - Collection names are case sensitive. `"My-Company"` and `"my-company"` are two different names.
+    - Code will automatically trim leading and trailing whitespaces in the collection names. 
+        - Ex: `" test1"`, `"test1 "`, `"    test1    "` would all equal `"test1"`
+      - When creating a collection hierarchy [See: Collection Hierarchies](#create-one-collection-hierarcy), the code trims leading/training whitespaces before and after the `/`. Ex: `"test1 / test 2"` would equal `"test1/test2"` (test1 is one collection and test2 is another collection). 
+    - Spaces in names are allowed: `"my collection"` is different than `"mycollection"`. 
+    - Multiple spaces are allowed: `"my new collection"`  
+    - Collection names are case sensitive. `"My-Company"` and `"my-company"` are two different names.
 
 ### **Examples**
 The start_collection has to already exist in Purview. Pass in either the friendly name or the real name of the collection.
@@ -83,8 +83,8 @@ client.create_collections(start_collection="My-Company",
 ```
 ![Collections](../img/tutorial/create-collections/image08.png)
 
-Hierarchies can be of different length:
-Example 2:
+Hierarchies can be of different length. Example 2: Create three hierarchies under `My-Company`:
+
 ```Python
 short_hierarchy = "First Collection/Second Collection"
 longer_hierarchy = "Longer Hierarhcy/Longer Hierarchy2/Another Collection"
@@ -94,3 +94,5 @@ client.create_collections("My-Company",
                           [short_hierarchy, longer_hierarchy, even_longer_hierarchy]
                         )
 ```
+
+![Collections](../img/tutorial/create-collections/image09.png)

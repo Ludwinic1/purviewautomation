@@ -2,10 +2,28 @@ site_name: Purview Automation
 
 theme:
   name: material
+  logo: img/logo/logo02.png
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette: 
+  - scheme: default
+    primary: blue
+    accent: amber
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - scheme: slate 
+    primary: blue
+    accent: amber 
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  
   language: en
-
+  
 nav:
-  - index.md
+  - Purview Automation: index.md
   - Why This Library: why-this-library.md
   - Tutorial  - User Guide:
     - First Steps: tutorial/first-steps.md
@@ -15,11 +33,13 @@ nav:
     - Create Collections: tutorial/create-collections.md
     - Delete Collections: tutorial/delete-collections.md
     - Delete Collections Recursively: tutorial/delete-collections-recursively.md
+    - Extract Collections: tutorial/extract-collections.md
     - Get Collection Name: tutorial/get-collection-name.md
     
 plugins:
   - search
   - mkdocstrings
+  - termynal
 
 repo_url: https://github.com/Ludwinic1/purviewautomation
 
