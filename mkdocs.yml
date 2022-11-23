@@ -45,6 +45,9 @@ repo_url: https://github.com/Ludwinic1/purviewautomation
 
 markdown_extensions:
   - admonition
+  - def_list 
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 
 

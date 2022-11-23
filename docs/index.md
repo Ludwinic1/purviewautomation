@@ -1,9 +1,21 @@
-Welcome to Purview Automation!
+Welcome to Purview Automation! 
 
-Purview Automation is a Python library that's a wrapper around Purview APIs that's designed to be simple to and make scaling and automating Purview easier.
-<br>
-<br>
+Purview Automation is a Python wrapper library around Purview APIs that's designed to be simple to use and make scaling and automating Purview easier. 
 
+**Phase I is all about making it easier to working with, scale and automate Purview collections!** 
+
+Key benefits:
+
+- **Easy**: Create, delete and list collections and collection hierarchies with one line of code
+- **Rollback**: Rollback to previous hierarchy states and save versions for later use
+- **Deploy**: Extract and deploy collections to upper environments (UAT/PROD) so the collection hierarchy structures are consistent across all Purviews 
+- **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+- **Delete Assets**: Delete assets in collections or all assets in a collection hierarchy   
+ 
+- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual collection name
+  
+
+<br>
 See this **5 minute video** on why this library was created, what problems it solves and how it can help you save time!  
 <br>
 
@@ -19,29 +31,64 @@ $ pip install purviewautomation
 
 ## **Quick Start**
 
-Create a Python file `main.py` (can be called anything) and gather the Azure Service Principal information to use and replace the tenantid, clientid, client secret and Purview account name per below:
+Create a Python file `main.py` (can be called anything) and gather the Azure Service Principal information and replace `yourtenantid`, `yourclientid`, `yourclientsecret` and `yourpurviewaccountname` per below:
 
 ```Python
-    from purviewautomation import (ServicePrincipalAuthentication, 
-                                   PurviewCollections)
+from purviewautomation import (ServicePrincipalAuthentication, 
+                                PurviewCollections)
 
-    auth = ServicePrincipalAuthentication(tenantid="yourtenantid",
-                                          clientid="yourclientid",
-                                          clientsecret="yourclientsecret")
-    
-    client = PurviewCollections(purview_account_name="yourpurviewaccountname",
-                                auth=auth)
-    
-    # Now interact and print the collections
-    print(client.list_collections())
+auth = ServicePrincipalAuthentication(tenantid="yourtenantid",
+                                      clientid="yourclientid",
+                                      clientsecret="yourclientsecret")
+
+client = PurviewCollections(purview_account_name="yourpurviewaccountname",
+                            auth=auth)
 ```
 
-## **Create a Collection**
+!!! important
+    Make sure the Service Principal is assigned the Collection Admin role in Purview. See here for more info:  
 
-```Python 
+
+Now interact with the Purview collections:
+
+## **Print Collections**
+```Python
+print(client.list_collections())
+```
+
+## **Print Only the Relevant Collection Name Info**
+```Python
+client.list_collections(only_names=True, pprint=True)
+```
+
+## **Return Collections as a List or Only Names as a Dictionary**
+```Python
+collection_list = client.list_collections()
+for coll in collection_list:
+    print(coll)
+
+# Return only the relevant names as a dictionary
+collection_names = client.list_collections(only_names=True)
+for name, value in collection_names.items():
+    print(name, value)
+
+# Return just the keys (actual names)
+for name in collection_names:
+    print(name)
+
+# Return the friendly names or parent collection names
+for name in collection_names.values():
+    friendly_name = name["friendlyName"]
+    parent_name = name["parentCollection"] 
+```
+
+
+## **Create a Collection**
+```Python
+# Replace "yourpurviewaccountname"
+
 client.create_collections(start_collection="yourpurviewaccountname",
-                          collection_names="My First Collection"
-                        )
+                          collection_names="My First Collection")
 ```                        
 
 ## **Create a Collection Hierarchy**
@@ -59,6 +106,13 @@ client.create_collections(start_collection="My First Collection",
 client.create_collections(start_collection="Sub Collection 1", 
                           collection_names=["Random Collection", "Random Collection 2"])
 ```
+## **Create Multiple Collection Hierarchies**
+```Python
+hierarchy_1 = "hierarchy1/hierarchysub1/hierarchysub2/hierarchysub3"
+hierarchy_2 = "hierarchy 2/hierarchy sub2"
+client.create_collections(start_collection="My First Collection",
+                          collection_names=[hierarcy_1, hierarchy_2])
+```    
 
 ## **Extract Collections**
 ```Python
@@ -73,12 +127,19 @@ client.extract_collections("My First Collection")
 ```Python
 client.delete_collections(collection_names="Random Collection")
 ```
+## ** Delete a Collection with Rollback Enabled**
+```Python
+# Will delete the collection and output the exact script needed to recreate the collection
 
-## **Delete a Collection Hierarchy**
-```Python 
-# Will delete all of the children and their children under My First Collection
- 
-client.delete_collections_recursively("My First Collection")
+client.delete_collections(collection_names="Random Collection 2", 
+                          safe_delete="client")
+```                    
+## ** Delete a Collection Hierarchy with Rollback Enabled**
+```Python
+# Will delete all of the children and output the exact script 
+# needed to recreate the entire hierarchy or deploy to another Purview
+
+client.delete_collections_reursively("My First Collection", safe_delete="client")
 ```
 
 
