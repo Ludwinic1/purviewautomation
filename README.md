@@ -11,11 +11,7 @@ See this **5 minute video** on why this library was created, what problems it so
 
 
 ## **Installation**
-```console
-$ pip install purviewautomation
-
----> 100%
-```
+`pip install purviewautomation`
 
 ## **Quick Start**
 
