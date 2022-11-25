@@ -30,7 +30,7 @@ dependencies = [
     "requests>=2.28.1",
 ]
 [project.urls]
-Homepage = "https://github.com/Ludwinic1/purviewautomation
+Homepage = "https://github.com/Ludwinic1/purviewautomation"
 Documentation = "https://netlifywebsite" # TODO
 
 [project.optional-dependencies]

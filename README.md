@@ -1,4 +1,5 @@
 ![Tests](https://github.com/Ludwinic1/purviewautomation/actions/workflows/test.yml/badge.svg?branch=main)
+[![license](https://img.shields.io/github/license/Ludwinic1/purviewautomation)](https://github.com/Ludwinic1/purviewautomation/blob/main/LICENSE)
 
 Welcome to Purview Automation!
 
