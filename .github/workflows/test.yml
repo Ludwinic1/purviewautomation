@@ -54,7 +54,7 @@ jobs:
           pytest
 
   delete-purview-account:
-    needs: [create-purview-account, test]
+    needs: [create-purview-account, python-tests]
     if: always() # Always will delete the account even if the test job fails
     runs-on: ubuntu-latest
     steps:
