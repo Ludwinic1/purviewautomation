@@ -46,7 +46,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 ```
 
 !!! important
-    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info:  
+    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Create a Service Princpal and Assign the Collection Admin Role in Purview](create-a-service-principal.md) 
 
 
 Now interact with the Purview collections:

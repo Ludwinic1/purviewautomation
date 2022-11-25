@@ -48,7 +48,7 @@ Click on new client secret in the middle of the page:
 
 Click add in the next screen (optionally, provide a description and expiration). Once created, the random string shown under the value tab is the clientsecret (password).
 
-## How to Assign the Service Principal Permission in Purview
+## How to Assign the Service Principal the Collection Admin Role in Purview
 
 The last step is to assign the Collection Admin role (in order to call the Purview APIs with the Service Principal). Go into your Purview application (for help, see: [Create a Purview Resource](./tutorial/create-purview.md) click on the diamond shaped icon on the far left, click on collections, click on role assignments in the middle of the page and click the person+ icon next to collection admins:
 

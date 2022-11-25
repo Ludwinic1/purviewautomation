@@ -1,6 +1,6 @@
 
 ### Welcome
-Welcome to the user guide for Purview Automation! This is a step-by-step walkthrough of how to get start and use the library. For a shortened quick startup, see: [Quick Startup](../index.md#quick-start)
+Welcome to the user guide for Purview Automation! This is a step-by-step walkthrough of how to get started and use the library. For a shortened quick startup, see: [Quick Startup](../index.md#quick-start)
 
 
 ### Install purviewautomation
