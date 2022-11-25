@@ -10,7 +10,7 @@ Key benefits:
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
 - **Deploy**: Extract and deploy collections to upper environments (UAT/PROD) so the collection hierarchy structures are consistent across all Purviews 
 - **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
-- **Delete Assets**: Delete assets in collections or all assets in a collection hierarchy   
+- **Delete Assets**: Delete assets in a collection or all assets in a collection hierarchy   
  
 - **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual collection name. See: [Purview Collection Names Overview](how-purview-names-work.md)
   
@@ -19,7 +19,7 @@ Key benefits:
 See this **5 minute video** on why this library was created, what problems it solves and how it can help you save time!  
 <br>
 
-**For a detailed step-by-step walkthrough and full reference guide, see: [Full Walkthrough](./tutorial/first-steps.md)**
+**For a detailed step-by-step walkthrough and full reference guide, see: [Full Walkthrough Tutorial](./tutorial/first-steps.md)**
 
 
 ## **Installation**
@@ -31,15 +31,15 @@ $ pip install purviewautomation
 
 ## **Quick Start**
 
-Create a Python file `main.py` (can be called anything) and gather the Azure Service Principal information and replace `yourtenantid`, `yourclientid`, `yourclientsecret` and `yourpurviewaccountname` per below:
+Create a Python file `main.py` (can be called anything), gather the Azure Service Principal information and replace `yourtenantid`, `yourclientid`, `yourclientsecret` and `yourpurviewaccountname`:
 
 ```Python
 from purviewautomation import (ServicePrincipalAuthentication, 
                                 PurviewCollections)
 
-auth = ServicePrincipalAuthentication(tenantid="yourtenantid",
-                                      clientid="yourclientid",
-                                      clientsecret="yourclientsecret")
+auth = ServicePrincipalAuthentication(tenant_id="yourtenantid",
+                                      client_id="yourclientid",
+                                      client_secret="yourclientsecret")
 
 client = PurviewCollections(purview_account_name="yourpurviewaccountname",
                             auth=auth)

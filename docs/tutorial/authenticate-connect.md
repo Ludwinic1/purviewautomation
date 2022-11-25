@@ -17,8 +17,7 @@ There are two main ways to authenticate/connect to Purview:
 To authenticate with a Service Principal, import the ServicePrincipalAuthentication and PurviewCollection classes: 
 ```Python
     from purviewautomation import (ServicePrincipalAuthentication, 
-                                   PurviewCollections
-    )
+                                   PurviewCollections)
 ```
 
 Create a variable named **auth** (can be named anything) and add the tenantid, client id and client secret:

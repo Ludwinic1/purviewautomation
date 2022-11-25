@@ -597,6 +597,17 @@ class PurviewCollections():
         safe_delete_name: str = 'client',  
         api_version: Optional[str] = None
     ) -> None:
+        """Extract and outputs the collection hierarchy structure.
+
+        Args:
+            start_collection_name: Collection to start on.
+            safe_delete_name:  The client name to be used when printing the safe delete commands.
+                Default is 'client'.
+            api_version: API version to use. If none, default is "2019-11-01-preview". 
+        
+        Returns:
+            None. Will print out the script to create the collection hierarchy structure starting at the start_collection_name.
+        """
 
         if not api_version:
             api_version = self.collections_api_version
