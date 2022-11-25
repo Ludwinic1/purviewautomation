@@ -1,3 +1,5 @@
+https://github.com/tiangolo/fastapi/workflows/Test/badge.svg?event=push&branch=master
+
 Welcome to Purview Automation!
 
 Purview Automation is a Python wrapper library around Purview APIs that's designed to be simple to use and make scaling and automating Purview easier.
