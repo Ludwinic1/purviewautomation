@@ -1,3 +1,5 @@
+![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+
 Welcome to Purview Automation!
 
 Purview Automation is a Python wrapper library around Purview APIs that's designed to be simple to use and make scaling and automating Purview easier.
