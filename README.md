@@ -1,4 +1,4 @@
-![example workflow](https://github.com/Ludwinic1/purviewautomation/actions/workflows/test.yml/badge.svg)
+![example workflow](https://github.com/Ludwinic1/purviewautomation/actions/workflows/test.yml/badge.svg?branch=main)
 
 Welcome to Purview Automation!
 
