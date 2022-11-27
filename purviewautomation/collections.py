@@ -421,7 +421,9 @@ class PurviewCollections():
     def delete_collections(
         self, 
         collection_names: Union[str, list], 
-        safe_delete: Optional[str] = None, 
+        safe_delete: Optional[str] = None,
+        delete_assets: bool = False, 
+        delete_assets_timeout: Optional[int] = None,
         force_actual_name: bool = False, 
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this
@@ -464,6 +466,8 @@ class PurviewCollections():
             try:
                 colls = self.list_collections(only_names=True)
                 friendly_name = colls[coll_name]['friendlyName']
+                if delete_assets:
+                    self.delete_collection_assets(collection_names=coll_name, timeout=delete_assets_timeout)
                 delete_collections_request = requests.delete(url=url, headers=self.header)
                 if not delete_collections_request.content:
                     print(f"The collection '{friendly_name}' was successfully deleted")
@@ -538,6 +542,8 @@ class PurviewCollections():
         collection_names: Union[str, List[str]], 
         safe_delete: Optional[str] = None, 
         also_delete_first_collection: bool = False, 
+        delete_assets: bool = False,
+        delete_assets_timeout: Optional[int] = None,
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
@@ -550,6 +556,8 @@ class PurviewCollections():
                 and that name is duplicated across multiple hierarchies and one of those names 
                 is the actual passed in name, if True, this will force 
                 the method to use the actual name you pass in if it finds it.
+            delete_assets: if True, will delete all of the assets from every collection in the hierarchy.
+            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. If none, the default is 30 minutes.
             api_version: Collections API version. 
         
         Returns:
@@ -588,6 +596,8 @@ class PurviewCollections():
             if also_delete_first_collection:
                 delete_list.insert(0, collection_names[0])
             for coll in delete_list[::-1]: # starting from the most child collection
+                if delete_assets:
+                    self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
                 self.delete_collections([coll])
 
 
@@ -636,7 +646,7 @@ class PurviewCollections():
     def delete_collection_assets(
         self, 
         collection_names: Union[str, List[str]],
-        timeout: Optional[int] = 30, 
+        timeout: int = 30, 
         force_actual_name: bool = False,
         api_version: Optional[str] = None
     ) -> None:
