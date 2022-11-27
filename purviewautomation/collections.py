@@ -634,16 +634,35 @@ class PurviewCollections():
 
     def delete_collection_assets(
         self, 
-        collection_names: List[str], 
-        api_version: str, 
-        force_actual_name: bool = False
-    ):
+        collection_names: Union[str, List[str]], 
+        force_actual_name: bool = False,
+        api_version: Optional[str] = None
+    ) -> None:
+        """Delete all assets in a collection.
+
+        Args:
+            collection_names: Collection name or collection names to pass in.
+            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Catalog API version. If none, default is 2022-03-01-preview.
+        
+        Returns:
+            None.
+        """
         if not api_version:
             api_version = self.catalog_api_version
         
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+        
         # delete all assets in a collection
         for name in collection_names:
-            collection = self.get_real_collection_name(collection_name=name, force_actual_name=force_actual_name)
+            collection = self.get_real_collection_name(collection_name=name, 
+                                                       force_actual_name=force_actual_name)
             # url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
             # data = f'{{"keywords": null, "limit": 1, "filter": {{"collectionId": "{collection}"}}}}'       
             # asset_request = requests.post(url=url, data=data, headers=self.header)
