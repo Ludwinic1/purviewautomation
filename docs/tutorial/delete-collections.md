@@ -64,6 +64,8 @@ The `Collection To Delete` collection is recreated:
 ### Delete Assets
 To delete assets in a collection, use the `delete_assets` parameter with the optional `delete_assets_timeout` option:
 !!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+    
     Deleting assets in a collection is irreversible. Re-scan the deleted assets to add them back to the collection.
 
     The code will delete all the assets and the collection. To only delete assets in a collection and not delete the collection, see: [Delete Collection Assets](./delete-collection-assets.md)

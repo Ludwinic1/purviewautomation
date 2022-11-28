@@ -119,11 +119,17 @@ client.create_collections(start_collection="My First Collection",
 ```    
 
 ## **Delete All Assets in a Collection**
+!!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+
 ```Python
 client.delete_collection_assets(collection_names="My First Collection")
 ```
 
 ## **Delete All Assets in Multiple Collections**
+!!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+
 ```Python
 collections = ["Random Collection", "hierarchy sub2"]
 client.delete_collection_assets(collection_names=collections)

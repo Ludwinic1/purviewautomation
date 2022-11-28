@@ -4,6 +4,9 @@
         heading_level: 0
 
 !!! Important
+    !!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+
     **The timeout when running delete_collection_assets is 30 minutes. If there are a large number of assets in the collection, pass an integer to the timeout parameter (in minutes) to increase (or decrease) the time.**
 
     For example, `client.delete_collection_assets(collection_names="My Collection", timeout=60)` will allow the code to run up to one hour (60 minutes). 

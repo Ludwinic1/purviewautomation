@@ -656,8 +656,13 @@ class PurviewCollections():
                 if also_delete_first_collection:
                     delete_list.insert(0, collection_names[0])
                 for coll in delete_list[::-1]: # starting from the most child collection
+                    
                     if delete_assets:
-                        self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
+                        remove_duplicates = []
+                        if coll not in remove_duplicates:
+                            remove_duplicates.append(coll)
+                        for coll in remove_duplicates:
+                            self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
                     self.delete_collections([coll])
 
 
