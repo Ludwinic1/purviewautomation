@@ -6,18 +6,18 @@
 !!! important
     - Code will automatically trim leading and trailing whitespaces in the collection names. 
         - Ex: `" test1"`, `"test1 "`, `"    test1    "` would all equal `"test1"`
-      - When creating a collection hierarchy [See: Collection Hierarchies](#create-one-collection-hierarcy), the code trims leading/training whitespaces before and after the `/`. Ex: `"test1 / test 2"` would equal `"test1/test2"` (test1 is one collection and test2 is another collection). 
+      - When creating a collection hierarchy [See: Collection Hierarchies](#create-one-collection-hierarcy), the code trims leading/trailing whitespaces before and after the `/`. Ex: `"test1 / test 2"` would equal `"test1/test2"` (test1 is one collection and test2 is another collection). 
     - Spaces in names are allowed: `"my collection"` is different than `"mycollection"`. 
     - Multiple spaces are allowed: `"my new collection"`  
     - Collection names are case sensitive. `"My-Company"` and `"my-company"` are two different names.
 
-### **Examples**
+## **Examples**
 The start_collection has to already exist in Purview. Pass in either the friendly name or the real name of the collection.
 
 
    
 
-# **Create One Collection**
+### **Create One Collection**
 If the Purview collections look like this:
 
 ![Collections](../img/tutorial/create-collections/image01.png)
@@ -38,7 +38,7 @@ client.create_collections("test 1", "sub test coll")
 ![Collections](../img/tutorial/create-collections/image03.png)
 
 
-# **Create Multiple Collections**
+### **Create Multiple Collections**
 To create multiple collections, pass in a list to the collection_names parameter. The `subcoll1` and `subcoll2` collections would be children of `test 1`:
 ```Python
 client.create_collections(start_collection="test 1", ["subcoll 1", "subcoll2"])
@@ -53,7 +53,7 @@ client.create_collections("subcoll 1", colls)
 ![Collections](../img/tutorial/create-collections/image05.png)
 
 
-# **Create One Collection Hierarcy**
+### **Create One Collection Hierarcy**
 To create a collection hierarchy, add `/` for parent/child relationships.
 If the Purview collections look like this:
 
@@ -67,7 +67,7 @@ client.create_collections(start_collection="My-Company",
 ```
 ![Collections](../img/tutorial/create-collections/image07.png)
 
-# **Create Multiple Collection Hierarchies**
+### **Create Multiple Collection Hierarchies**
 If the Purview collections look like this:
 
 ![Collections](../img/tutorial/create-collections/image06.png)
@@ -82,7 +82,7 @@ client.create_collections(start_collection="My-Company",
 ```
 ![Collections](../img/tutorial/create-collections/image08.png)
 
-Hierarchies can be of different length. Example 2: Create three hierarchies under `My-Company`:
+Hierarchies can be of different length. Create three hierarchies under `My-Company`:
 
 ```Python
 short_hierarchy = "First Collection/Second Collection"

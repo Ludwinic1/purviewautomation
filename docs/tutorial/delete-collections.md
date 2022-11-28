@@ -8,7 +8,9 @@
     - Collection names are case sensitive. `My-Company` is different than `my-Company`.
     
 
-### Examples
+## Examples
+
+### Delete One Collection
 If the Purview collections look like this:
 
 ![Collections](../img/tutorial/delete-collections/image01.png)
@@ -20,6 +22,7 @@ client.delete_collections(collection_names="Sub Collection 1")
 The output will be printed to the screen:
 ![Collections](../img/tutorial/delete-collections/image02.png)
 
+### Delete Multiple Collections
 Deleting multiple collections under different hierarchies is also allowed. If the Purview collections look like this:
 
 
@@ -63,9 +66,9 @@ To delete assets in a collection, use the `delete_assets` parameter with the opt
 !!! Important
     Deleting assets in a collection is irreversible. Re-scan the deleted assets to add them back to the collection.
 
-    The code will delete all the assets and the collection. To only delete assets in a collection and not delete the collection, see: [Delete Collection Assets](./list-collections.md)
+    The code will delete all the assets and the collection. To only delete assets in a collection and not delete the collection, see: [Delete Collection Assets](./delete-collection-assets.md)
 
-    The root collection (top level collection) can't be deleted. In the example above, `purview-test-2` is the root collection. To only delete the assets, see: [Delete Collection Assets](./list-collections.md)
+    The root collection (top level collection) can't be deleted. In the example above, `purview-test-2` is the root collection. To only delete the assets, see: [Delete Collection Assets](./delete-collection-assets.md)
 
 
 For example, the below collection `Collection To Delete` has 3 assets:
@@ -96,6 +99,16 @@ client.delete_collections(collection_names="Collection To Delete",
 
 
 ### Handling Duplicate Friendly Names
+
+In the event there's multiple duplicate friendly names/edge cases, see: [Handeling Multiple Duplicate Friendly Names](../handeling-multiple-duplicate-friendly-names.md).
+
+
+
+
+
+
+
+
 In Purview, the real name (under the hood name) of a collection has to be unique but there can be duplicate friendly names under different hierarchies:
 ![Collections](../img/tutorial/delete-collections/image04.png)
 

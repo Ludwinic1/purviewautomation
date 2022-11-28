@@ -50,7 +50,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 ```
 
 !!! important
-    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Create a Service Princpal and Assign the Collection Admin Role in Purview](create-a-service-principal.md#how-to-assign-the-service-principal-the-collection-admin-role-in-purview) 
+    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](create-a-service-principal.md#how-to-assign-the-service-principal-the-collection-admin-role-in-purview) 
 
 
 Now interact with the Purview collections:
@@ -117,6 +117,17 @@ hierarchy_2 = "hierarchy 2/hierarchy sub2"
 client.create_collections(start_collection="My First Collection",
                           collection_names=[hierarcy_1, hierarchy_2])
 ```    
+
+## **Delete All Assets in a Collection**
+```Python
+client.delete_collection_assets(collection_names="My First Collection")
+```
+
+## **Delete All Assets in Multiple Collections**
+```Python
+collections = ["Random Collection", "hierarchy sub2"]
+client.delete_collection_assets(collection_names=collections)
+```
 
 ## **Extract Collections**
 ```Python
