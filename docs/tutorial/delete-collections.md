@@ -58,7 +58,36 @@ The `Collection To Delete` collection is recreated:
 ![Collections](../img/tutorial/delete-collections/image12.png)
 
 
+### Delete Assets
+To delete assets in a collection, use the `delete_assets` parameter with the optional `delete_assets_timeout` option:
+!!! Important
+    Deleting assets in a collection is irreversible. Re-scan the deleted assets to add them back to the collection.
 
+    The code will delete all the assets and the collection. To only delete assets in a collection and not delete the collection, see: [Delete Collection Assets](./list-collections.md)
+
+    The root collection (top level collection) can't be deleted. In the example above, `purview-test-2` is the root collection. To only delete the assets, see: [Delete Collection Assets](./list-collections.md)
+
+
+For example, the below collection `Collection To Delete` has 3 assets:
+
+![Collections](../img/tutorial/delete-collections/image13.png)
+
+Run the code to delete all 3 assets in the collection and delete the collection as well:
+
+
+```Python
+client.delete_collections(collection_names="Collection To Delete",
+                          delete_assets=True)
+``` 
+
+The delete_assets parameter has a default timeout of 30 mins. If the collection has a large number of assets, pass in an integer to the delete_assets_timeout parameter to specify a longer or shorter timeframe (in minutes).
+
+For example, the below code will run up to an hour before timing out. The code will also stop when all the assets are deleted. If it only takes one minute to delete all of the assets, the code will stop after a minute:
+```Python
+client.delete_collections(collection_names="Collection To Delete",
+                          delete_assets=True,
+                          delete_assets_timeout=60)
+```                          
 
 
 
