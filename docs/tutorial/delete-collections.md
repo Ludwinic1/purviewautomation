@@ -32,10 +32,35 @@ client.delete_collections(["Sub Collection 2", "Sub Collection 1"])
 
 
 ### Rollback/Safe Delete
-When deleting collections, passing in the safe_delete parameter will output the collection/s that were deleted in order to recreate the collections. Think of this as a rollback option.
+When deleting collections, passing in the safe_delete parameter will output the collection/s that were deleted in order to recreate the collection. Think of this as a rollback option.
 
 If Purview looked like this:
+
 ![Collections](../img/tutorial/delete-collections/image10.png)
+
+Running the code: 
+```Python
+client.delete_collections(collection_names="Collection To Delete", 
+                          safe_delete="client")
+```
+Will delete the collection in Purview and output (print to the screen) the exact script to recreate the collection again. The same actual and friendly names are used:
+
+![Collections](../img/tutorial/delete-collections/image11.png)
+
+Simply copy and run the code to recreate the collection:
+```Python
+client.create_collections(start_collection='tkhegu', 
+                          collection_names='msvebq', 
+                          safe_delete_friendly_name='Collection To Delete')
+```                                             
+The `Collection To Delete` collection is recreated:
+
+![Collections](../img/tutorial/delete-collections/image12.png)
+
+
+
+
+
 
 
 

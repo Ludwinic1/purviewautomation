@@ -378,7 +378,7 @@ class PurviewCollections():
                 parent_name = collections[collection_name]['parentCollection']
                 friendly_name = collections[collection_name]['friendlyName']
                 create_collection_string = f"""{safe_delete_name}.create_collections(start_collection='{parent_name}', 
-                                               collection_names='{collection_name}', friendly_name='{friendly_name}')
+                                               collection_names='{collection_name}', safe_delete_friendly_name='{friendly_name}')
                                             """
             
             else:
@@ -396,7 +396,7 @@ class PurviewCollections():
         else:
             for item in create_colls_list:
                 create_coll_final_string = f"{safe_delete_name}.{item}"
-                print(create_coll_final_string)
+                print(create_coll_final_string, end='')
         print('\n')
         print('end of code')
         print('\n')
@@ -418,12 +418,75 @@ class PurviewCollections():
         return get_collections_request.json()
 
 
+    def delete_collection_assets(
+    self, 
+    collection_names: Union[str, List[str]],
+    timeout: int = 30, 
+    force_actual_name: bool = False,
+    api_version: Optional[str] = None
+    ) -> None:
+        """Delete all assets in a collection.
+
+        Args:
+            collection_names: Collection name or collection names where the assets will be deleted.
+            timeout: How long in minutes before the code times out. Default is 30 minutes. 
+            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Catalog API version. If none, default is 2022-03-01-preview.
+        
+        Returns:
+            None. Will output the deleted assets information.
+        """
+        if not api_version:
+            api_version = self.catalog_api_version
+        
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+            
+        # delete all assets in a collection
+        for name in collection_names:
+            collection = self.get_real_collection_name(collection_name=name, 
+                                                        force_actual_name=force_actual_name)
+
+            future_timeout_time = datetime.now() + timedelta(minutes=timeout)
+            final = False
+            while not final and datetime.now() <= future_timeout_time:
+                print(f"Attempting to delete assets in collection: {name}")
+                print("Note: This could take time if there's a large number of assets in the collection") 
+                url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
+                # max value is 1000
+                data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'      
+                asset_request = requests.post(url=url, data=data, headers=self.header)
+                results = asset_request.json()
+                total = len(results['value'])
+                if total == 0:
+                    final = True
+                    print(f'All assets have been successfully deleted from collection: {name}')
+                else:
+                    # delete entities
+                    guids = [item["id"] for item in results["value"]]
+                    guid_str = '&guid='.join(guids)
+                    url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
+                    delete_request = requests.delete(url, headers=self.header)
+                    print(delete_request.content)
+
+
+
+
+
+
+
+
     def delete_collections(
         self, 
         collection_names: Union[str, list], 
         safe_delete: Optional[str] = None,
         delete_assets: bool = False, 
-        delete_assets_timeout: Optional[int] = None,
+        delete_assets_timeout: int = 30,
         force_actual_name: bool = False, 
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this
@@ -439,6 +502,9 @@ class PurviewCollections():
                 and that name is duplicated across multiple hierarchies and one of those names 
                 is the actual passed in name, if True, this will force 
                 the method to use the actual name you pass in if it finds it.
+            delete_assets: if True, will delete all of the assets from the collection.
+            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. 
+                If none, the default is 30 minutes.
             api_version: Collections API version.
         """
 
@@ -543,7 +609,7 @@ class PurviewCollections():
         safe_delete: Optional[str] = None, 
         also_delete_first_collection: bool = False, 
         delete_assets: bool = False,
-        delete_assets_timeout: Optional[int] = None,
+        delete_assets_timeout: int = 30,
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
@@ -557,7 +623,8 @@ class PurviewCollections():
                 is the actual passed in name, if True, this will force 
                 the method to use the actual name you pass in if it finds it.
             delete_assets: if True, will delete all of the assets from every collection in the hierarchy.
-            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. If none, the default is 30 minutes.
+            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. 
+                If none, the default is 30 minutes.
             api_version: Collections API version. 
         
         Returns:
@@ -641,89 +708,61 @@ class PurviewCollections():
         self._safe_delete_recursivly(collections_list, safe_delete_name, name, True)
 
 
+    # def delete_collection_assets(
+    #     self, 
+    #     collection_names: Union[str, List[str]],
+    #     timeout: int = 30, 
+    #     force_actual_name: bool = False,
+    #     api_version: Optional[str] = None
+    # ) -> None:
+    #     """Delete all assets in a collection.
 
-
-    def delete_collection_assets(
-        self, 
-        collection_names: Union[str, List[str]],
-        timeout: int = 30, 
-        force_actual_name: bool = False,
-        api_version: Optional[str] = None
-    ) -> None:
-        """Delete all assets in a collection.
-
-        Args:
-            collection_names: Collection name or collection names to pass in.
-            timeout: How long in minutes before the code times out. Default is 30 minutes. 
-            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
-                and that name is duplicated across multiple hierarchies and one of those names 
-                is the actual passed in name, if True, this will force 
-                the method to use the actual name you pass in if it finds it.
-            api_version: Catalog API version. If none, default is 2022-03-01-preview.
+    #     Args:
+    #         collection_names: Collection name or collection names where the assets will be deleted.
+    #         timeout: How long in minutes before the code times out. Default is 30 minutes. 
+    #         force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
+    #             and that name is duplicated across multiple hierarchies and one of those names 
+    #             is the actual passed in name, if True, this will force 
+    #             the method to use the actual name you pass in if it finds it.
+    #         api_version: Catalog API version. If none, default is 2022-03-01-preview.
         
-        Returns:
-            None.
-        """
-        if not api_version:
-            api_version = self.catalog_api_version
+    #     Returns:
+    #         None. Will output the deleted assets information.
+    #     """
+    #     if not api_version:
+    #         api_version = self.catalog_api_version
         
-        if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list type.")
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
+    #     if not isinstance(collection_names, (str, list)):
+    #         raise ValueError("The collection_names parameter has to either be a string or a list type.")
+    #     elif isinstance(collection_names, str):
+    #         collection_names = [collection_names]
             
-        # delete all assets in a collection
-        for name in collection_names:
-            collection = self.get_real_collection_name(collection_name=name, 
-                                                       force_actual_name=force_actual_name)
-            # url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
-            # data = f'{{"keywords": null, "limit": 1, "filter": {{"collectionId": "{collection}"}}}}'       
-            # asset_request = requests.post(url=url, data=data, headers=self.header)
-            # results = asset_request.json()
-            # total = len(results['value'])
-            # print(total)
+    #     # delete all assets in a collection
+    #     for name in collection_names:
+    #         collection = self.get_real_collection_name(collection_name=name, 
+    #                                                    force_actual_name=force_actual_name)
 
-            # # delete entities
-            # guids = [item["id"] for item in results["value"]]
-            # guid_str = '&guid='.join(guids)
-            # url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
-            # request2 = requests.delete(url, headers=self.header)
-            # print(request2.content)
-
-            future_timeout_time = datetime.now() + timedelta(minutes=timeout)
-
-            final = False
-            while not final and datetime.now() <= future_timeout_time:
-                print(f'Attempting to delete assets in collection: {name}')
-                print('To note, based on the number of assets, this could take time if there are a lot of assets to delete.')
-                url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
-                # max value is 1000
-                data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'      
-                asset_request = requests.post(url=url, data=data, headers=self.header)
-                results = asset_request.json()
-                total = len(results['value'])
-                if total == 0:
-                    final = True
-                    print(f'All assets have been successfully deleted from collection: {name}')
-                else:
-                    # delete entities
-                    guids = [item["id"] for item in results["value"]]
-                    guid_str = '&guid='.join(guids)
-                    url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
-                    request2 = requests.delete(url, headers=self.header)
-                    print(request2.content)
-
-
-                    # print(child_test['value'][0]['friendlyName'])
-                # print(collections[name]['parentCollection'], delete_list[index - 1], 'herererere')
-                # friendly_parent = collections[delete_list[index - 1]]['friendlyName']
-                # coll2 = collections[name]['friendlyName']
-                # print(collections[item]['friendlyName'], collections[delete_list[index - 1]]['friendlyName'])
-                # new_string = f"{safe_delete_name}.create_collections('{friendly_parent}', ['{coll2}'])"
-                # print(new_string)        
-        # print('\n')
-        # print('end code')
-        # print('\n')
+    #         future_timeout_time = datetime.now() + timedelta(minutes=timeout)
+    #         final = False
+    #         while not final and datetime.now() <= future_timeout_time:
+    #             print(f"Attempting to delete assets in collection: {name}")
+    #             print("Note: This could take time if there's a large number of assets in the collection") 
+    #             url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
+    #             # max value is 1000
+    #             data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'      
+    #             asset_request = requests.post(url=url, data=data, headers=self.header)
+    #             results = asset_request.json()
+    #             total = len(results['value'])
+    #             if total == 0:
+    #                 final = True
+    #                 print(f'All assets have been successfully deleted from collection: {name}')
+    #             else:
+    #                 # delete entities
+    #                 guids = [item["id"] for item in results["value"]]
+    #                 guid_str = '&guid='.join(guids)
+    #                 url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
+    #                 delete_request = requests.delete(url, headers=self.header)
+    #                 print(delete_request.content)
 
 
 

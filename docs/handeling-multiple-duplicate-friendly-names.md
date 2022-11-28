@@ -23,7 +23,7 @@ The code automatically knows the parent collection and can handle it accordingly
 
 ## **Handling Multiple Duplicate Friendly Names in the start_collection Parameter When Creating Collections or When Deleting Collections**
 
-In the event there's multiple duplicate friendly names, either pass in the **actual name** (which has to be unique across Purview) or if a **friendly name** is passed, the code will raise a value error advising you to choose one of the **actual names**.
+In the event there's multiple duplicate friendly names, either pass in the **actual name** (which has to be unique across Purview) or if a **friendly name** is passed, the code will raise a value error advising you to choose one of the **actual names**. For more info on actual and friendly names, see: [Purview Collection Names Overview](how-purview-names-work.md).
 
 For example, given the below Purview, `My-Collection` is a duplicated friendly name across two different hierarchies:
 

@@ -1,5 +1,5 @@
 ### What is Purview?
-Purview is a data governance tool to help organizations govern, protect, and manage their data estate. For more information, see: [Purview Overview](https://learn.microsoft.com/en-us/purview/purview)
+Purview is a data governance tool to help organizations govern, protect, and manage their data estate. For more information, see: [Purview Overview](https://learn.microsoft.com/en-us/purview/purview).
 
 ### How to Create a Purview Resource
 There are several ways to create a Purview resource, below are just two ways:

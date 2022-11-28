@@ -20,15 +20,17 @@ To authenticate with a Service Principal, import the ServicePrincipalAuthenticat
                                    PurviewCollections)
 ```
 
-Create a variable named **auth** (can be named anything) and add the tenantid, client id and client secret:
+Create a variable named **auth** (can be named anything) and add the tenantid and the Service Principal's client id and client secret:
 
 ```Python
     auth = ServicePrincipalAuthentication(tenantid="yourtenantid", 
                                           clientid="yourclientid", 
                                           clientsecret="yourclientsecret")
 ```
+!!! tip
+    To find the tenantid, go to **[portal.azure.com](https://portal.azure.com)**, sign in and then click on the Azure Active Directory blade on the left. The tenantid will then be displayed in the middle of the screen.
 
-Now create a variable named **client** (can be named anything) and instantiate the class with your Purview account name and the auth variable created in the previous step
+Now create a variable named **client** (can be named anything) and instantiate the class with your Purview account name and the auth variable created in the previous step:
 
 ```Python
     client = PurviewCollections(purview_account_name=yourpurviewaccountname,
