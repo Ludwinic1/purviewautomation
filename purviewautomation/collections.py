@@ -447,7 +447,6 @@ class PurviewCollections():
         elif isinstance(collection_names, str):
             collection_names = [collection_names]
             
-        # delete all assets in a collection
         for name in collection_names:
             collection = self.get_real_collection_name(collection_name=name, 
                                                         force_actual_name=force_actual_name)
@@ -467,7 +466,6 @@ class PurviewCollections():
                     final = True
                     print(f"All assets have been successfully deleted from collection: '{name}'")
                 else:
-                    # delete entities
                     guids = [item["id"] for item in results["value"]]
                     guid_str = '&guid='.join(guids)
                     url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
@@ -627,8 +625,8 @@ class PurviewCollections():
         if not api_version:
             api_version = self.collections_api_version
 
-        delete_list = []
-        recursive_list = []
+        # delete_list = []
+        # recursive_list = []
 
         if not isinstance(collection_names, (str, list)):
             raise ValueError("The collection_names parameter has to either be a string or a list type.")
@@ -636,6 +634,8 @@ class PurviewCollections():
             collection_names = [collection_names]
 
         for name in collection_names:
+            delete_list = []
+            recursive_list = []
             name = self.get_real_collection_name(name)
             self._recursive_append(name, delete_list)
             if delete_list[0] is not None:
@@ -646,19 +646,19 @@ class PurviewCollections():
                         delete_list.append(item2)
                         self._recursive_append(item2, recursive_list)
         
-        if safe_delete:
-            if also_delete_first_collection:
-                self._safe_delete_recursivly(delete_list, safe_delete, name, True)
-            else:
-                self._safe_delete_recursivly(delete_list, safe_delete, name)
+            if safe_delete:
+                if also_delete_first_collection:
+                    self._safe_delete_recursivly(delete_list, safe_delete, name, True)
+                else:
+                    self._safe_delete_recursivly(delete_list, safe_delete, name)
 
-        if delete_list[0] is not None:
-            if also_delete_first_collection:
-                delete_list.insert(0, collection_names[0])
-            for coll in delete_list[::-1]: # starting from the most child collection
-                if delete_assets:
-                    self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
-                self.delete_collections([coll])
+            if delete_list[0] is not None:
+                if also_delete_first_collection:
+                    delete_list.insert(0, collection_names[0])
+                for coll in delete_list[::-1]: # starting from the most child collection
+                    if delete_assets:
+                        self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
+                    self.delete_collections([coll])
 
 
 
