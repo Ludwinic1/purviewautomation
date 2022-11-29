@@ -11,7 +11,7 @@ Key benefits:
 
 - **Easy**: Create, delete and list collections and collection hierarchies with one line of code
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
-- **Deploy**: Extract and deploy collections to upper environments (UAT/PROD) so the collection hierarchy structures are consistent across all Purviews 
+- **Deploy**: Extract/deploy collections to UAT/PROD environments to ensure consistency across Purviews 
 - **Delete Assets**: Delete all assets in a collection or all assets in a collection hierarchy 
 - **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
   
@@ -114,6 +114,7 @@ client.create_collections(start_collection="Sub Collection 1",
 ```Python
 hierarchy_1 = "hierarchy1/hierarchysub1/hierarchysub2/hierarchysub3"
 hierarchy_2 = "hierarchy 2/hierarchy sub2"
+
 client.create_collections(start_collection="My First Collection",
                           collection_names=[hierarcy_1, hierarchy_2])
 ```    
@@ -148,6 +149,7 @@ client.extract_collections("My First Collection")
 ```Python
 client.delete_collections(collection_names="Random Collection")
 ```
+
 ## ** Delete a Collection with Rollback Enabled**
 ```Python
 # Will delete the collection 
@@ -155,7 +157,19 @@ client.delete_collections(collection_names="Random Collection")
 
 client.delete_collections(collection_names="Random Collection 2", 
                           safe_delete="client")
-```                    
+```
+
+## **Delete All Assets in a Collection and Delete the Collection**
+!!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+
+```Python
+# Delete all of the assets in the collection 
+# And delete the collection as well
+
+client.delete_collections("My First Collection", delete_assets=True)
+```
+
 ## ** Delete a Collection Hierarchy with Rollback Enabled**
 ```Python
 # Will delete all of the children and their children and output the exact script 
@@ -164,6 +178,16 @@ client.delete_collections(collection_names="Random Collection 2",
 client.delete_collections_reursively("My First Collection", safe_delete="client")
 ```
 
+## **Delete All Assets in a Collection Hierarchy and Delete the Hierarchy**
+!!! Important
+    **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
+
+```Python
+# Delete all of the assets in all of the collections under the hierarchy 
+# And delete the collection hierarchy as well
+
+client.delete_collections_recursively("My First Collection", delete_assets=True)
+```
 
 
 

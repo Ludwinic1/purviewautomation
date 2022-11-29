@@ -7,6 +7,8 @@
     - This method only deletes collections that have children (sub collections). To delete collections that have no children, see [Delete Collections](delete-collections.md) 
     - Collection names are case sensitive. `My-Company` is different than `my-Company`.
 
+    - To delete collections that also have assets, add the delete_assets parameter see: [Delete Assets Section](#delete-assets)
+
 ## Examples
 
 ### **Delete One Collection Hierarchy**
@@ -42,7 +44,6 @@ client.delete_collections_recursively(collection_names="My-Collection",
 Purview after running the code where `My-Collection` along with the child collections are deleted:
 
 ![Delete Collections Recursively](../img/tutorial/delete-collections-recursively/image04.png)
-
 
 ### **Delete Multiple Collection Hierarchies**
 
@@ -98,6 +99,8 @@ Purview output after the code runs will recreate the entire hierarchy:
 
 
 ### **Delete Assets**
+To delete all of the assets in a hierarchy (delete all of the assets in every collection in the hierarchy), use the `delete_assets` parameter with the optional `delete_assets_timeout` option:
+
 !!! Important
     **The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)** 
 
@@ -107,10 +110,7 @@ Purview output after the code runs will recreate the entire hierarchy:
 
     The root collection (top level collection) can't be deleted. In the examples above, `purview-test-2` is the root collection. To only delete the assets, see: [Delete Collection Assets](./delete-collection-assets.md)
 
-
-To delete all of the assets in a hierarchy (delete all of the assets in every collection in the hierarchy), use the `delete_assets` parameter with the optional `delete_assets_timeout` option:
-
-!!! Important
+!!! Info
     **The timeout when deleting assets is 30 minutes. If there are a large number of assets in the collection, pass an integer to the timeout parameter (in minutes) to increase (or decrease) the time.**
 
     For example: `client.delete_collections_recursively(collection_names="My Collection", 
@@ -131,7 +131,9 @@ client.delete_collections_recursively(collection_names="My-Collections",
                                       delete_assets=True)
 ```                                      
 
-Will output the below Purview:
+The resulting Purview:
+
+![Delete Collections Recursively](../img/tutorial/delete-collections-recursively/image12.png)
 
 
 
