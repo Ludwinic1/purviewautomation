@@ -2,6 +2,7 @@ import requests
 import re
 import random
 import string
+from datetime import datetime, timedelta
 from pprint import pprint as pretty_print
 from typing import Union, List, Dict, Optional, Tuple
 from .auth import ServicePrincipalAuthentication
@@ -21,6 +22,9 @@ class PurviewCollections():
         collections_api_version: API version for the collection APIs.
         catalog_endpoint: The endpoint when calling the catalog APIs.
         catalog_api_version: API version for the catalog APIs.
+    
+    Returns:
+        PurviewCollections object
     """
     def __init__(
         self,
@@ -53,10 +57,11 @@ class PurviewCollections():
             api_version: If None, the default is "2019-11-01-preview".
 
         Returns:
-            List of dictionaries with each dictionary containing all of the info for that collection.
+            List of dictionaries containing all of the info for that collection.
                 If only_names is True will return a dictionary of only the names (actual, friendly, parent).
                 If pprint is True, will print the values to the screen and nothing is returned.
         """
+
         if not api_version:
             api_version = self.collections_api_version
         
@@ -96,18 +101,19 @@ class PurviewCollections():
         """Returns the actual under the hood collection name.
 
         Args:
-            collection_name: Name to check. Can pass in a friendly name or a real name.
+            collection_name: Name to check. Can pass in a friendly name or actual name.
             api_version: Collections API version.
-            force_actual_name: Edge case. If True it will check if the real name is the name passed in.
+            force_actual_name: Edge case. If True it will check if the actual name is the name passed in.
                 Useful if there are multiple friendly names. 
         
         Returns:
-            The real name of the collection.
+            The actual name of the collection.
         
         Raises:
             If the collection doesn't exist, it will raise an error that no collection exists.
             If multiple friendly names exist, an error will display listing the multiple friendly names.
         """
+
         if not api_version:
             api_version = self.collections_api_version
 
@@ -217,6 +223,7 @@ class PurviewCollections():
             -If the name doesn't exist but meets the Purview naming requirements, returns the name.
             -If none of the above are returned, returns a random six character lowercase string.  
         """
+
         if name in collection_dict and collection_dict[name]['parentCollection'] == parent_collection.lower():
             return name 
         elif name in friendly_names:
@@ -281,8 +288,8 @@ class PurviewCollections():
         Args:
             start_collection: Existing collection name to start creating the collections from.
                 Use list_collections(only_names, pprint=True) to see all of the collection names.
-                Use a friendly or real name.
-            collection_names: collection name/names and the parent/child items if needed.
+                Use a friendly or actual name.
+            collection_names: collection name/names and the parent/child names if needed.
             force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter
                 and that name is duplicated across multiple hierarchies and one of those names
                 is the actual passed in name, if True, this will force
@@ -292,8 +299,8 @@ class PurviewCollections():
                 safe_delete_friendly_name: Used during the safe delete functionality. Don't call directly.
         
         Returns:
-            Prints the successfully created collection or collections. If the collection/s already exists,
-                nothing prints.
+            Prints the successfully created collection or collections. 
+                If the collection/s already exist, nothing prints.
             """
 
         if not api_version:
@@ -377,7 +384,7 @@ class PurviewCollections():
                 parent_name = collections[collection_name]['parentCollection']
                 friendly_name = collections[collection_name]['friendlyName']
                 create_collection_string = f"""{safe_delete_name}.create_collections(start_collection='{parent_name}', 
-                                               collection_names='{collection_name}', friendly_name='{friendly_name}')
+                                               collection_names='{collection_name}', safe_delete_friendly_name='{friendly_name}')
                                             """
             
             else:
@@ -395,7 +402,7 @@ class PurviewCollections():
         else:
             for item in create_colls_list:
                 create_coll_final_string = f"{safe_delete_name}.{item}"
-                print(create_coll_final_string)
+                print(create_coll_final_string, end='')
         print('\n')
         print('end of code')
         print('\n')
@@ -417,26 +424,92 @@ class PurviewCollections():
         return get_collections_request.json()
 
 
+    def delete_collection_assets(
+    self, 
+    collection_names: Union[str, List[str]],
+    timeout: int = 30, 
+    force_actual_name: bool = False,
+    api_version: Optional[str] = None
+    ) -> None:
+        """Delete all assets in a collection or all assets in multiple collections.
+
+        Args:
+            collection_names: Collection name or collection names where the assets will be deleted.
+            timeout: How long in minutes before the code times out. Default is 30 minutes. 
+            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
+                and that name is duplicated across multiple hierarchies and one of those names 
+                is the actual passed in name, if True, this will force 
+                the method to use the actual name you pass in if it finds it.
+            api_version: Catalog API version. If none, default is 2022-03-01-preview.
+        
+        Returns:
+            Will output (print) that the collection assets have been successfully deleted.
+        """
+
+        if not api_version:
+            api_version = self.catalog_api_version
+        
+        if not isinstance(collection_names, (str, list)):
+            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+
+        collections = self.list_collections(only_names=True)            
+            
+        for name in collection_names:
+            collection = self.get_real_collection_name(collection_name=name, 
+                                                        force_actual_name=force_actual_name)
+                                                                    
+            future_timeout_time = datetime.now() + timedelta(minutes=timeout)
+            final = False
+            while not final and datetime.now() <= future_timeout_time:
+                print(f"Attempting to delete assets in collection: '{collections[collection]['friendlyName']}'")
+                print("Note: This could take time if there's a large number of assets in the collection") 
+                url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
+                # max value is 1000
+                data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'      
+                asset_request = requests.post(url=url, data=data, headers=self.header)
+                results = asset_request.json()
+                total = len(results['value'])
+                if total == 0:
+                    final = True
+                    print(f"All assets have been successfully deleted from collection: '{collections[collection]['friendlyName']}'")
+                    print("\n")
+                else:
+                    guids = [item["id"] for item in results["value"]]
+                    guid_str = '&guid='.join(guids)
+                    url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
+                    delete_request = requests.delete(url, headers=self.header)
+
+
     def delete_collections(
         self, 
         collection_names: Union[str, list], 
-        safe_delete: Optional[str] = None, 
+        safe_delete: Optional[str] = None,
+        delete_assets: bool = False, 
+        delete_assets_timeout: int = 30,
         force_actual_name: bool = False, 
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this
         """Delete one or more collections. 
         
-            Can pass in either the real or friendly collection name. 
+            Pass in either the actual or friendly collection name. 
             Can't pass in collections that have chidren. Use delete_collection_recursively instead.
         
         Args:
             collection_names: Collections to be deleted. 
             safe_delete: The client name to be used when printing the safe delete commands.
+            delete_assets: if True, will delete all of the assets from the collection.
+            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. 
+                If None, the default is 30 minutes.
             force_actual_name:  Edge Case. If a friendly name is passed in the start_collection parameter 
                 and that name is duplicated across multiple hierarchies and one of those names 
                 is the actual passed in name, if True, this will force 
                 the method to use the actual name you pass in if it finds it.
             api_version: Collections API version.
+        
+        Returns:
+            Ouptuts to the screen the collection has been deleted. 
         """
 
         if not api_version:
@@ -463,9 +536,12 @@ class PurviewCollections():
             try:
                 colls = self.list_collections(only_names=True)
                 friendly_name = colls[coll_name]['friendlyName']
+                if delete_assets:
+                    self.delete_collection_assets(collection_names=coll_name, timeout=delete_assets_timeout)
                 delete_collections_request = requests.delete(url=url, headers=self.header)
                 if not delete_collections_request.content:
                     print(f"The collection '{friendly_name}' was successfully deleted")
+                    print("\n")
                 else:
                     print(delete_collections_request.content)
             except Exception as e:
@@ -531,12 +607,13 @@ class PurviewCollections():
         print('end code', '\n')
 
 
-
     def delete_collections_recursively(
         self, 
         collection_names: Union[str, List[str]], 
         safe_delete: Optional[str] = None, 
         also_delete_first_collection: bool = False, 
+        delete_assets: bool = False,
+        delete_assets_timeout: int = 30,
         api_version: Optional[str] = None
     ) -> None: #TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
@@ -549,6 +626,9 @@ class PurviewCollections():
                 and that name is duplicated across multiple hierarchies and one of those names 
                 is the actual passed in name, if True, this will force 
                 the method to use the actual name you pass in if it finds it.
+            delete_assets: if True, will delete all of the assets from every collection in the hierarchy.
+            delete_assets_timeout: If delete_assets is True, this is the timeout for deleting the assets. 
+                If none, the default is 30 minutes.
             api_version: Collections API version. 
         
         Returns:
@@ -558,15 +638,14 @@ class PurviewCollections():
         if not api_version:
             api_version = self.collections_api_version
 
-        delete_list = []
-        recursive_list = []
-
         if not isinstance(collection_names, (str, list)):
             raise ValueError("The collection_names parameter has to either be a string or a list type.")
         elif isinstance(collection_names, str):
             collection_names = [collection_names]
 
         for name in collection_names:
+            delete_list = []
+            recursive_list = []
             name = self.get_real_collection_name(name)
             self._recursive_append(name, delete_list)
             if delete_list[0] is not None:
@@ -577,18 +656,24 @@ class PurviewCollections():
                         delete_list.append(item2)
                         self._recursive_append(item2, recursive_list)
         
-        if safe_delete:
-            if also_delete_first_collection:
-                self._safe_delete_recursivly(delete_list, safe_delete, name, True)
-            else:
-                self._safe_delete_recursivly(delete_list, safe_delete, name)
+            if safe_delete:
+                if also_delete_first_collection:
+                    self._safe_delete_recursivly(delete_list, safe_delete, name, True)
+                else:
+                    self._safe_delete_recursivly(delete_list, safe_delete, name)
 
-        if delete_list[0] is not None:
-            if also_delete_first_collection:
-                delete_list.insert(0, collection_names[0])
-            for coll in delete_list[::-1]: # starting from the most child collection
-                self.delete_collections([coll])
-
+            if delete_list[0] is not None:
+                if also_delete_first_collection:
+                    delete_list.insert(0, collection_names[0])
+                for coll in delete_list[::-1]: # starting from the most child collection           
+                    if delete_assets:
+                        remove_duplicate_names = []
+                        if coll not in remove_duplicate_names:
+                            remove_duplicate_names.append(coll)
+                        for coll in remove_duplicate_names:
+                            self.delete_collection_assets(collection_names=coll, 
+                                                          timeout=delete_assets_timeout)
+                    self.delete_collections([coll])
 
 
     def extract_collections(
@@ -629,85 +714,6 @@ class PurviewCollections():
         
         self._safe_delete_recursivly(collections_list, safe_delete_name, name, True)
 
-
-
-
-    def delete_collection_assets(
-        self, 
-        collection_names: Union[str, List[str]], 
-        force_actual_name: bool = False,
-        api_version: Optional[str] = None
-    ) -> None:
-        """Delete all assets in a collection.
-
-        Args:
-            collection_names: Collection name or collection names to pass in.
-            force_actual_name: Edge Case. If a friendly name is passed in the start_collection parameter 
-                and that name is duplicated across multiple hierarchies and one of those names 
-                is the actual passed in name, if True, this will force 
-                the method to use the actual name you pass in if it finds it.
-            api_version: Catalog API version. If none, default is 2022-03-01-preview.
-        
-        Returns:
-            None.
-        """
-        if not api_version:
-            api_version = self.catalog_api_version
-        
-        if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list type.")
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
-        
-        # delete all assets in a collection
-        for name in collection_names:
-            collection = self.get_real_collection_name(collection_name=name, 
-                                                       force_actual_name=force_actual_name)
-            # url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
-            # data = f'{{"keywords": null, "limit": 1, "filter": {{"collectionId": "{collection}"}}}}'       
-            # asset_request = requests.post(url=url, data=data, headers=self.header)
-            # results = asset_request.json()
-            # total = len(results['value'])
-            # print(total)
-
-            # # delete entities
-            # guids = [item["id"] for item in results["value"]]
-            # guid_str = '&guid='.join(guids)
-            # url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
-            # request2 = requests.delete(url, headers=self.header)
-            # print(request2.content)
-
-
-            final = False
-            while not final:
-                url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
-                data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'       
-                asset_request = requests.post(url=url, data=data, headers=self.header)
-                results = asset_request.json()
-                total = len(results['value'])
-                if total == 0:
-                    print('total', total)
-                    final = True
-                    print('end')
-                else:
-                    # delete entities
-                    guids = [item["id"] for item in results["value"]]
-                    guid_str = '&guid='.join(guids)
-                    url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
-                    request2 = requests.delete(url, headers=self.header)
-                    print(request2.content)
-
-
-                    # print(child_test['value'][0]['friendlyName'])
-                # print(collections[name]['parentCollection'], delete_list[index - 1], 'herererere')
-                # friendly_parent = collections[delete_list[index - 1]]['friendlyName']
-                # coll2 = collections[name]['friendlyName']
-                # print(collections[item]['friendlyName'], collections[delete_list[index - 1]]['friendlyName'])
-                # new_string = f"{safe_delete_name}.create_collections('{friendly_parent}', ['{coll2}'])"
-                # print(new_string)        
-        # print('\n')
-        # print('end code')
-        # print('\n')
 
 
 
