@@ -1,8 +1,13 @@
 import requests
 from datetime import datetime
 
-class ServicePrincipalAuthentication():
-    def __init__(self, tenant_id: str, client_id: str, client_secret: str):
+class ServicePrincipalAuthentication:
+    def __init__(
+        self, 
+        tenant_id: str, 
+        client_id: str, 
+        client_secret: str
+    ):
         self.url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
         self.data = {
             "client_id": client_id,
