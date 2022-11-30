@@ -1,0 +1,8 @@
+purautorealvenv
+__pycache__/
+test.py
+CurrentWay.py
+oldCodetoDelete.py 
+purviewautomation.egg-info/
+.vscode/
+.tox/

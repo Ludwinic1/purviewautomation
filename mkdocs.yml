@@ -1,0 +1,57 @@
+site_name: Purview Automation
+
+theme:
+  name: material
+  logo: img/logo/logo01.png
+  font:
+    text: Roboto
+    code: Roboto Mono
+  palette: 
+  - scheme: default
+    primary: blue
+    accent: amber
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - scheme: slate 
+    primary: blue
+    accent: amber 
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  
+  language: en
+  
+nav:
+  - Purview Automation: index.md
+  - Why This Library: why-this-library.md
+  - Purview Collection Names Intro and Important Info: how-purview-names-work.md
+  - Tutorial  - User Guide:
+    - First Steps: tutorial/first-steps.md
+    - Create a Purview Resource: tutorial/create-purview.md
+    - Authenticate and Connect with Purview: tutorial/authenticate-connect.md
+    - List Collections: tutorial/list-collections.md
+    - Create Collections: tutorial/create-collections.md
+    - Delete Collection Assets: tutorial/delete-collection-assets.md
+    - Delete Collections: tutorial/delete-collections.md
+    - Delete Collections Recursively: tutorial/delete-collections-recursively.md
+    - Extract Collections: tutorial/extract-collections.md
+    - Get Collection Name: tutorial/get-collection-name.md
+  - How to Create a Service Principal: create-a-service-principal.md
+  - Handeling Multiple Duplicate Friendly Name Scenarios and Edge Cases: handeling-multiple-duplicate-friendly-names.md
+  
+plugins:
+  - search
+  - mkdocstrings
+  - termynal
+
+repo_url: https://github.com/Ludwinic1/purviewautomation
+
+markdown_extensions:
+  - admonition
+  - def_list 
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+
+
