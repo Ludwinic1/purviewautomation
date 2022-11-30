@@ -1,4 +1,4 @@
-name: Tests Test
+name: New
 
 on: workflow_dispatch
 
@@ -12,7 +12,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true 
       
-      - name: Create Purview Account 
+      - name: create-purview-account 
         uses: azure/powershell@v1 
         with:
           azPSVersion: latest 
