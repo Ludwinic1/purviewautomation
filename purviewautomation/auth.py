@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 
+
 class ServicePrincipalAuthentication:
     def __init__(
         self, 
