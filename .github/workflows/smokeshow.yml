@@ -26,8 +26,6 @@ jobs:
         with:
           workflow: tests.yml
           commit: ${{ github.event.workflow_run.head_sha }}
-          check_artifacts: true 
-          search_artifacts: true
       
       - run: smokeshow upload coverage-html 
         env:

@@ -99,7 +99,7 @@ jobs:
       - run: coverage html --show-contexts --title "purviewautomation coverage for ${{ github.sha }}"   
 
       - name: Store coverage html 
-        uses: actions/upload-artifact@v3 
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-html
           path: htmlcov
