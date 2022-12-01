@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "purviewautomation"
-description = "Python wrapper around the Purview APIs. Simplifies the code needed to write and improves the capabilities significantly."
+description = "Purview Automation is a Python wrapper library built on top of Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier."
 version = "0.0.1"
 authors = [
     { name = "Nick Ludwig", email = "nick.ludwig223@gmail.com" },
 ]
-license = { file = "LICENSE" }
+license = "MIT"
 requires-python = ">=3.8"
 readme = "README.md"
 classifiers = [
@@ -44,8 +44,10 @@ doc = [
     "mkdocs-material>=8.1.4"
 ]
 
+[tool.black]
+line-length = 120 
+
 [tool.isort]
-line-length = 120
 profile = "black"
 
 

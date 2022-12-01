@@ -4,3 +4,4 @@ test.py
 CurrentWay.py
 purviewautomation.egg-info/
 .vscode/
+dist/

@@ -4,7 +4,7 @@ Welcome to Purview Automation!
 Purview Automation is a Python wrapper library around Purview APIs that's designed to be simple to use and make scaling and automating Purview easier. 
 
 <br>
-**Phase I is all about making it easier to working with, scale, rollback and automate Purview collections!** 
+**Phase I is all about making it easier to working with, scale, rollback and automate Purview collections and assets in collections!** 
 
 <br>
 Key benefits:
@@ -16,7 +16,7 @@ Key benefits:
 - **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
   
  
-- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual collection name when calling APIs. See: [Purview Collection Names Overview](how-purview-names-work.md)
+- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](how-purview-names-work.md)
   
 
 <br>
