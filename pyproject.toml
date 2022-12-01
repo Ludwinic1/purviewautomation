@@ -34,10 +34,18 @@ Homepage = "https://github.com/Ludwinic1/purviewautomation"
 
 [project.optional-dependencies]
 test = [
-    "pytest==7.2.0"
+    "pytest==7.2.0",
+    "black==22.10.0",
+    "isort>=5.10.1",
+    "coverage-6.5.0"
 ]
 doc = [
     "mkdocs >=1.1.2",
     "mkdocs-material>=8.1.4"
 ]
+
+[tool.isort]
+line-length = 120
+profile = "black"
+
 
