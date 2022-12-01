@@ -1,11 +1,11 @@
 name: Smokeshow 
 
 on:
-  # workflow_dispatch:
+  workflow_dispatch
     
-  workflow_run:
-    workflows: [Tests]
-    types: [completed]
+  # workflow_run: CHANGE THIS WHEN REPO IS PUBLIC. ALL TESTED AND WORKS 62 COVERAGE. 
+  #   workflows: [Tests]
+  #   types: [completed]
 
 permissions:
   statuses: write

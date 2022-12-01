@@ -1,9 +1,11 @@
 name: Tests
 
-on: 
-  push:
-    branches:
-      - main
+on:
+  workflow_dispatch:
+    
+  # push:     switch this back and get rid of workflow_dispatch when public
+  #   branches:
+  #     - main
 
 jobs:
   create-purview-account:
@@ -129,6 +131,21 @@ jobs:
             Remove-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME"
 
 
+  check:
+    if: always()
+
+    needs:
+    - create-purview-account
+    - run-python-tests
+    - delete-purview-account
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
 
 
 
