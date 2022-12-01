@@ -1,4 +1,4 @@
-import os 
+import os
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 from typing import List
 
