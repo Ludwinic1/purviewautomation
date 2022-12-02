@@ -9,10 +9,10 @@ One of the benefits of a Service Principal is it can be used to connect with Azu
 For example, imagine a developer named Frank. If Frank wanted to call Purview APIs, how would he connect with Purview?
 
 <br>
-He could provide his username and password in the script. This is very dangerous because if a hacker gets a hold of the info or it gets leaked, the hacker not only has access to use the Purview APIs but any other potential resources Frank has access too!
+He could provide his username and password in the script. This is very dangerous because if a hacker gets a hold of the info or it gets leaked, the hacker not only has access to use the Purview APIs but any other potential resources Frank has access to!
 
 <br>
-On top of that, what if Frank's colleauge Mary wanted to call Purview APIs too? She would either have to get Frank's credentials or use her own. Now we have two developer credentials that are exposed to hackers.  
+On top of that, what if Frank's colleauge Mary wanted to call Purview APIs too? She would either have to get Frank's credentials or use her own. Now we have two developer credentials that are potentially exposed.  
 
 To help solve this, Service Principals can be used. When a Service Principal is created, it gets assigned a clientid (think of it as a username) and a clientsecret (password) and we can assign the Service Principal only the Purview permissions needed.
 

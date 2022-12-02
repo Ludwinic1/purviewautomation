@@ -1,10 +1,10 @@
 Welcome to Purview Automation! 
 
 <br>
-Purview Automation is a Python wrapper library around Purview APIs that's designed to be simple to use and make scaling and automating Purview easier. 
+Purview Automation is a Python wrapper library built on top of Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier.
 
 <br>
-**Phase I is all about making it easier to working with, scale, rollback and automate Purview collections and assets in collections!** 
+**Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!** 
 
 <br>
 Key benefits:
