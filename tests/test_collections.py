@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple, Union, Any
+from typing import Any, List, Tuple
 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 
