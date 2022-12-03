@@ -1,1 +1,0 @@
-![Screenshot2](img/create-purview/image01.png)
