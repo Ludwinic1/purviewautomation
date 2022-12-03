@@ -1,0 +1,35 @@
+name: Build Docs
+on:
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-docs-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-v01
+      
+      - name: Install docs extras
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install .[doc]
+      
+      - name: Build Docs 
+        run: python mkdocs build
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.2.4
+        with:
+          publish-dir: './site'
+          production-branch: main 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
