@@ -24,6 +24,12 @@ jobs:
       - name: Build Docs 
         run: mkdocs build
       
+      - name: Store Docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: site
+      
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2.4
         with:
