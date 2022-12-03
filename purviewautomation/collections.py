@@ -13,8 +13,6 @@ from .auth import ServicePrincipalAuthentication
 class PurviewCollections:
     """Interact with Purview Collections.
 
-        Longer description
-
     Attributes:
         purview_account_name: Name of the Purview account.
         auth: Access token automatically generated
@@ -37,6 +35,7 @@ class PurviewCollections:
         self.collections_api_version = "2019-11-01-preview"
         self.catalog_endpoint = f"https://{self.purview_account_name}.purview.azure.com/catalog"
         self.catalog_api_version = "2022-03-01-preview"
+
 
     def list_collections(self, only_names: bool = False, pprint: bool = False, api_version: Optional[str] = None):
         """Returns the Purview collections.
@@ -83,6 +82,7 @@ class PurviewCollections:
 
         return collections
 
+
     def get_real_collection_name(
         self, collection_name: str, api_version: Optional[str] = None, force_actual_name: bool = False
     ) -> str:
@@ -116,7 +116,8 @@ class PurviewCollections:
             err_msg = (
                 "collection_name parameter value error. "
                 f"The collection '{collection_name}' either doesn't exist or your don't have permission to start on it. "
-                "If you're trying to create a child collection, would need to be a collection admin on that collection if it exists. Name is case sensitive."
+                "If you're trying to create a child collection, would need to be a collection admin on that collection " 
+                "if it exists. Name is case sensitive."
             )
             raise ValueError(err_msg)
         elif collection_name not in collections and len(friendly_names) == 1:
@@ -140,7 +141,8 @@ class PurviewCollections:
                 f"Multiple collections exist with the friendly name '{collection_name}'. "
                 f"Please choose and re-enter the first item from one of the options below in place of '{collection_name}': "
                 f"{newline}{newline.join(map(str, multiple_friendly_names))} {newline}"
-                f"If you want to use the collection name '{collection_name}' and it's listed as an option above as a first item (actual_name), add the force_actual_name parameter to True. "
+                f"If you want to use the collection name '{collection_name}' and it's listed as an option above as " 
+                f"a first item (actual_name), add the force_actual_name parameter to True. "
                 "Ex: force_actual_name=True"
             )
             raise ValueError(err_msg)
@@ -171,6 +173,7 @@ class PurviewCollections:
         ]
         return friendly_names
 
+
     def _verify_collection_name(self, collection_name: str) -> str:
         """Checks if the collection_name meets the Purview naming requirements.
 
@@ -191,6 +194,7 @@ class PurviewCollections:
         else:
             collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
         return collection_name
+
 
     def _return_updated_collection_name(
         self,
@@ -233,6 +237,7 @@ class PurviewCollections:
             name = self._verify_collection_name(name)
         return name
 
+
     def _return_updated_collection_list(
         self,
         start_collection: str,
@@ -258,6 +263,7 @@ class PurviewCollections:
                 )
             updated_list.append(name)
         return updated_list
+
 
     def create_collections(
         self,
@@ -364,6 +370,7 @@ class PurviewCollections:
                     except Exception as e:
                         raise e
 
+    
     # Delete collections/assets
 
     def _safe_delete(self, collection_names: List[str], safe_delete_name: str) -> None:
@@ -406,6 +413,7 @@ class PurviewCollections:
         print("end of code")
         print("\n")
 
+
     def get_child_collection_names(self, collection_name: str, api_version: Optional[str] = None):
         if not api_version:
             api_version = self.collections_api_version
@@ -416,6 +424,7 @@ class PurviewCollections:
         except Exception as e:
             raise e
         return get_collections_request.json()
+
 
     def delete_collection_assets(
         self,
@@ -475,6 +484,7 @@ class PurviewCollections:
                     url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
                     delete_request = requests.delete(url, headers=self.header)
 
+
     def delete_collections(
         self,
         collection_names: Union[str, list],
@@ -507,7 +517,7 @@ class PurviewCollections:
             api_version = self.collections_api_version
 
         if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+            raise ValueError("The collection_names parameter has to either be a string or a list.")
         elif isinstance(collection_names, str):
             collection_names = [collection_names]
 
@@ -540,6 +550,7 @@ class PurviewCollections:
             except Exception as e:
                 raise e
 
+
     def _recursive_append(self, name: str, append_list: List[Union[str, None]]):
         """Internal method. Do not call directly."""
 
@@ -553,6 +564,7 @@ class PurviewCollections:
                 if isinstance(v, list):
                     for index, name in enumerate(v):
                         append_list.append(v[index]["name"])
+
 
     def _safe_delete_recursivly(
         self,
@@ -601,6 +613,7 @@ class PurviewCollections:
         print("\n")
         print("end code", "\n")
 
+
     def delete_collections_recursively(
         self,
         collection_names: Union[str, List[str]],
@@ -608,6 +621,7 @@ class PurviewCollections:
         also_delete_first_collection: bool = False,
         delete_assets: bool = False,
         delete_assets_timeout: int = 30,
+        force_actual_name: bool = False,
         api_version: Optional[str] = None,
     ) -> None:  # TODO need to update this and add force_actual_name
         """Delete one or multiple collection hierarchies.
@@ -635,15 +649,24 @@ class PurviewCollections:
             api_version = self.collections_api_version
 
         if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list type.")
+            raise ValueError("The collection_names parameter has to either be a string or a list.")
         elif isinstance(collection_names, str):
             collection_names = [collection_names]
-
+        
         for name in collection_names:
             delete_list = []
             recursive_list = []
-            name = self.get_real_collection_name(name)
-            self._recursive_append(name, delete_list)
+            coll_name = self.get_real_collection_name(name, force_actual_name=force_actual_name)
+            child_collections_check = self.get_child_collection_names(coll_name)
+            if child_collections_check["count"] == 0:
+                err_msg = (
+                    f"The collection '{name}' has no child collections. Can only delete collections that have children. "
+                    "To delete collections with no children, "
+                    f"use: delete_collections('{name}')"
+                )
+                raise ValueError(err_msg)
+
+            self._recursive_append(coll_name, delete_list)
             if delete_list[0] is not None:
                 for item in delete_list:
                     self._recursive_append(item, recursive_list)
@@ -654,9 +677,9 @@ class PurviewCollections:
 
             if safe_delete:
                 if also_delete_first_collection:
-                    self._safe_delete_recursivly(delete_list, safe_delete, name, True)
+                    self._safe_delete_recursivly(delete_list, safe_delete, coll_name, True)
                 else:
-                    self._safe_delete_recursivly(delete_list, safe_delete, name)
+                    self._safe_delete_recursivly(delete_list, safe_delete, coll_name)
 
             if delete_list[0] is not None:
                 if also_delete_first_collection:
@@ -669,6 +692,7 @@ class PurviewCollections:
                         for coll in remove_duplicate_names:
                             self.delete_collection_assets(collection_names=coll, timeout=delete_assets_timeout)
                     self.delete_collections([coll])
+
 
     def extract_collections(
         self, start_collection_name: str, safe_delete_name: str = "client", api_version: Optional[str] = None

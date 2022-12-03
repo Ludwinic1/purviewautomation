@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Tuple, Union, Any
 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 
@@ -13,7 +13,7 @@ client = PurviewCollections(purview_account_name, auth=auth)
 
 
 # Helper function
-def collection_check_helper(collection_names: str) -> List[str]:
+def collection_check_helper(collection_names: str) -> Tuple[List[str], List[Any]]:
     names = [name.strip() for name in collection_names.split("/")]
     collections = client.list_collections(only_names=True)
     friendly_names = [coll["friendlyName"] for coll in collections.values()]
