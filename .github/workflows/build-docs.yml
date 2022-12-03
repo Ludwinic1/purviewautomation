@@ -22,7 +22,7 @@ jobs:
         run: pip install .[doc]
       
       - name: Build Docs 
-        run: python mkdocs build
+        run: mkdocs build
       
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2.4
