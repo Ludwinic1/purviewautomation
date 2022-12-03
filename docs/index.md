@@ -1,4 +1,4 @@
-Welcome to Purview Automation! 2
+Welcome to Purview Automation!
 
 <br>
 Purview Automation is a Python wrapper library built on top of Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier.
