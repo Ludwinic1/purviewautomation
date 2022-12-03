@@ -7,7 +7,7 @@ Welcome to Purview Automation!
 Purview Automation is a Python wrapper library built on top of Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier.
 <br>
 
-Documentation: [https://purviewautomation.netlify.app](https://purviewautomation.netlify.app)
+**Documentation:** [https://purviewautomation.netlify.app](https://purviewautomation.netlify.app)
 <br>
 
 **Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!** 
