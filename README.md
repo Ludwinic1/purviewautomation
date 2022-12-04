@@ -34,10 +34,10 @@ Key benefits:
 
 Azure Purview before:
 
-![Purview Before test](https://purviewautomation.netlify.app/img/readme/image01.png)
+![Purview Before](https://purviewautomation.netlify.app/img/readme/image01.png)
 
 
-![Purview Before](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image01.png)
+<!-- ![Purview Before](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image01.png) -->
 
 Write simple code:
 
