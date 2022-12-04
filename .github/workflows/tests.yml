@@ -135,6 +135,7 @@ jobs:
     needs:
     - create-purview-account
     - run-python-tests
+    - coverage-combine
     - delete-purview-account
 
     runs-on: ubuntu-latest
