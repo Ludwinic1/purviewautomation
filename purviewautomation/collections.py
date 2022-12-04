@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import requests
 
-from .auth import ServicePrincipalAuthentication
+from .auth import AzIdentityAuthentication, ServicePrincipalAuthentication
 
 
 class PurviewCollections:
@@ -27,7 +27,9 @@ class PurviewCollections:
         PurviewCollections object
     """
 
-    def __init__(self, purview_account_name: str, auth: ServicePrincipalAuthentication) -> None:
+    def __init__(
+        self, purview_account_name: str, auth: Union[ServicePrincipalAuthentication, AzIdentityAuthentication]
+    ) -> None:
         self.purview_account_name = purview_account_name
         self.auth = auth.get_access_token()
         self.header = {"Authorization": f"Bearer {self.auth}", "Content-Type": "application/json"}

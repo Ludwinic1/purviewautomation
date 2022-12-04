@@ -1,29 +1,49 @@
 Welcome to Purview Automation!
 
-<br>
 Purview Automation is a Python wrapper library built on top of Azure Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier.
 
-<br>
-**Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!** 
+**Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!**
 
-<br>
+---
+
+**Documentation:** [https://purviewautomation.netlify.app](https://purviewautomation.netlify.app)
+
+**Source Code:** [https://github.com/Ludwinic1/purviewautomation](https://github.com/Ludwinic1/purviewautomation)
+
+---
+
+
 Key benefits:
 
-- **Easy**: Create, delete and list collections and collection hierarchies with one line of code
+- **Easy**: Create and delete collections and collection hierarchies with one line of code
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
 - **Deploy**: Extract/deploy collections to UAT/PROD environments to ensure consistency across Purviews 
 - **Delete Assets**: Delete all assets in a collection or all assets in a collection hierarchy 
 - **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
   
  
-- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](how-purview-names-work.md)
-  
+- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
 
-<br>
-See this **5 minute video** on why this library was created, what problems it solves and how it can help you save time!  
-<br>
+---
 
-**For a detailed step-by-step walkthrough and full reference guide, see: [Full Walkthrough Tutorial](./tutorial/first-steps.md)**
+**Example Showcase:**
+
+Azure Purview before:
+
+![Purview Before](./img/readme/image01.png)
+
+Write simple code:
+
+```Python
+client.create_collections(start_collection="My-Collection",
+                          collection_names="Sub Collection 1/Deeper Sub 1/Deeper Sub 2/Deeper Sub 3")
+```
+
+Azure Purview after:
+
+![Purview After](./img/readme/image02.png)
+
+---
 
 
 ## **Installation**
@@ -34,6 +54,8 @@ $ pip install purviewautomation
 ```
 
 ## **Quick Start**
+
+### **Connect to Purview With a Service Principal**
 
 Create a Python file `main.py` (can be called anything), gather the Azure Service Principal information and replace `yourtenantid`, `yourclientid`, `yourclientsecret` and `yourpurviewaccountname`:
 
@@ -52,6 +74,30 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 !!! important
     Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](create-a-service-principal.md#how-to-assign-the-service-principal-the-collection-admin-role-in-purview) 
 
+<br>
+
+### **Connect to Purview With the Azure-Identity Package Via the Azure CLI**
+
+Alternatively,to connect with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:
+
+```pip install azure-identity```
+
+Then sign in with your Azure CLI credentials (in a terminal type `az login` and sign in via the link that pops up):
+
+```Python
+from azure.identity import AzureCliCredential
+
+from purviewautomation import PurviewCollections, AzIdentityAuthentication
+
+auth = AzIdentityAuthentication(credential=AzureCliCredential())
+
+client = PurviewCollections(purview_account_name="yourpurviewaccountname", 
+                            auth=auth)
+```                            
+!!! important
+    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection). For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
+
+<br>
 
 Now interact with the Purview collections:
 

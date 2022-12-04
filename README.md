@@ -19,7 +19,7 @@ Purview Automation is a Python wrapper library built on top of Azure Purview RES
 
 Key benefits:
 
-- **Easy**: Create, delete and list collections and collection hierarchies with one line of code
+- **Easy**: Create and delete collections and collection hierarchies with one line of code
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
 - **Deploy**: Extract/deploy collections to UAT/PROD environments to ensure consistency across Purviews 
 - **Delete Assets**: Delete all assets in a collection or all assets in a collection hierarchy 
@@ -56,6 +56,8 @@ pip install purviewautomation
 
 ## **Quick Start**
 
+### **Connect to Purview With a Service Principal**
+
 Create a Python file `main.py` (can be called anything), gather the Azure Service Principal information and replace `yourtenantid`, `yourclientid`, `yourclientsecret` and `yourpurviewaccountname`:
 
 ```Python
@@ -71,28 +73,34 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 ```
 
 **Important:**
-    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/) 
+    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-assign-the-service-principal-the-collection-admin-role-in-purview). 
+    
+To learn how to create a Service Principal, see: [Create a Service Principal](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-create-a-service-principal).
 
 <br>
 
-**Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:**
+### **Connect to Purview With the Azure-Identity Package Via the Azure CLI**
+
+Alternatively, to connect with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:
 
 ```pip install azure-identity```
 
-Then sign in with your Azure CLI credentials:
+Then sign in with your Azure CLI credentials (in a terminal type `az login` and sign in via the link that pops up):
 
 ```Python
 from azure.identity import AzureCliCredential
 
-from purviewautomation import PurviewCollections
+from purviewautomation import PurviewCollections, AzIdentityAuthentication
 
-auth = AzureCliCredential()
+auth = AzIdentityAuthentication(credential=AzureCliCredential())
 
-client = PurviewCollections(purview_account_name ="yourpurviewaccountname",
+client = PurviewCollections(purview_account_name="yourpurviewaccountname", 
                             auth=auth)
 ```                            
 **Important:**
-    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection).
+    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection). For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
+
+<br>
 
 Now interact with the Purview collections:
 
