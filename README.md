@@ -32,7 +32,7 @@ Key benefits:
 **Example Showcase:**
 
 Purview before:
-![How collection names work](../img/how-purview-names-work/image03.png)
+![Purview Before](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image01.png)
 
 
 
