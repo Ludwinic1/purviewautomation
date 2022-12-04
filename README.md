@@ -76,6 +76,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
     Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/). 
 
 <br>
+
 ### **Sign in With the Azure-Identity Package Via the Azure CLI**
 
 **Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:**
