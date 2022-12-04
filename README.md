@@ -14,6 +14,8 @@ Purview Automation is a Python wrapper library built on top of Azure Purview RES
 
 **Source Code:**: [https://github.com/Ludwinic1/purviewautomation](https://github.com/Ludwinic1/purviewautomation)
 
+---
+
 
 Key benefits:
 
