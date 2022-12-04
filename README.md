@@ -27,13 +27,12 @@ Key benefits:
   
  
 - **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
-<br>
 
 ---
 
 **Example Showcase:**
 
-Purview before:
+Azure Purview before:
 
 ![Purview Before](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image01.png)
 
@@ -44,7 +43,7 @@ client.create_collections(start_collection="My-Collection",
                           collection_names="Sub Collection 1/Deeper Sub 1/Deeper Sub 2/Deeper Sub 3")
 ```
 
-Purview after:
+Azure Purview after:
 
 ![Purview After](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image02.png)
 
@@ -74,6 +73,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 **Important:**
     Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/) 
 
+<br>
 
 Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) use the **Azure-Identity** package instead of the Service Principal:
 
