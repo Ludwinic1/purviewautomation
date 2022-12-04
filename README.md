@@ -27,19 +27,23 @@ Key benefits:
   
  
 - **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
+<br>
 
 
 **Example Showcase:**
 
 Purview before:
+
 ![Purview Before](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image01.png)
 
+Write simple code:
 
+client.create_collections(start_collection="My-Collection",
+                          collection_names="Sub Collection 1/Deeper Sub 1/Deeper Sub 2/Deeper Sub 3")
 
+Purview after:
 
-
-
-
+![Purview After](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image02.png)
 
 
 
