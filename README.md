@@ -12,7 +12,7 @@ Purview Automation is a Python wrapper library built on top of Azure Purview RES
 
 **Documentation:** [https://purviewautomation.netlify.app](https://purviewautomation.netlify.app)
 
-**Source Code:**: [https://github.com/Ludwinic1/purviewautomation](https://github.com/Ludwinic1/purviewautomation)
+**Source Code:** [https://github.com/Ludwinic1/purviewautomation](https://github.com/Ludwinic1/purviewautomation)
 
 ---
 
@@ -73,6 +73,23 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 
 **Important:**
     Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/) 
+
+
+Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) use the **Azure-Identity** package instead of the Service Principal:
+
+```pip install azure-identity```
+
+Sign in with your Azure CLI credentials:
+
+```Python
+from azure.identity import AzureCliCredential
+
+from pyapacheatlas.core import PurviewClient
+
+auth = AzureCliCredential()
+
+client = PurviewCollections(purview_account_name ="yourpurviewaccountname",
+                            auth=auth)
 
 
 Now interact with the Purview collections:
