@@ -81,7 +81,7 @@ To learn how to create a Service Principal, see: [Create a Service Principal](ht
 
 ### **Connect to Purview With the Azure-Identity Package Via the Azure CLI**
 
-Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:
+Alternatively, to connect with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:
 
 ```pip install azure-identity```
 
