@@ -99,6 +99,8 @@ client = PurviewCollections('purview-test-2', auth=auth)
 **Important:**
     Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection).
 
+<br>
+
 Now interact with the Purview collections:
 
 ## **Print Collections**
