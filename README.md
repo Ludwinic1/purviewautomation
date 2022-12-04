@@ -28,6 +28,21 @@ Key benefits:
  
 - **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
 
+
+**Example Showcase:**
+
+Purview before:
+![How collection names work](../purviewautomation/docs/img/readme/image01.png)
+
+
+
+
+
+
+
+
+
+
 ## **Installation**
 ```Python
 pip install purviewautomation
