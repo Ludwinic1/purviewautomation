@@ -91,7 +91,8 @@ from purviewautomation import PurviewCollections, AzIdentityAuthentication
 
 auth = AzIdentityAuthentication(credential=AzureCliCredential())
 
-client = PurviewCollections('purview-test-2', auth=auth)
+client = PurviewCollections(purview_account_name="yourpurviewaccountname", 
+                            auth=auth)
 ```                            
 !!! important
     Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection).
