@@ -75,7 +75,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 **Important:**
     Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-assign-the-service-principal-the-collection-admin-role-in-purview). 
     
-To learn how to create a Service Principal, see: [Create a Service Principal](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-create-a-service-principal)
+To learn how to create a Service Principal, see: [Create a Service Principal](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-create-a-service-principal).
 
 <br>
 
