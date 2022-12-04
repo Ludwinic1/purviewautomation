@@ -3,7 +3,10 @@
 [![license](https://img.shields.io/github/license/Ludwinic1/purviewautomation.svg)](https://github.com/Ludwinic1/purviewautomation/blob/main/LICENSE)
 
 **Documentation:** [https://purviewautomation.netlify.app](https://purviewautomation.netlify.app)
+
 **Source Code:**: [https://github.com/Ludwinic1/purviewautomation](https://github.com/Ludwinic1/purviewautomation)
+
+---
 
 Welcome to Purview Automation!
 
@@ -13,11 +16,6 @@ Purview Automation is a Python wrapper library built on top of Azure Purview RES
 <br>
 
 ---
-
-
-<br>
----
- 
 
 Key benefits:
 
