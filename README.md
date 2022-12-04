@@ -79,7 +79,7 @@ Alternatively, to sign in with your own credentials or other options (Managed Id
 
 ```pip install azure-identity```
 
-Sign in with your Azure CLI credentials:
+Then sign in with your Azure CLI credentials:
 
 ```Python
 from azure.identity import AzureCliCredential
@@ -90,7 +90,9 @@ auth = AzureCliCredential()
 
 client = PurviewCollections(purview_account_name ="yourpurviewaccountname",
                             auth=auth)
-
+```                            
+**Important:**
+    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role at the root collection level.
 
 Now interact with the Purview collections:
 
