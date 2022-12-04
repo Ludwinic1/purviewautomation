@@ -38,8 +38,10 @@ Purview before:
 
 Write simple code:
 
+```Python
 client.create_collections(start_collection="My-Collection",
                           collection_names="Sub Collection 1/Deeper Sub 1/Deeper Sub 2/Deeper Sub 3")
+```
 
 Purview after:
 
