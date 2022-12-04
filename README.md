@@ -77,7 +77,6 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
     
 **To learn how to create a Service Principal, see:** [Create a Service Principal](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-create-a-service-principal)
 
-<br>
 
 
 ### **Connect to Purview With the Azure-Identity Package Via the Azure CLI**
