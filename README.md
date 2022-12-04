@@ -75,7 +75,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 
 <br>
 
-Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) use the **Azure-Identity** package instead of the Service Principal:
+**Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) use the Azure-Identity package instead of the Service Principal:**
 
 ```pip install azure-identity```
 
