@@ -75,7 +75,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 
 <br>
 
-**Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) use the Azure-Identity package instead of the Service Principal:**
+**Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:**
 
 ```pip install azure-identity```
 
@@ -84,7 +84,7 @@ Then sign in with your Azure CLI credentials:
 ```Python
 from azure.identity import AzureCliCredential
 
-from pyapacheatlas.core import PurviewClient
+from purviewautomation import PurviewCollections
 
 auth = AzureCliCredential()
 
@@ -92,7 +92,7 @@ client = PurviewCollections(purview_account_name ="yourpurviewaccountname",
                             auth=auth)
 ```                            
 **Important:**
-    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role at the root collection level.
+    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level.
 
 Now interact with the Purview collections:
 
