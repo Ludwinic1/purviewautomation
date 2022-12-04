@@ -78,11 +78,11 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 
 ### **Connect to Purview With the Azure-Identity Package Via the Azure CLI**
 
-**Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:**
+Alternatively, to sign in with your own credentials or other options (Managed Identity, Environment Credentials, Azure CLI Credentials) instead of the Service Principal, use the Azure-Identity package:
 
 ```pip install azure-identity```
 
-Then sign in with your Azure CLI credentials:
+Then sign in with your Azure CLI credentials (in a terminal type `az login`):
 
 ```Python
 from azure.identity import AzureCliCredential
