@@ -1,11 +1,9 @@
 name: Tests
 
 on:
-  workflow_dispatch:
-    
-  # push:     switch this back and get rid of workflow_dispatch when public
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   create-purview-account:
