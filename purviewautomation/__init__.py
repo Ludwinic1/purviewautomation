@@ -1,4 +1,2 @@
-from .auth import ServicePrincipalAuthentication, AzIdentityAuthentication
+from .auth import AzIdentityAuthentication, ServicePrincipalAuthentication
 from .collections import PurviewCollections
-
-
