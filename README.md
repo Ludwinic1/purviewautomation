@@ -48,7 +48,9 @@ client.create_collections(start_collection="My-Collection",
 
 Azure Purview after:
 
-![Purview After](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image02.png)
+![Purview After](https://purviewautomation.netlify.app/img/readme/image02.png)
+
+<!-- ![Purview After](https://github.com/Ludwinic1/purviewautomation/blob/main/docs/img/readme/image02.png) -->
 
 ---
 
