@@ -26,7 +26,6 @@ theme:
   
 nav:
   - Purview Automation: index.md
-  - Why This Library: why-this-library.md
   - Purview Collection Names Intro and Important Info: how-purview-names-work.md
   - Tutorial  - User Guide:
     - First Steps: tutorial/first-steps.md
