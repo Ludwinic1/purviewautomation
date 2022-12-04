@@ -86,7 +86,7 @@ Alternatively, to sign in with your own credentials or other options (Managed Id
 
 ```pip install azure-identity```
 
-Then sign in with your Azure CLI credentials (in a terminal type `az login`):
+Then sign in with your Azure CLI credentials (in a terminal type `az login` and sign in via the link that pops up):
 
 ```Python
 from azure.identity import AzureCliCredential
