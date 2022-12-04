@@ -90,12 +90,11 @@ Then sign in with your Azure CLI credentials (in a terminal type `az login` and 
 ```Python
 from azure.identity import AzureCliCredential
 
-from purviewautomation import PurviewCollections
+from purviewautomation import PurviewCollections, AzIdentityAuthentication
 
-auth = AzureCliCredential()
+auth = AzIdentityAuthentication(credential=AzureCliCredential())
 
-client = PurviewCollections(purview_account_name ="yourpurviewaccountname",
-                            auth=auth)
+client = PurviewCollections('purview-test-2', auth=auth)
 ```                            
 **Important:**
     Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection).
