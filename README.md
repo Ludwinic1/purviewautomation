@@ -24,7 +24,7 @@ Key benefits:
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
 - **Deploy**: Extract/deploy collections to UAT/PROD environments to ensure consistency across Purviews 
 - **Delete Assets**: Delete all assets in a collection or all assets in a collection hierarchy 
-- **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+- **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
   
  
 - **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
