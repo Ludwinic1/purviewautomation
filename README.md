@@ -2,6 +2,7 @@
 [![Coverage](https://coverage-badge.samuelcolvin.workers.dev/Ludwinic1/purviewautomation.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/Ludwinic1/purviewautomation)
 [![pypi](https://img.shields.io/pypi/pyversions/purviewautomation)](https://pypi.org/project/purviewautomation/)
 [![license](https://img.shields.io/github/license/Ludwinic1/purviewautomation.svg)](https://github.com/Ludwinic1/purviewautomation/blob/main/LICENSE)
+[![license2](https://img.shields.io/github/license/Ludwinic1/purviewautomation.svg)](https://github.com/Ludwinic1/purviewautomation/blob/main/LICENSE)
 
 Welcome to Purview Automation!
 
