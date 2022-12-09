@@ -3,6 +3,8 @@ from typing import Any, List, Tuple
 
 import pytest
 
+import requests
+
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 
 TENANT_ID = os.environ["purviewautomation-tenant-id"]
@@ -121,4 +123,32 @@ def test_multiple_friendly_names():
     with pytest.raises(ValueError):
         client.create_collections(start_collection="duplicatename", collection_names="test2")
 
+# Delete collection assets
 
+# delete collection assets helper function
+def delete_assets_helper(collection_name: str):
+    actual_coll_name = client.get_real_collection_name(collection_name=collection_name)
+    url = f"{client.catalog_endpoint}/api/search/query?api-version={client.catalog_api_version}" 
+    data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{actual_coll_name}"}}}}'
+    asset_request = requests.post(url=url, data=data, headers=client.header)
+    results = asset_request.json()
+    total = len(results["value"])
+    return total 
+
+def test_delete_collection_assets():
+    client.delete_collection_assets(collection_names="Collection 2")
+    total = delete_assets_helper("Collection 2")
+    assert total == 0
+
+
+def test_delete_collection_assets_recursively():
+    client.create_collections("Collection 1", collection_names="sub assets1/sub assets2/ sub assets3")
+    client.delete_collections_recursively("Collection 1")
+    coll_1_total = delete_assets_helper("Collection 1")
+    sub_1_coll_total = delete_assets_helper("sub assets1")
+    sub_2_coll_total = delete_assets_helper("sub assets2")
+    sub_3_coll_total = delete_assets_helper("sub assets3")
+
+# extract collections
+def test_extract_collections():
+    client.extract_collections(start_collection_name=PURVIEW_ACCOUNT_NAME, safe_delete_name="client")
