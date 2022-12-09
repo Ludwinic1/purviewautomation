@@ -20,9 +20,15 @@ def test_service_principal_raise_error():
         client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
 
 
+def test_az_identity():
+    auth = AzIdentityAuthentication(AzureCliCredential())
+    client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
+    assert type(client) == PurviewCollections
+
+
 def test_az_identity_raise_error():
-    with pytest.raises(azure.identity.CredentialUnavailableError):
-        auth = AzIdentityAuthentication(credential=AzureCliCredential())
+    with pytest.raises(AttributeError):
+        credential = "randomcredential"
+        auth = AzIdentityAuthentication(credential=credential)
         client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
-
-
+        assert type(client) != PurviewCollections
