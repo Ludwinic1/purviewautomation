@@ -145,16 +145,14 @@ def test_delete_collection_assets():
 
 def test_delete_collection_assets_recursively():
     client.create_collections(PURVIEW_ACCOUNT_NAME, collection_names="Delete Assets Collection")
-    client.create_collections("Delete Assets Collection", collection_names="sub assets1/sub assets2/ sub assets3")
-    client.delete_collections_recursively("Delete Assets Collection")
-    coll_1_total = delete_assets_helper("Delete Assets Collection")
-    sub_1_coll_total = delete_assets_helper("sub assets1")
-    sub_2_coll_total = delete_assets_helper("sub assets2")
-    sub_3_coll_total = delete_assets_helper("sub assets3")
-    assert coll_1_total == 0
-    assert sub_1_coll_total == 0
-    assert sub_2_coll_total == 0
-    assert sub_3_coll_total == 0
+    client.create_collections("Delete Assets Collection", collection_names="sub assets1/sub assets2/sub assets3")
+    client.delete_collections_recursively("Delete Assets Collection", delete_assets=True)
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll["friendlyName"] for coll in collections.values()]
+    assert "sub assets1" not in friendly_names
+    assert "sub assets2" not in friendly_names
+    assert "sub assets3" not in friendly_names
+    assert "Delete Assets Collection" in friendly_names
 
 
 # extract collections
