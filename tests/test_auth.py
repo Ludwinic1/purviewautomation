@@ -21,7 +21,7 @@ def test_service_principal_raise_error():
 
 
 def test_az_identity_raise_error():
-    with pytest.raies(azure.identity.CredentialUnavailableError):
+    with pytest.raises(azure.identity.CredentialUnavailableError):
         auth = AzIdentityAuthentication(credential=AzureCliCredential())
         client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
 
