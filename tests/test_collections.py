@@ -2,7 +2,6 @@ import os
 from typing import Any, List, Tuple
 
 import pytest
-
 import requests
 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
@@ -76,6 +75,7 @@ def test_create_collections_multiple02():
         assert name in friendly_names
         assert name2 in friendly_names
 
+
 def test_create_collections_type_error():
     with pytest.raises(ValueError):
         collections = {"name1": "name2"}
@@ -86,7 +86,6 @@ def test_create_collections_type_error():
 def test_delete_collection():
     client.delete_collections("mytest1")
     client.delete_collections("my test 2", safe_delete="client")
-    
 
 
 def test_delete_collections_recursively():
@@ -119,21 +118,24 @@ def test_force_actual_name():
     name, friendly_names = collection_check_helper("test sub 1")
     assert name[0] in friendly_names
 
+
 def test_multiple_friendly_names():
     with pytest.raises(ValueError):
         client.create_collections(start_collection="duplicatename", collection_names="test2")
+
 
 # Delete collection assets
 
 # delete collection assets helper function
 def delete_assets_helper(collection_name: str):
     actual_coll_name = client.get_real_collection_name(collection_name=collection_name)
-    url = f"{client.catalog_endpoint}/api/search/query?api-version={client.catalog_api_version}" 
+    url = f"{client.catalog_endpoint}/api/search/query?api-version={client.catalog_api_version}"
     data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{actual_coll_name}"}}}}'
     asset_request = requests.post(url=url, data=data, headers=client.header)
     results = asset_request.json()
     total = len(results["value"])
-    return total 
+    return total
+
 
 def test_delete_collection_assets():
     client.delete_collection_assets(collection_names="Collection 2")
@@ -142,12 +144,18 @@ def test_delete_collection_assets():
 
 
 def test_delete_collection_assets_recursively():
-    client.create_collections("Collection 1", collection_names="sub assets1/sub assets2/ sub assets3")
-    client.delete_collections_recursively("Collection 1")
-    coll_1_total = delete_assets_helper("Collection 1")
+    client.create_collections(PURVIEW_ACCOUNT_NAME, collection_names="Delete Assets Collection")
+    client.create_collections("Delete Assets Collection", collection_names="sub assets1/sub assets2/ sub assets3")
+    client.delete_collections_recursively("Delete Assets Collection")
+    coll_1_total = delete_assets_helper("Delete Assets Collection")
     sub_1_coll_total = delete_assets_helper("sub assets1")
     sub_2_coll_total = delete_assets_helper("sub assets2")
     sub_3_coll_total = delete_assets_helper("sub assets3")
+    assert coll_1_total == 0
+    assert sub_1_coll_total == 0
+    assert sub_2_coll_total == 0
+    assert sub_3_coll_total == 0
+
 
 # extract collections
 def test_extract_collections():
