@@ -1,32 +1,24 @@
-from purviewautomation import ServicePrincipalAuthentication
+import os
 
+import pytest
+import requests
 from azure.identity import AzureCliCredential
 
-from purviewautomation import PurviewCollections, AzIdentityAuthentication
+from purviewautomation import (
+    AzIdentityAuthentication,
+    PurviewCollections,
+    ServicePrincipalAuthentication,
+)
 
-auth = AzIdentityAuthentication(credential=AzureCliCredential())
-
-client = PurviewCollections(purview_account_name="yourpurviewaccountname", 
-                            auth=auth)
-
-import os 
-
-# tenant id to draw error
-tenant_id = "randomtenantid"
-client_id = os.environ["purviewautomation-sp-client-id"]
-client_secret = os.environ["purviewautomation-sp-secret"]
-purview_account_name = os.environ["purview-account-name"]
-
-def test_service_principal_set_access_token_error():
-    # raise for status error
-    auth = ServicePrincipalAuthentication(tenant_id, client_id, client_secret)
+PURVIEW_ACCOUNT_NAME = os.environ["purview-account-name"]
 
 
-def test_az_identity_set_access_token_error():
+def test_service_principal_raise_error():
+    with pytest.raises(requests.exceptions.HTTPError):
+        auth = ServicePrincipalAuthentication(tenant_id="asldf", client_id="alsdjf", client_secret="alsdjf")
+        client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
+
+
+def test_az_identity_raise_error():
     auth = AzIdentityAuthentication(credential=AzureCliCredential())
-
-
-
-
-
-
+    client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)

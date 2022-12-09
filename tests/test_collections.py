@@ -3,13 +3,13 @@ from typing import Any, List, Tuple
 
 from purviewautomation import PurviewCollections, ServicePrincipalAuthentication
 
-tenant_id = os.environ["purviewautomation-tenant-id"]
-client_id = os.environ["purviewautomation-sp-client-id"]
-client_secret = os.environ["purviewautomation-sp-secret"]
-purview_account_name = os.environ["purview-account-name"]
+TENANT_ID = os.environ["purviewautomation-tenant-id"]
+CLIENT_ID = os.environ["purviewautomation-sp-client-id"]
+CLIENT_SECRET = os.environ["purviewautomation-sp-secret"]
+PURVIEW_ACCOUNT_NAME = os.environ["purview-account-name"]
 
-auth = ServicePrincipalAuthentication(tenant_id, client_id, client_secret)
-client = PurviewCollections(purview_account_name, auth=auth)
+auth = ServicePrincipalAuthentication(tenant_id=TENANT_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
+client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
 
 
 # Helper function
@@ -42,7 +42,7 @@ def test_list_colls_only_names_pprint():
 # Create collections
 def test_create_single_collection():
     # Change this to be dynamic to use purview account name
-    client.create_collections(start_collection=purview_account_name, collection_names="My-Company")
+    client.create_collections(start_collection=PURVIEW_ACCOUNT_NAME, collection_names="My-Company")
     client.create_collections(start_collection="My-Company", collection_names="mytest1")
     name, friendly_names = collection_check_helper("mytest1")
     assert name[0] in friendly_names
