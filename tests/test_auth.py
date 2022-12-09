@@ -1,6 +1,5 @@
 import os
 
-import azure.identity
 import pytest
 import requests
 from azure.identity import AzureCliCredential
@@ -31,4 +30,3 @@ def test_az_identity_raise_error():
         credential = "randomcredential"
         auth = AzIdentityAuthentication(credential=credential)
         client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
-        assert type(client) != PurviewCollections
