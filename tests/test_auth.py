@@ -1,5 +1,6 @@
 import os
 
+import azure.identity
 import pytest
 import requests
 from azure.identity import AzureCliCredential
@@ -20,5 +21,8 @@ def test_service_principal_raise_error():
 
 
 def test_az_identity_raise_error():
-    auth = AzIdentityAuthentication(credential=AzureCliCredential())
-    client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
+    with pytest.raies(azure.identity.CredentialUnavailableError):
+        auth = AzIdentityAuthentication(credential=AzureCliCredential())
+        client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
+
+
