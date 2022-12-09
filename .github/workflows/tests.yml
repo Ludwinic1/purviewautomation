@@ -41,7 +41,7 @@ jobs:
       matrix:
         os: [ubuntu-latest] # add windows-latest and macos later
         python-version: ['3.8', '3.9', '3.10', '3.11']
-      fail-fast: false
+      fail-fast: true
 
     steps:
       - uses: actions/checkout@v3 
