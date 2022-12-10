@@ -50,8 +50,12 @@ doc = [
     "termynal==0.2.0"
 ]
 
+dev = [
+    "pre-commit==2.20.0"
+]
+
 [tool.black]
-line-length = 120 
+line-length = 120
 
 [tool.isort]
 profile = "black"
