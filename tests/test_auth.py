@@ -2,7 +2,7 @@ import os
 
 import pytest
 import requests
-from azure.identity import AzureCliCredential, DefaultAzureCredential
+from azure.identity import AzureCliCredential
 
 from purviewautomation import (
     AzIdentityAuthentication,
