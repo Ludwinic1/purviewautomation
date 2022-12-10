@@ -158,3 +158,29 @@ def test_delete_collection_assets_recursively():
 # extract collections
 def test_extract_collections():
     client.extract_collections(start_collection_name=PURVIEW_ACCOUNT_NAME, safe_delete_name="client")
+
+
+def test_safe_delete_recursively():
+    client.create_collections(PURVIEW_ACCOUNT_NAME, "collection11")
+    client.create_collections("collection11", "testa/testb/testc/testd")
+    delete_list = ["testa", "testb", "testc", "testd"]
+    parent_name = "collection11"
+    safe_delete_list = client._safe_delete_recursivly(
+        delete_list=delete_list, safe_delete_name="client", parent_name=parent_name
+    )
+
+    first_coll = "client.create_collections(start_collection='collection11', collection_names='testa', safe_delete_friendly_name='testa')"
+    second_coll = "client.create_collections(start_collection='testa', collection_names='testb', safe_delete_friendly_name='testb')"
+    third_coll = "client.create_collections(start_collection='testb', collection_names='testc', safe_delete_friendly_name='testc')"
+    fourth_coll = "client.create_collections(start_collection='testc', collection_names='testd', safe_delete_friendly_name='testd')"
+
+    assert safe_delete_list[0] == first_coll
+    assert safe_delete_list[1] == second_coll
+    assert safe_delete_list[2] == third_coll
+    assert safe_delete_list[3] == fourth_coll
+
+
+def test_safe_delete():
+    safe_delete_string = client._safe_delete(collection_names=["testa"], safe_delete_name="client")
+    coll_string = "client.create_collections(start_collection='collection11', collection_names='testa', safe_delete_friendly_name='testa')"
+    assert safe_delete_string == coll_string

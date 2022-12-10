@@ -400,13 +400,16 @@ class PurviewCollections:
         print("Copy and run the below code in your program to recreate the collection/collections:", "\n")
         if len(collection_names) == 1:
             print(create_collection_string)
+            return create_collection_string
         else:
             for item in create_colls_list:
                 create_coll_final_string = f"{safe_delete_name}.{item}"
                 print(create_coll_final_string, end="")
+                return create_colls_list
         print("\n")
         print("end of code")
         print("\n")
+        
 
     def get_child_collection_names(self, collection_name: str, api_version: Optional[str] = None):
         if not api_version:
@@ -602,6 +605,7 @@ class PurviewCollections:
 
         print("\n")
         print("end code", "\n")
+        return clean_list
 
     def delete_collections_recursively(
         self,
