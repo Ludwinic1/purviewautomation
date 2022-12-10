@@ -79,7 +79,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
 ```
 
 **Important:**
-    Make sure the Service Principal is assigned the Collection Admin role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-assign-the-service-principal-the-collection-admin-role-in-purview). 
+    Make sure the Service Principal is assigned the **Collection Admin** role to a collection in Purview. The below examples assume the Service Principal is assigned the Collection Admin role at the root collection level. See here for more info: [Assign the Service Principal the Collection Admin Role in Purview](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-assign-the-service-principal-the-collection-admin-role-in-purview). 
     
 To learn how to create a Service Principal, see: [Create a Service Principal](https://purviewautomation.netlify.app/create-a-service-principal/#how-to-create-a-service-principal).
 
@@ -104,7 +104,7 @@ client = PurviewCollections(purview_account_name="yourpurviewaccountname",
                             auth=auth)
 ```                            
 **Important:**
-    Make sure the user or entity is assigned the Collection Admin role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection). For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
+    Make sure the user or entity is assigned the **Collection Admin** role to a collection in Purview. The below examples assume the role is assigned at the root collection level (yourpurviewaccountname collection). For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
 
 <br>
 
@@ -176,7 +176,7 @@ client.create_collections(start_collection="My First Collection",
 
 ## **Delete All Assets in a Collection**
 **Important:**
-    The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+    The Service Principal or user that authenticated/connected to Purview would need to be assigned the **Data Curator** role on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
 
 ```Python
 client.delete_collection_assets(collection_names="My First Collection")
@@ -184,7 +184,7 @@ client.delete_collection_assets(collection_names="My First Collection")
 
 ## **Delete All Assets in Multiple Collections**
 **Important:**
-    The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+    The Service Principal or user that authenticated/connected to Purview would need to be assigned the **Data Curator** role on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
 
 ```Python
 collections = ["Random Collection", "hierarchy sub2"]
@@ -216,7 +216,7 @@ client.delete_collections(collection_names="Random Collection 2",
 
 ## **Delete All Assets in a Collection and Delete the Collection**
 **Important:**
-    The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+    The Service Principal or user that authenticated/connected to Purview would need to be assigned the **Data Curator** role on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
 
 ```Python
 # Delete all of the assets in the collection 
@@ -235,7 +235,7 @@ client.delete_collections_reursively("My First Collection", safe_delete="client"
 
 ## **Delete All Assets in a Collection Hierarchy and Delete the Hierarchy**
 **Important:**
-    The Service Principal or user that authenticated/connected to Purview would need to be listed as a Data Curator on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
+    The Service Principal or user that authenticated/connected to Purview would need to be assigned the **Data Curator** role on the collection in order to delete assets in that collection. For more info, see: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
 
 ```Python
 # Delete all of the assets in all of the collections under the hierarchy 
