@@ -18,4 +18,3 @@ repos:
   -   id: black
       args:
       -   -l 120
-

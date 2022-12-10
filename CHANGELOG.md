@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-// Add new changes below this line
+// Add new changes below this line.
 
 ### Added
 
-- Added PyPI version to README
+- Added PyPI version to README.
 
 - Return values from the _safe_delete and _safe_delete_recursively methods for additional testing purposes. Does not impact the original code.
 
