@@ -170,9 +170,16 @@ def test_delete_collection_assets_recursively():
     assert "Delete Assets Collection" in friendly_names
 
 
+def test_delete_assets_raise_error():
+    with pytest.raises(ValueError):
+        collection = {"test1", "test2"}
+        client.delete_collection_assets(collection_names=collection)
+
+
 # Extract collections
 def test_extract_collections():
     client.extract_collections(start_collection_name=PURVIEW_ACCOUNT_NAME, safe_delete_name="client")
+
 
 # Safe delete
 def test_safe_delete_recursively():
@@ -199,3 +206,4 @@ def test_safe_delete():
     safe_delete_string = client._safe_delete(collection_names=["testa"], safe_delete_name="client")
     coll_string = "client.create_collections(start_collection='collection11', collection_names='testa', safe_delete_friendly_name='testa')"
     assert safe_delete_string == coll_string
+    

@@ -15,7 +15,7 @@ But under the hood, the actual name is `1nlmts` and the friendly name is `My-Col
 
 This is important because if you tried to create a child collection under `My-Collection` using the [Purview Collection REST API](https://learn.microsoft.com/en-us/rest/api/purview/catalogdataplane/collection/create-or-update?tabs=HTTP) and used `My-Collection` as the parent collection reference, it would return an error stating `My-Collection` doesn't exist.
 
-You'd have to first find the actual name of My-Collection (`1nlmts`) and then can create the collection. This can get very tricky when trying to collections and collection hierarchies.
+You'd have to first find the actual name of My-Collection (`1nlmts`) and then can create the collection. This can get very tricky when trying to create collections and collection hierarchies.
 
 Actual names have to be unique across the entire Purview account but friendly names can be duplicated in different hierarchies (can't be duplicated in the same hierarchy).
 
