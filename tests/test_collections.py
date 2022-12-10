@@ -86,6 +86,21 @@ def test_create_collections_type_error():
 def test_delete_collection():
     client.delete_collections("mytest1")
     client.delete_collections("my test 2", safe_delete="client")
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll["friendlyName"] for coll in collections.values()]
+    assert "mytest1" not in friendly_names
+    assert "my test 2" not in friendly_names
+
+
+def test_delete_multiple_collections():
+    client.create_collections(
+        start_collection=PURVIEW_ACCOUNT_NAME, collection_names=["multideletecoll1", "multideletecoll2"]
+    )
+    client.delete_collections(["multideletecoll1", "multideletecoll2"])
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll["friendlyName"] for coll in collections.values()]
+    assert "multideletecoll1" not in friendly_names
+    assert "multideletecoll2" not in friendly_names
 
 
 def test_delete_collections_recursively():
@@ -155,11 +170,11 @@ def test_delete_collection_assets_recursively():
     assert "Delete Assets Collection" in friendly_names
 
 
-# extract collections
+# Extract collections
 def test_extract_collections():
     client.extract_collections(start_collection_name=PURVIEW_ACCOUNT_NAME, safe_delete_name="client")
 
-
+# Safe delete
 def test_safe_delete_recursively():
     client.create_collections(PURVIEW_ACCOUNT_NAME, "collection11")
     client.create_collections("collection11", "testa/testb/testc/testd")
