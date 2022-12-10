@@ -1,7 +1,7 @@
 [![Tests](https://github.com/Ludwinic1/purviewautomation/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ludwinic1/purviewautomation/actions?query=branch%3Amain+workflow%3ATests)
 [![Coverage](https://coverage-badge.samuelcolvin.workers.dev/Ludwinic1/purviewautomation.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/Ludwinic1/purviewautomation)
 [![pypi](https://img.shields.io/pypi/pyversions/purviewautomation)](https://pypi.org/project/purviewautomation/)
-[![pypi Version](https://img.shields.io/pypi/v/purviewautomation?color=blue)
+[![pypi version](https://img.shields.io/pypi/v/purviewautomation?color=blue)](https://pypi.org/project/purviewautomation/)
 [![license](https://img.shields.io/github/license/Ludwinic1/purviewautomation)](https://github.com/Ludwinic1/purviewautomation/blob/main/LICENSE)
 
 Welcome to Purview Automation!
