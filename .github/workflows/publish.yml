@@ -1,15 +1,16 @@
-name: Publish 
+name: Publish
 
 on:
+  workflow_dispatch:
   release:
     types:
       - created
 
 jobs:
-  publish: 
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4.3.0
@@ -18,13 +19,13 @@ jobs:
           cache: "pip"
           cache-dependency-path: pyproject.toml
 
-      - uses: actions/cache@v3 
-        id: cache 
+      - uses: actions/cache@v3
+        id: cache
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-publish
 
-      - name: Install build dependencies 
+      - name: Install build dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: pip install build
 
