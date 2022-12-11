@@ -103,6 +103,17 @@ def test_delete_multiple_collections():
     assert "multideletecoll2" not in friendly_names
 
 
+def test_delete_multiple_collections_safe_delete():
+    client.create_collections(
+        start_collection=PURVIEW_ACCOUNT_NAME, collection_names=["multideletecoll10", "multideletecoll11"]
+    )
+    client.delete_collections(["multideletecoll10", "multideletecoll11"], safe_delete="client")
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll["friendlyName"] for coll in collections.values()]
+    assert "multideletecoll10" not in friendly_names
+    assert "multideletecoll11" not in friendly_names
+
+
 def test_delete_collections_recursively():
     client.delete_collections_recursively("My-Company", safe_delete="client")
     my_company_real_name = client.get_real_collection_name("My-Company")
@@ -116,6 +127,12 @@ def test_delete_collections_recursively02():
     collections = client.list_collections(only_names=True)
     friendly_names = [coll["friendlyName"] for coll in collections.values()]
     assert "My-Company" not in friendly_names
+
+
+def test_delete_collections_child_error():
+    with pytest.raises(ValueError):
+        client.create_collections(PURVIEW_ACCOUNT_NAME, "childtest1/childtest2")
+        client.delete_collections("childtest1")
 
 
 # Get real collection name
@@ -206,4 +223,11 @@ def test_safe_delete():
     safe_delete_string = client._safe_delete(collection_names=["testa"], safe_delete_name="client")
     coll_string = "client.create_collections(start_collection='collection11', collection_names='testa', safe_delete_friendly_name='testa')"
     assert safe_delete_string == coll_string
-    
+
+
+# Verify collection name
+
+
+def verify_random_name():
+    random_name = client._verify_collection_name("/")
+    assert isinstance(random_name, str) and len(random_name) == 6

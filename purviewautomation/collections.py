@@ -61,6 +61,17 @@ class PurviewCollections:
 
         url = f"{self.collections_endpoint}?api-version={api_version}"
         collection_request = requests.get(url=url, headers=self.header)
+        if collection_request.status_code != 200:
+            if collection_request.status_code == 403:
+                err_msg = (
+                    "Not authorized. The Service Principal or user would need to be added as a Collection Admin on at "
+                    "least one collection. For more info see: "
+                    "https://learn.microsoft.com/en-us/azure/purview/catalog-permissions"
+                )
+                raise ValueError(err_msg)
+            else:
+                collection_request.raise_for_status()
+
         collections = collection_request.json()["value"]
 
         if only_names:
@@ -159,6 +170,7 @@ class PurviewCollections:
         url = f"{self.collections_endpoint}/{name}?api-version={api_version}"
         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
         request = requests.put(url=url, headers=self.header, data=data)
+        print("here", request)
         return request
 
     def _return_friendly_collection_names(
@@ -368,7 +380,7 @@ class PurviewCollections:
 
     # Delete collections/assets
 
-    def _safe_delete(self, collection_names: List[str], safe_delete_name: str) -> None:
+    def _safe_delete(self, collection_names: List[str], safe_delete_name: str) -> str:
         """Helper function. Do not run directly."""
 
         collections = self.list_collections(only_names=True)
@@ -409,7 +421,6 @@ class PurviewCollections:
         print("\n")
         print("end of code")
         print("\n")
-        
 
     def get_child_collection_names(self, collection_name: str, api_version: Optional[str] = None):
         if not api_version:
@@ -565,7 +576,7 @@ class PurviewCollections:
         safe_delete_name: str,
         parent_name: str,
         also_delete_first_collection: bool = False,
-    ):
+    ) -> List[str]:
         initial_list = []
         clean_list = []
 
