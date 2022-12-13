@@ -228,6 +228,6 @@ def test_safe_delete():
 # Verify collection name
 
 
-def verify_random_name():
+def test_verify_random_name():
     random_name = client._verify_collection_name("/")
     assert isinstance(random_name, str) and len(random_name) == 6
