@@ -6,16 +6,12 @@ All notable changes to this project will be documented in this file.
 
 // Add new changes below this line.
 
-### Added
+## v0.1.4 (2022-12-11)
 
-- Added PyPI version to README.
-
-- Return values from the _safe_delete and _safe_delete_recursively methods for additional testing purposes. Does not impact the original code.
-
+- Added a friendly error message to the list collections method.
+- Added additional automated tests.
 
 ## v0.1.3 (2022-12-04)
-
-### Added
 
 - Updated README on PyPI to show Python versions.
 
