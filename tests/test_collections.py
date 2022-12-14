@@ -11,6 +11,10 @@ CLIENT_ID = os.environ["purviewautomation-sp-client-id"]
 CLIENT_SECRET = os.environ["purviewautomation-sp-secret"]
 PURVIEW_ACCOUNT_NAME = os.environ["purview-account-name"]
 
+# Service Principal for Testing Insufficient Permissions
+LESS_ACCESS_CLIENT_ID = os.environ["less-access-sp-client-id"]
+LESS_ACCESS_CLIENT_SECRET = os.environ["less-access-sp-secret"]
+
 auth = ServicePrincipalAuthentication(tenant_id=TENANT_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
 
@@ -40,6 +44,14 @@ def test_list_colls_pprint():
 
 def test_list_colls_only_names_pprint():
     client.list_collections(only_names=True, pprint=True)
+
+
+def test_list_colls_raise__permission_error():
+    with pytest.raises(ValueError):
+        auth = ServicePrincipalAuthentication(
+            tenant_id=TENANT_ID, client_id=LESS_ACCESS_CLIENT_ID, client_secret=LESS_ACCESS_CLIENT_SECRET
+        )
+        client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
 
 
 # Create collections
@@ -80,6 +92,14 @@ def test_create_collections_type_error():
     with pytest.raises(ValueError):
         collections = {"name1": "name2"}
         client.create_collections(start_collection="My-Company", collection_names=collections)
+
+
+def test_create_collections_safe_delete_friendly_name():
+    client.create_collections(
+        start_collection="My-Company", collection_names="safe delete test", safe_delete_friendly_name="safe delete test"
+    )
+    name, friendly_names = collection_check_helper("safe delete test")
+    assert name[0] in friendly_names
 
 
 # Delete collections
@@ -129,10 +149,24 @@ def test_delete_collections_recursively02():
     assert "My-Company" not in friendly_names
 
 
+def test_delete_collection_and_assets():
+    client.create_collections(start_collection=PURVIEW_ACCOUNT_NAME, collection_names="assets1")
+    client.delete_collections(collection_names="assets1", delete_assets=True)
+    collections = client.list_collections(only_names=True)
+    friendly_names = [coll["friendlyName"] for coll in collections.values()]
+    assert "assets1" not in friendly_names
+
+
 def test_delete_collections_child_error():
     with pytest.raises(ValueError):
         client.create_collections(PURVIEW_ACCOUNT_NAME, "childtest1/childtest2")
         client.delete_collections("childtest1")
+
+
+def test_delete_collections_type_error():
+    with pytest.raises(ValueError):
+        incorrect_type = {"test1": "test2"}
+        client.delete_collections(collection_names=incorrect_type)
 
 
 # Get real collection name
