@@ -170,7 +170,6 @@ class PurviewCollections:
         url = f"{self.collections_endpoint}/{name}?api-version={api_version}"
         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
         request = requests.put(url=url, headers=self.header, data=data)
-        print("here", request)
         return request
 
     def _return_friendly_collection_names(
@@ -405,22 +404,27 @@ class PurviewCollections:
                 create_collection_string = (
                     f"create_collections(start_collection='{parent_name}', "
                     f"collection_names='{collection_name}', "
-                    f"friendly_name='{friendly_name}')"
+                    f"safe_delete_friendly_name='{friendly_name}')"
                 )
                 create_colls_list.append(create_collection_string)
 
         print("Copy and run the below code in your program to recreate the collection/collections:", "\n")
         if len(collection_names) == 1:
             print(create_collection_string)
-            return create_collection_string
+            print("\n")
+
         else:
             for item in create_colls_list:
                 create_coll_final_string = f"{safe_delete_name}.{item}"
-                print(create_coll_final_string, end="")
-                return create_colls_list
-        print("\n")
+                print(create_coll_final_string)
+                print("\n")
+
         print("end of code")
         print("\n")
+        if len(create_colls_list) >= 1:
+            return create_colls_list
+        else:
+            return create_collection_string
 
     def get_child_collection_names(self, collection_name: str, api_version: Optional[str] = None):
         if not api_version:
