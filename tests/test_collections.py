@@ -52,6 +52,7 @@ def test_list_colls_raise__permission_error():
             tenant_id=TENANT_ID, client_id=LESS_ACCESS_CLIENT_ID, client_secret=LESS_ACCESS_CLIENT_SECRET
         )
         client = PurviewCollections(purview_account_name=PURVIEW_ACCOUNT_NAME, auth=auth)
+        client.list_collections(pprint=True)
 
 
 # Create collections
