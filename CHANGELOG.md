@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 // Add new changes below this line.
 
+## v0.1.5 (2022-12-14)
+
+- Fixed safe delete printing sequence (cleaner printing).
+
 ## v0.1.4 (2022-12-11)
 
 - Added a friendly error message to the list collections method.
