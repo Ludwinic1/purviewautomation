@@ -476,11 +476,20 @@ class PurviewCollections:
             final = False
             print(f"Attempting to delete assets in collection: '{collections[collection]['friendlyName']}'")
             print("Note: This could take time if there's a large number of assets in the collection")
+
             while not final and datetime.now() <= future_timeout_time:
                 url = f"{self.catalog_endpoint}/api/search/query?api-version={api_version}"
                 # max value is 1000
                 data = f'{{"keywords": null, "limit": 1000, "filter": {{"collectionId": "{collection}"}}}}'
                 asset_request = requests.post(url=url, data=data, headers=self.header)
+
+                if asset_request.status_code == 403:
+                    err_msg = (
+                        f"The Service Principal or user needs to be listed as a Data Curator on collection '{collections[collection]['friendlyName']}' "
+                        "in order to delete assets on that collection."
+                    )
+                    raise ValueError(err_msg)
+
                 results = asset_request.json()
                 total = len(results["value"])
                 if total == 0:
