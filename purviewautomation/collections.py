@@ -612,7 +612,7 @@ class PurviewCollections:
             elif child_test["count"] > 1:
                 for index, name2 in enumerate(child_test["value"]):
                     initial_list.append(
-                        f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{name2}, safe_delete_friendly_name='{name2['friendlyName']}'])"
+                        f"{safe_delete_name}.create_collections(start_collection='{name}', collection_names='{name2['name']}', safe_delete_friendly_name='{name2['friendlyName']}')"
                     )
 
         default_set = set()
