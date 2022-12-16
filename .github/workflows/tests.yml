@@ -18,7 +18,7 @@ jobs:
       - name: create-purview-account
         uses: azure/powershell@v1
         with:
-          azPSVersion: '9.1.0'
+          azPSVersion: latest
           inlineScript: |
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
