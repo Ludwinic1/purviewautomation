@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "purviewautomation"
 description = "Purview Automation is a Python wrapper library built on top of Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier."
-version = "0.1.5"
+version = "0.1.6"
 authors = [
     { name = "Nick Ludwig", email = "nick.ludwig223@gmail.com" },
 ]
