@@ -24,11 +24,12 @@ jobs:
           inlineScript: |
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
+            [string] $LOCATION2 = "${{ secrets.PURVIEW_LOCATION2 }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             [string] $MANAGED_RG_NAME = "${{ secrets.PURVIEW_MANAGED_RG_NAME }}"
             az config set extension.use_dynamic_install=yes_without_prompt
-            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION --managed-group-name $MANAGED_RG_NAME
+            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION2 --managed-group-name $MANAGED_RG_NAME
             az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --created
 
   run-python-tests:
@@ -141,13 +142,11 @@ jobs:
 
   check:
     if: always()
-
     needs:
     - create-purview-account
     - run-python-tests
     - coverage-combine
     - delete-purview-account
-
     runs-on: ubuntu-latest
 
     steps:
