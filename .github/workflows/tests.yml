@@ -26,8 +26,8 @@ jobs:
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             [string] $MANAGED_RG_NAME = "${{ secrets.PURVIEW_MANAGED_RG_NAME }}"
             az config set extension.use_dynamic_install=yes_without_prompt
-            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION --managed-group-name $MANAGED_RG_NAME
-            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --created
+            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION --managed-group-name $MANAGED_RG_NAME --output none
+            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --created --output none
 
   run-python-tests:
     needs: create-purview-account
@@ -134,8 +134,8 @@ jobs:
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             az config set extension.use_dynamic_install=yes_without_prompt
-            az purview account delete --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --yes
-            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --deleted
+            az purview account delete --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --yes --output none
+            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --deleted --output none
 
   check:
     if: always()
