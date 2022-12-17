@@ -10,7 +10,7 @@ Purview Automation is a Python wrapper library built on top of Azure Purview RES
 
 **Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!**
 
-Rather see a video on what problems this solves and how it could help make your life easier? See: [Purview Automation Video](https://www.youtube.com/watch?v=aZAyeRXio1s).
+Rather see a video on how this could help make your life easier and why it was created? See: [Purview Automation Video](https://www.youtube.com/watch?v=aZAyeRXio1s).
 
 ---
 
