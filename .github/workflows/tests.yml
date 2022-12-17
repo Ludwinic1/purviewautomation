@@ -1,9 +1,11 @@
 name: Tests
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   create-purview-account:
@@ -24,9 +26,7 @@ jobs:
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force
-            Import-Module Az.Purview
-            New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
+            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION
 
   run-python-tests:
     needs: create-purview-account
