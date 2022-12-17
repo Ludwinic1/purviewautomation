@@ -27,7 +27,6 @@ jobs:
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             [string] $MANAGED_RG_NAME = "${{ secrets.PURVIEW_MANAGED_RG_NAME }}"
-
             az config set extension.use_dynamic_install=yes_without_prompt
             az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION --managed-group-name $MANAGED_RG_NAME
             az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --created
