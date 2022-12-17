@@ -22,7 +22,6 @@ jobs:
           inlineScript: |
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
-            [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
             [string] $MANAGED_RG_NAME = "${{ secrets.PURVIEW_MANAGED_RG_NAME }}"
             az config set extension.use_dynamic_install=yes_without_prompt
