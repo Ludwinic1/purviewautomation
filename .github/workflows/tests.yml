@@ -24,7 +24,7 @@ jobs:
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force -RequiredVersion 0.1.0
+            Install-Module Az.Purview -Force
             Import-Module Az.Purview
             New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
 
