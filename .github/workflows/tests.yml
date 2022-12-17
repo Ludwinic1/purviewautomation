@@ -26,9 +26,10 @@ jobs:
             [string] $LOCATION = "${{ secrets.PURVIEW_LOCATION }}"
             [string] $NETWORK = "${{ secrets.NETWORK_ACCESS }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force
-            Import-Module Az.Purview
-            New-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME" -Location "$LOCATION" -IdentityType SystemAssigned -SkuCapacity 4 -SkuName Standard -PublicNetworkAccess "$NETWORK"
+            [string] $MANAGED_RG_NAME = "${{ secrets.PURVIEW_MANAGED_RG_NAME }}"
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az purview account create --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --location $LOCATION --managed-group-name $MANAGED_RG_NAME
+            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --created
 
   run-python-tests:
     needs: create-purview-account
@@ -134,10 +135,9 @@ jobs:
           inlineScript: |
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force
-            Import-Module Az.Purview
-            Remove-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME"
-
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az purview account delete --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --yes
+            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --deleted
 
   check:
     if: always()
