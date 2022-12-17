@@ -135,10 +135,9 @@ jobs:
           inlineScript: |
             [string] $RG_NAME = "${{ secrets.RG_NAME }}"
             [string] $PURVIEW_ACCOUNT_NAME = "${{ secrets.PURVIEW_ACCOUNT_NAME }}"
-            Install-Module Az.Purview -Force
-            Import-Module Az.Purview
-            Remove-AzPurviewAccount -Name "$PURVIEW_ACCOUNT_NAME" -ResourceGroupName "$RG_NAME"
-
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az purview account delete --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME
+            az purview account wait --account-name $PURVIEW_ACCOUNT_NAME --resource-group $RG_NAME --deleted
 
   check:
     if: always()
