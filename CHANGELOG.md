@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 // Add new changes below this line.
 
+## v0.1.7 (2022-12-18)
+
+- Updated README and added Purview Automation video for PyPI.
+
 ## v0.1.6 (2022-12-15)
 
 - Added friendly error message on delete assets.
