@@ -10,7 +10,7 @@ Purview Automation is a Python library designed to be simple to use and makes sc
 
 **Create, delete, scale, rollback and automate Purview collections and delete assets in collections. More to come later on!**
 
-**Rather see a video on how it works? See: [Purview Automation Video](https://www.youtube.com/watch?v=aZAyeRXio1s).**
+**Rather see a video on how it works? See: [Purview Automation Video](https://www.youtube.com/watch?v=b9LGeFrbzGk).**
 
 ---
 

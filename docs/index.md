@@ -1,10 +1,10 @@
 Welcome to Purview Automation!
 
-Purview Automation is a Python wrapper library built on top of Azure Purview REST APIs that's designed to be simple to use and make scaling and automating Purview easier.
+Purview Automation is a Python library designed to be simple to use and makes scaling and automating Azure Purview easier.
 
-**Phase I is all about making it easier to work with, scale, rollback and automate Purview collections!**
+**Create, delete, scale, rollback and automate Purview collections and delete assets in collections. More to come later on!**
 
-**Rather see a video on what it solves and how it works? See: [Purview Automation Video](https://www.youtube.com/watch?v=aZAyeRXio1s).**
+**Rather see a video on how it works? See: [Purview Automation Video](https://www.youtube.com/watch?v=b9LGeFrbzGk).**
 
 ---
 
@@ -19,12 +19,10 @@ Key benefits:
 
 - **Easy**: Create and delete collections and collection hierarchies with one line of code
 - **Rollback**: Rollback to previous collection hierarchy states and save versions for later use
-- **Deploy**: Extract/deploy collections to UAT/PROD environments to ensure consistency across Purviews
-- **Delete Assets**: Delete all assets in a collection or all assets in a collection hierarchy
-- **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is granted in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions)
-
-
-- **Ease of Use**: Use either the friendly collection name (what is shown in the Purview UI) or the actual collection name (under the hood name) instead of being required to find and use the actual name when calling APIs. See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
+- **Deploy**: Extract existing collections and deploy to UAT/PROD environments ensuring consistency across Purviews
+- **Delete Assets**: Delete all assets in a collection or all assets under a collection hierarchy
+- **Safe**: Does **NOT** supercede any Purview permissions. Unable to create/delete collections unless the Collection Admin role is assigned in Purview. See: [Purview Roles](https://learn.microsoft.com/en-us/azure/purview/catalog-permissions).
+- **Ease of Use**: Use either the friendly or actual collection name instead of being required to find the under the hood collection name (actual name). See: [Purview Collection Names Overview](https://purviewautomation.netlify.app/how-purview-names-work/)
 
 ---
 
