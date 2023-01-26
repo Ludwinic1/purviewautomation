@@ -10,7 +10,7 @@ from .auth import AzIdentityAuthentication, ServicePrincipalAuthentication
 from .collections import PurviewCollections
 
 
-class PurviewScanning:
+class PurviewScanning(PurviewCollections):
     """Purview scanning class"""
 
     def __init__(
@@ -22,10 +22,9 @@ class PurviewScanning:
         self.header = {"Authorization": f"Bearer {self.auth}", "Content-Type": "application/json"}
         self.data_sources_endpoint = f"https://{self.purview_account_name}.purview.azure.com/scan/datasources"
         self.data_sources_api_version = "2022-02-01-preview"
-        # self.data_sources_api_version = "2018-12-01-preview"
 
-        coll_auth = PurviewCollections(self.purview_account_name, auth.get_access_token())
-        print(coll_auth)
+        # Initializing the PurviewCollections class
+        super().__init__(purview_account_name=purview_account_name, auth=auth)
 
     # Helper methods
     def get_storage_info(self, name: str, subscription_id: str, resource_group_name: str):
@@ -34,10 +33,15 @@ class PurviewScanning:
         url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{name}?api-version=2022-09-01"
         access_token = self.auth_object.get_access_token(scope="https://management.azure.com/.default")
         header = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-        response = requests.get(url, headers=header).json()
-        resource_id = response["id"]
-        dfs_endpoint = response["properties"]["primaryEndpoints"]["dfs"]
-        location = response["location"]
+        response = requests.get(url, headers=header)
+
+        if response.status_code != 200:
+            response.raise_for_status()
+
+        result = response.json()
+        resource_id = result["id"]
+        dfs_endpoint = result["properties"]["primaryEndpoints"]["dfs"]
+        location = result["location"]
 
         return resource_id, dfs_endpoint, location
 
@@ -69,9 +73,17 @@ class PurviewScanning:
                 "location": location,
                 "resourceName": data_lake_name,
                 "resourceId": resource_id,
-                "collection": {"type": "CollectionReference", "referenceName": collection_name},
+                "collection": {
+                    "type": "CollectionReference",
+                    "referenceName": super().get_real_collection_name(collection_name),
+                },
+                # super() is calling the PurviewCollections class
             },
         }
         response = requests.put(url, headers=self.header, data=json.dumps(data))
 
+        if response.status_code != 200:
+            response.raise_for_status()
+
+        print(f"Data source {data_lake_name} registered successfully in Purview!")
         return response.json()
