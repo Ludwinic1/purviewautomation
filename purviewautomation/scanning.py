@@ -27,7 +27,7 @@ class PurviewScanning(PurviewCollections):
         super().__init__(purview_account_name=purview_account_name, auth=auth)
 
     # Helper methods
-    def get_storage_info(self, name: str, subscription_id: str, resource_group_name: str):
+    def _get_storage_info(self, name: str, subscription_id: str, resource_group_name: str):
         """Get Data Lake Info"""
 
         url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{name}?api-version=2022-09-01"
@@ -55,7 +55,7 @@ class PurviewScanning(PurviewCollections):
     ) -> None:
         """Register a data source in Purview"""
 
-        resource_id, dfs_endpoint, location = self.get_storage_info(
+        resource_id, dfs_endpoint, location = self._get_storage_info(
             data_lake_name, subscription_id, resource_group_name
         )
         url = f"{self.data_sources_endpoint}/{data_lake_name}?api-version={self.data_sources_api_version}"
