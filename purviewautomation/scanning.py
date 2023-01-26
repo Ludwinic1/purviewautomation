@@ -24,7 +24,7 @@ class PurviewScanning:
         self.data_sources_api_version = "2022-02-01-preview"
         # self.data_sources_api_version = "2018-12-01-preview"
 
-        coll_auth = PurviewCollections.get_real_collection_name(self, self.purview_account_name)
+        coll_auth = PurviewCollections(self.purview_account_name, auth.get_access_token())
         print(coll_auth)
 
     # Helper methods
