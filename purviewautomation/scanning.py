@@ -53,7 +53,15 @@ class PurviewScanning(PurviewCollections):
         collection_name: str,
         nickname: Optional[str] = None,
     ) -> None:
-        """Register a data source in Purview"""
+        """Register a data source in Purview
+
+        :param data_lake_name: Name of the data lake
+        :param subscription_id: Subscription ID of the data lake
+        :param resource_group_name: Resource group name of the data lake
+        :param collection_name: Collection name to register the data source in
+        :param nickname: Nickname of the data source
+
+        """
 
         resource_id, dfs_endpoint, location = self._get_storage_info(
             data_lake_name, subscription_id, resource_group_name
