@@ -1,16 +1,21 @@
 from datetime import datetime
+from typing import List
 
 from msal import ConfidentialClientApplication
 
 
 # Base authentication
-def _msal_get_access_token(tenant_id, client_id, client_secret, scope):
+def _msal_get_access_token(
+    tenant_id: str, client_id: str, client_secret: str, scope: List[str] = "https://purview.azure.net/.default"
+) -> str:
+    """Get access token using MSAL"""
+
     app = ConfidentialClientApplication(
         client_id=client_id, client_credential=client_secret, authority=f"https://login.microsoftonline.com/{tenant_id}"
     )
     result = None
+    # checks cache for an access token that can be used
     result = app.acquire_token_silent(scopes=scope, account=None)
-
     if not result:
         result = app.acquire_token_for_client(scopes=scope)
 
@@ -21,12 +26,14 @@ def _msal_get_access_token(tenant_id, client_id, client_secret, scope):
 
 
 class ServicePrincipalAuthentication:
-    def __init__(self, tenant_id, client_id, client_secret):
+    """Get an access token using a service principal"""
+
+    def __init__(self, tenant_id: str, client_id: str, client_secret: str):
         self.tenant_id = tenant_id
         self.client_id = client_id
         self.client_secret = client_secret
 
-    def get_access_token(self, scope="https://purview.azure.net/.default"):
+    def get_access_token(self, scope: str = "https://purview.azure.net/.default"):
         access_token = _msal_get_access_token(
             tenant_id=self.tenant_id, client_id=self.client_id, client_secret=self.client_secret, scope=[scope]
         )
@@ -49,3 +56,9 @@ class AzIdentityAuthentication:
         if self.access_token_expiration <= datetime.now():
             self._set_access_token()
         return self.access_token
+
+
+def service_principal_authentication(tenant_id: str, client_id: str, client_secret: str) -> str:
+    """Get an access token using a service principal"""
+
+    return _msal_get_access_token(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
