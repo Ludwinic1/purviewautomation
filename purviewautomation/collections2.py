@@ -173,6 +173,10 @@ class PurviewCollections:
         url = f"{self.collections_endpoint}/{name}?api-version={api_version}"
         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
         request = requests.put(url=url, headers=self.header, data=data)
+
+        if request.status_code != 200:
+            request.raise_for_status()
+
         return request
 
     def _return_friendly_collection_names(
@@ -275,6 +279,17 @@ class PurviewCollections:
             updated_list.append(name)
         return updated_list
 
+    def _check_collection_names_type(collection_names):
+        """Checks to see if the collection_names parameter is a string or list type."""
+        if not isinstance(collection_names, (str, list)):
+            err = """The collection_names parameter has
+                     to be a string or list type.
+                  """
+            raise ValueError(err)
+        elif isinstance(collection_names, str):
+            collection_names = [collection_names]
+        return collection_names
+
     def create_collections(
         self,
         start_collection: str,
@@ -315,14 +330,7 @@ class PurviewCollections:
         start_collection = self.get_real_collection_name(start_collection, api_version, force_actual_name)
 
         collection_list = []
-        if not isinstance(collection_names, (str, list)):
-            err = """The collection_names parameter has
-                     to be a string or list type.
-                  """
-            raise ValueError(err)
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
-
+        collection_names = self._check_collection_names_type(collection_names)
         collection_names_list = [[name] for name in collection_names]
         for item in collection_names_list:
             for name in item:
@@ -340,51 +348,43 @@ class PurviewCollections:
             )
             for index, name in enumerate(updated_collection_list):
                 if index == 0:
-                    if name in coll_dict and coll_dict[name]["parentCollection"].lower() == start_collection.lower():
-                        continue
-                    else:
+                    if (
+                        name not in coll_dict
+                        and coll_dict[name]["parentCollection"].lower() != start_collection.lower()
+                    ):
                         if "safe_delete_friendly_name" in kwargs:
                             friendly_name = kwargs["safe_delete_friendly_name"]
                         else:
                             friendly_name = colls[index]
-                    try:
-                        request = self._return_request_info(
-                            name=name,
-                            friendly_name=friendly_name,
-                            parent_collection=start_collection,
-                            api_version=api_version,
-                        )
-                        print(request.content)
-                        print("\n")
-                    except Exception as e:
-                        raise e
 
+                    request = self._return_request_info(
+                        name=name,
+                        friendly_name=friendly_name,
+                        parent_collection=start_collection,
+                        api_version=api_version,
+                    )
+                    print(request.content)
+                    print("\n")
                 else:
                     if (
-                        name in coll_dict
-                        and coll_dict[name]["parentCollection"].lower() == updated_collection_list[index - 1].lower()
+                        name not in coll_dict
+                        and coll_dict[name]["parentCollection"].lower() != updated_collection_list[index - 1].lower()
                     ):
-                        continue
-                    else:
                         friendly_name = colls[index]
                         parent_collection = updated_collection_list[index - 1]
-                    try:
-                        request = self._return_request_info(
-                            name=name,
-                            friendly_name=friendly_name,
-                            parent_collection=parent_collection,
-                            api_version=api_version,
-                        )
-                        print(request.content)
-                        print("\n")
-                    except Exception as e:
-                        raise e
+
+                    request = self._return_request_info(
+                        name=name,
+                        friendly_name=friendly_name,
+                        parent_collection=parent_collection,
+                        api_version=api_version,
+                    )
+                    print(request.content)
+                    print("\n")
 
     # Delete collections/assets
 
     def _safe_delete(self, collection_names: List[str], safe_delete_name: str) -> str:
-        """Helper function. Do not run directly."""
-
         collections = self.list_collections(only_names=True)
 
         create_colls_list = []
@@ -393,17 +393,18 @@ class PurviewCollections:
                 collection_name = self.get_real_collection_name(name)
                 parent_name = collections[collection_name]["parentCollection"]
                 friendly_name = collections[collection_name]["friendlyName"]
+
                 create_collection_string = (
                     f"{safe_delete_name}"
                     f".create_collections(start_collection='{parent_name}', "
                     f"collection_names='{collection_name}', "
                     f"safe_delete_friendly_name='{friendly_name}')"
                 )
-
             else:
                 collection_name = self.get_real_collection_name(name)
                 parent_name = collections[collection_name]["parentCollection"]
                 friendly_name = collections[collection_name]["friendlyName"]
+
                 create_collection_string = (
                     f"create_collections(start_collection='{parent_name}', "
                     f"collection_names='{collection_name}', "
@@ -415,7 +416,6 @@ class PurviewCollections:
         if len(collection_names) == 1:
             print(create_collection_string)
             print("\n")
-
         else:
             for item in create_colls_list:
                 create_coll_final_string = f"{safe_delete_name}.{item}"
@@ -424,6 +424,7 @@ class PurviewCollections:
 
         print("end of code")
         print("\n")
+
         if len(create_colls_list) >= 1:
             return create_colls_list
         else:
@@ -434,10 +435,11 @@ class PurviewCollections:
             api_version = self.collections_api_version
 
         url = f"{self.collections_endpoint}/{collection_name}/getChildCollectionNames?api-version={api_version}"
-        try:
-            get_collections_request = requests.get(url=url, headers=self.header)
-        except Exception as e:
-            raise e
+        get_collections_request = requests.get(url=url, headers=self.header)
+
+        if get_collections_request.status_code != 200:
+            get_collections_request.raise_for_status()
+
         return get_collections_request.json()
 
     def delete_collection_assets(
@@ -464,12 +466,7 @@ class PurviewCollections:
         if not api_version:
             api_version = self.catalog_api_version
 
-        if not isinstance(collection_names, (str, list)):
-            err = "The collection_names parameter has to be a string or list type."
-            raise ValueError(err)
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
-
+        collection_names = self._check_collection_names_type(collection_names)
         collections = self.list_collections(only_names=True)
 
         for name in collection_names:
@@ -507,6 +504,9 @@ class PurviewCollections:
                     url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
                     delete_request = requests.delete(url, headers=self.header)
 
+                    if delete_request.status_code != 200:
+                        delete_request.raise_for_status()
+
     def delete_collections(
         self,
         collection_names: Union[str, list],
@@ -538,11 +538,7 @@ class PurviewCollections:
         if not api_version:
             api_version = self.collections_api_version
 
-        if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list.")
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
-
+        collection_names = self._check_collection_names_type(collection_names)
         if safe_delete:
             self._safe_delete(collection_names=collection_names, safe_delete_name=safe_delete)
 
@@ -668,11 +664,7 @@ class PurviewCollections:
         if not api_version:
             api_version = self.collections_api_version
 
-        if not isinstance(collection_names, (str, list)):
-            raise ValueError("The collection_names parameter has to either be a string or a list.")
-        elif isinstance(collection_names, str):
-            collection_names = [collection_names]
-
+        collection_names = self._check_collection_names_type(collection_names)
         for name in collection_names:
             delete_list = []
             recursive_list = []
