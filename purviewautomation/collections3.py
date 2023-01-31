@@ -9,8 +9,9 @@ import requests
 
 from .auth import AzIdentityAuthentication, ServicePrincipalAuthentication
 
-
 # Helper Functions
+
+
 def _send_api_request(
     url: str, method: str = "GET", headers: Dict[str] = None, body: Optional[Dict] = None
 ) -> requests.Response:
@@ -39,25 +40,6 @@ def _send_api_request(
         else:
             response.raise_for_status()
     return response.json()
-
-
-# def get_only_collection_names(purview_account_name: str, headers: Dict[str], api_version: str = None):
-#     """Returns the collection actual name, friendly name and parent collection name"""
-
-#     url= f"https://{purview_account_name}.purview.azure.com/account/collections?api-version={api_version}"
-#     collections_request = _send_api_request(method="GET", url=url, headers=headers)
-#     collections = collections_request["value"]
-
-#     coll_names = {}
-#     for coll in collections:
-#         if "parentCollection" not in coll:
-#             coll_names[coll["name"]] = {"friendlyName": coll["friendlyName"], "parentCollection": None}
-#         else:
-#             coll_names[coll["name"]] = {
-#                 "friendlyName": coll["friendlyName"],
-#                 "parentCollection": coll["parentCollection"]["referenceName"],
-#             }
-#     return coll_names
 
 
 def _check_collection_names_type(collection_names):
@@ -183,7 +165,7 @@ class PurviewCollections:
         if not api_version:
             api_version = self.collections_api_version
 
-        collections = get_only_collection_names(api_version=api_version)
+        collections = self._get_only_collection_names(api_version=api_version)
 
         friendly_names = [
             (name, collections[name]) for name, value in collections.items() if collection_name == value["friendlyName"]
@@ -412,377 +394,8 @@ class PurviewCollections:
                     print(request.content)
                     print("\n")
 
-    # class PurviewCollections:
-    #     """Interact with Purview Collections.
-
-    #     Attributes:
-    #         purview_account_name: Name of the Purview account.
-    #         auth: Access token automatically generated
-    #                 from the ServicePrincipalAuthentication class.
-    #         header: Headers to be sent when calling the Purview APIs.
-    #         collections_endpoint: The endpoint when calling collection APIs.
-    #         collections_api_version: API version for the collection APIs.
-    #         catalog_endpoint: The endpoint when calling the catalog APIs.
-    #         catalog_api_version: API version for the catalog APIs.
-
-    #     Returns:
-    #         PurviewCollections object
-    #     """
-
-    #     def __init__(
-    #         self, purview_account_name: str, auth: Union[ServicePrincipalAuthentication, AzIdentityAuthentication]
-    #     ) -> None:
-    #         self.purview_account_name = purview_account_name
-    #         # method used from the ServicePrincipalAuthentication or AzIdentityAuthentication class
-    #         self.auth = auth.get_access_token()
-    #         self.header = {"Authorization": f"Bearer {self.auth}", "Content-Type": "application/json"}
-    #         self.collections_endpoint = f"https://{self.purview_account_name}.purview.azure.com/account/collections"
-    #         self.collections_api_version = "2019-11-01-preview"
-    #         self.catalog_endpoint = f"https://{self.purview_account_name}.purview.azure.com/catalog"
-    #         self.catalog_api_version = "2022-03-01-preview"
-
-    #     def list_collections(self, only_names: bool = False, pretty_print: bool = False, api_version: Optional[str] = None):
-    #         """Returns the Purview collections.
-
-    #         Args:
-    #             only_names: If True, will return only the actual, friendly,
-    #                 and parent collection names.
-    #             pprint: If True, will print the collections in a nice format.
-    #                 If only_names is also True, will print only
-    #                     the names listed in only_names in a nice format.
-    #             api_version: If None, default is "2019-11-01-preview".
-
-    #         Returns:
-    #             List of dictionaries containing the collection info.
-    #                 If only_names is True, will return a dictionary
-    #                     of only_names items.
-    #                 If pprint is True, will print the values to the screen
-    #                     and nothing is returned.
-    #         """
-    #         if not api_version:
-    #             api_version = self.collections_api_version
-
-    #         url = f"{self.collections_endpoint}?api-version={api_version}"
-    #         collection_request = requests.get(url=url, headers=self.header)
-
-    #         if collection_request.status_code != 200:
-    #             if collection_request.status_code == 403:
-    #                 err_msg = (
-    #                     "Not authorized. The Service Principal or user would need to be added as a Collection Admin on at "
-    #                     "least one collection. For more info see: "
-    #                     "https://learn.microsoft.com/en-us/azure/purview/catalog-permissions"
-    #                 )
-    #                 raise ValueError(err_msg)
-    #             else:
-    #                 collection_request.raise_for_status()
-
-    #         collections = collection_request.json()["value"]
-
-    #         if pretty_print:
-    #             pprint(collections, sort_dicts=False)
-
-    #         if only_names:
-    #             coll_dict = {}
-    #             for coll in collections:
-    #                 if "parentCollection" not in coll:
-    #                     coll_dict[coll["name"]] = {"friendlyName": coll["friendlyName"], "parentCollection": None}
-    #                 else:
-    #                     coll_dict[coll["name"]] = {
-    #                         "friendlyName": coll["friendlyName"],
-    #                         "parentCollection": coll["parentCollection"]["referenceName"],
-    #                     }
-    #             if pretty_print:
-    #                 pprint(coll_dict, sort_dicts=False)
-    #             return coll_dict
-
-    #         return collections
-
-    #     def get_real_collection_name(
-    #         self, collection_name: str, api_version: Optional[str] = None, force_actual_name: bool = False
-    #     ) -> str:
-    #         """Returns the actual under the hood collection name.
-
-    #         Args:
-    #             collection_name: Name to check.
-    #             api_version: If None, default is "2019-11-01-preview".
-    #             force_actual_name: Edge case. If True, will check if the
-    #                 actual name is the name passed in. Useful if there
-    #                 are multiple friendly names.
-
-    #         Returns:
-    #             The actual name of the collection.
-
-    #         Raises:
-    #             If the collection doesn't exist, will raise an error
-    #                 that no collection exists.
-    #             If multiple friendly names exist, will raise an error
-    #                 listing the multiple friendly names.
-    #         """
-    #         if not api_version:
-    #             api_version = self.collections_api_version
-
-    #         collections = self.list_collections(only_names=True, api_version=api_version)
-
-    #         friendly_names = [
-    #             (name, collections[name]) for name, value in collections.items() if collection_name == value["friendlyName"]
-    #         ]
-
-    #         if collection_name not in collections and len(friendly_names) == 0:
-    #             err_msg = (
-    #                 f"The collection '{collection_name}' either doesn't exist or you don't have permission to start on it. "
-    #                 "The Collection Admin permission is required to create or delete collections. "
-    #                 "The Data Source Admin permission is required to register a data source to a collection. "
-    #                 "The collection name is case sensitive. Mycollection1 is different than mycollection1."
-    #             )
-    #             raise ValueError(err_msg)
-    #         elif collection_name not in collections and len(friendly_names) == 1:
-    #             collection_name = friendly_names[0][0]
-    #             return collection_name
-    #         elif collection_name in collections and len(friendly_names) <= 1:
-    #             return collection_name
-
-    #         if force_actual_name:
-    #             for i in range(len(friendly_names)):
-    #                 if friendly_names[i][0] == collection_name:
-    #                     return collection_name
-    #         else:
-    #             multiple_friendly_names = []
-    #             for coll in friendly_names:
-    #                 parent_name = coll[1]["parentCollection"]
-    #                 parent_friendly_name = collections[parent_name]["friendlyName"]
-    #                 friendly_output = f"{coll[0]}: [collection info: actual_name: {coll[0]}, friendlyName: {coll[1]['friendlyName']}, parentCollection: {parent_friendly_name}]"
-    #                 multiple_friendly_names.append(friendly_output)
-    #             newline = "\n"
-    #             err_msg = (
-    #                 f"Multiple collections exist with the friendly name '{collection_name}'. "
-    #                 f"Please choose and re-enter the first item from one of the options below in place of '{collection_name}': "
-    #                 f"{newline}{newline.join(map(str, multiple_friendly_names))} {newline}"
-    #                 f"If you want to use the collection name '{collection_name}' and it's listed as an actual_name per above, "
-    #                 f"add the force_actual_name parameter to True. "
-    #                 "Ex: force_actual_name=True"
-    #             )
-    #             raise ValueError(err_msg)
-
-    #     def _return_request_info(
-    #         self, name: str, friendly_name: str, parent_collection: str, api_version: Optional[str] = None
-    #     ) -> requests.request:
-    #         if not api_version:
-    #             api_version = self.collections_api_version
-
-    #         url = f"{self.collections_endpoint}/{name}?api-version={api_version}"
-    #         data = f'{{"parentCollection": {{"referenceName": "{parent_collection}"}}, "friendlyName": "{friendly_name}"}}'
-    #         request = requests.put(url=url, headers=self.header, data=data)
-
-    #         if request.status_code != 200:
-    #             request.raise_for_status()
-
-    #         return request
-
-    #     def _return_friendly_collection_names(
-    #         self, collection_name: str, api_version: str
-    #     ) -> List[Tuple[str, Dict[str, str]]]:
-
-    #         collections = self.list_collections(only_names=True, api_version=api_version)
-    #         friendly_names = [
-    #             (name, collections[name]) for name, value in collections.items() if collection_name == value["friendlyName"]
-    #         ]
-    #         return friendly_names
-
-    #     def _verify_collection_name(self, collection_name: str) -> str:
-    #         """Checks if the collection_name meets the Purview naming requirements.
-
-    #         Args:
-    #             collection_name: Name to check.
-
-    #         Returns:
-    #             The original collection_name or a random six character
-    #                 lowercase string if requirements are not met.
-    #         """
-    #         pattern = "[a-zA-Z0-9]+"
-    #         collection_check_pattern = re.search(pattern, collection_name)
-    #         if collection_check_pattern:
-    #             # returns the name the pattern matched.
-    #             collection_name_check = collection_check_pattern.group()
-    #             if len(collection_name) < 3 or len(collection_name) > 36 or (collection_name_check != collection_name):
-    #                 collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
-    #         else:
-    #             collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
-    #         return collection_name
-
-    #     def _return_updated_collection_name(
-    #         self,
-    #         name: str,
-    #         collection_dict: Dict[str, Dict[str, str]],
-    #         parent_collection: str,
-    #         friendly_names: List[str],
-    #         api_version: str,
-    #     ) -> str:
-    #         """Internal helper function. Do not call directly.
-
-    #         Returns one of the following:
-    #         -Actual name if the collection exists in Purview and
-    #             the parent collection names match.
-    #         -If the name doesn't exist but meets the Purview naming
-    #             requirements, returns the name.
-    #         -If none of the above are returned, returns a random
-    #             six character lowercase string.
-    #         """
-    #         if name in collection_dict and collection_dict[name]["parentCollection"] == parent_collection.lower():
-    #             return name
-    #         elif name in friendly_names:
-    #             friendly_list = self._return_friendly_collection_names(name, api_version)
-
-    #             if len(friendly_list) == 1 and friendly_list[0][1]["parentCollection"] == parent_collection.lower():
-    #                 name = friendly_list[0][0]
-    #             elif len(friendly_list) == 1 and name in collection_dict:
-    #                 name = "".join(random.choices(string.ascii_lowercase, k=6))
-
-    #             elif len(friendly_list) > 1:
-    #                 for collection in friendly_list:
-    #                     if collection[1]["parentCollection"] == parent_collection.lower():
-    #                         name = collection[0]
-    #                     else:
-    #                         if collection[0] == name:
-    #                             name = "".join(random.choices(string.ascii_lowercase, k=6))
-    #             else:
-    #                 name = self._verify_collection_name(name)
-    #         else:
-    #             name = self._verify_collection_name(name)
-    #         return name
-
-    #     def _return_updated_collection_list(
-    #         self,
-    #         start_collection: str,
-    #         collection_list: List[str],
-    #         collection_dict: Dict[str, Dict],  # Need to check this
-    #         api_version: str,
-    #     ) -> List[str]:
-    #         """Internal method. Do not call directly.
-
-    #         Returns a collection list with the collection names
-    #             used to call other methods.
-    #         """
-    #         updated_list = []
-    #         friendly_names = [v["friendlyName"] for v in collection_dict.values()]
-    #         for index, name in enumerate(collection_list):
-    #             if index == 0:
-    #                 name = self._return_updated_collection_name(
-    #                     name, collection_dict, start_collection, friendly_names, api_version
-    #                 )
-    #             else:
-    #                 name = self._return_updated_collection_name(
-    #                     name, collection_dict, updated_list[index - 1], friendly_names, api_version
-    #                 )
-    #             updated_list.append(name)
-    #         return updated_list
-
-    #     def _check_collection_names_type(collection_names):
-    #         """Checks to see if the collection_names parameter is a string or list type."""
-    #         if not isinstance(collection_names, (str, list)):
-    #             err = """The collection_names parameter has
-    #                      to be a string or list type.
-    #                   """
-    #             raise ValueError(err)
-    #         elif isinstance(collection_names, str):
-    #             collection_names = [collection_names]
-    #         return collection_names
-
-    #     def create_collections(
-    #         self,
-    #         start_collection: str,
-    #         collection_names: Union[str, List[str]],
-    #         force_actual_name: bool = False,
-    #         api_version: Optional[str] = None,
-    #         **kwargs,
-    #     ) -> None:  # TODO Need to update this
-    #         """Create collections.
-
-    #         Can create any of the following:
-    #         -One collection
-    #         -Multiple Collections
-    #         -One collection hierarchy (multiple parent/child relationships)
-    #         -Multiple collection hierarchies
-
-    #         Args:
-    #             start_collection: Existing collection name.
-    #                 Use list_collections(only_names, pprint=True) to see
-    #                 all of the collection names. Accepts friendly and
-    #                 actual names.
-    #             collection_names: collection name or names.
-    #             force_actual_name: Edge Case. If multiple duplicate friendly names
-    #                 and one of the actual names is the name passed in.
-    #             api_version: If None, default is "2019-11-01-preview".
-    #             **kwargs:
-    #                 safe_delete_friendly_name: Used during the safe delete
-    #                 functionality. Don't call directly.
-
-    #         Returns:
-    #             Prints the successfully created collection/collections.
-    #                 If the collection/collections already exist, nothing prints.
-    #         """
-    #         if not api_version:
-    #             api_version = self.collections_api_version
-
-    #         coll_dict = self.list_collections(only_names=True, api_version=api_version)
-    #         start_collection = self.get_real_collection_name(start_collection, api_version, force_actual_name)
-
-    #         collection_list = []
-    #         collection_names = self._check_collection_names_type(collection_names)
-    #         collection_names_list = [[name] for name in collection_names]
-    #         for item in collection_names_list:
-    #             for name in item:
-    #                 if "/" in name:
-    #                     names = name.split("/")
-    #                     names = [name.strip() for name in names]
-    #                     collection_list.append(names)
-    #                 else:
-    #                     names = [name.strip() for name in item]
-    #                     collection_list.append(names)
-
-    #         for colls in collection_list:
-    #             updated_collection_list = self._return_updated_collection_list(
-    #                 start_collection, colls, coll_dict, api_version
-    #             )
-    #             for index, name in enumerate(updated_collection_list):
-    #                 if index == 0:
-    #                     if (
-    #                         name not in coll_dict
-    #                         and coll_dict[name]["parentCollection"].lower() != start_collection.lower()
-    #                     ):
-    #                         if "safe_delete_friendly_name" in kwargs:
-    #                             friendly_name = kwargs["safe_delete_friendly_name"]
-    #                         else:
-    #                             friendly_name = colls[index]
-
-    #                     request = self._return_request_info(
-    #                         name=name,
-    #                         friendly_name=friendly_name,
-    #                         parent_collection=start_collection,
-    #                         api_version=api_version,
-    #                     )
-    #                     print(request.content)
-    #                     print("\n")
-    #                 else:
-    #                     if (
-    #                         name not in coll_dict
-    #                         and coll_dict[name]["parentCollection"].lower() != updated_collection_list[index - 1].lower()
-    #                     ):
-    #                         friendly_name = colls[index]
-    #                         parent_collection = updated_collection_list[index - 1]
-
-    #                     request = self._return_request_info(
-    #                         name=name,
-    #                         friendly_name=friendly_name,
-    #                         parent_collection=parent_collection,
-    #                         api_version=api_version,
-    #                     )
-    #                     print(request.content)
-    #                     print("\n")
-
-    # Delete collections/assets
-
     def _safe_delete(self, collection_names: List[str], safe_delete_name: str) -> str:
-        collections = self.get_only_collection_names()
+        collections = self._get_only_collection_names()
 
         create_colls_list = []
         for name in collection_names:
@@ -832,12 +445,9 @@ class PurviewCollections:
             api_version = self.collections_api_version
 
         url = f"{self.collections_endpoint}/{collection_name}/getChildCollectionNames?api-version={api_version}"
-        get_collections_request = requests.get(url=url, headers=self.header)
+        get_collections_request = _send_api_request(method="GET", url=url, headers=self.header)
 
-        if get_collections_request.status_code != 200:
-            get_collections_request.raise_for_status()
-
-        return get_collections_request.json()
+        return get_collections_request
 
     def delete_collection_assets(
         self,
@@ -864,7 +474,7 @@ class PurviewCollections:
             api_version = self.catalog_api_version
 
         collection_names = self._check_collection_names_type(collection_names)
-        collections = self.list_collections(only_names=True)
+        collections = self._get_only_collection_names()
 
         for name in collection_names:
             collection = self.get_real_collection_name(collection_name=name, force_actual_name=force_actual_name)
@@ -899,10 +509,7 @@ class PurviewCollections:
                     guids = [item["id"] for item in results["value"]]
                     guid_str = "&guid=".join(guids)
                     url = f"{self.catalog_endpoint}/api/atlas/v2/entity/bulk?guid={guid_str}"
-                    delete_request = requests.delete(url, headers=self.header)
-
-                    if delete_request.status_code != 200:
-                        delete_request.raise_for_status()
+                    delete_request = _send_api_request(method="DELETE", url=url, headers=self.header)
 
     def delete_collections(
         self,
@@ -989,7 +596,7 @@ class PurviewCollections:
         initial_list = []
         clean_list = []
 
-        collections = self.list_collections(only_names=True)
+        collections = self._get_only_collection_names()
         print("Copy and run the below code in your program to recreate the", end=" ")
         print("collections and collection hierarchies:")
         print("\n")
