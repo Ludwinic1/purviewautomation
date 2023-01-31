@@ -378,7 +378,6 @@ class PurviewCollections:
 
                     print(request.content)
                     print("\n")
-
                 else:
                     if (
                         name not in coll_dict
