@@ -235,11 +235,15 @@ class PurviewCollections:
 
             elif len(friendly_list) > 1:
                 for collection in friendly_list:
+                    found_name = ""
                     if collection[1]["parentCollection"] == parent_collection.lower():
-                        name = collection[0]
-                    else:
-                        if collection[0] == name:
-                            name = "".join(random.choices(string.ascii_lowercase, k=6))
+                        found_name = collection[0]
+                        break
+                if found_name != "":
+                    name = found_name
+                else:
+                    name = self._verify_collection_name(name)
+
             else:
                 name = self._verify_collection_name(name)
         else:
