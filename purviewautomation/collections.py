@@ -189,7 +189,7 @@ class PurviewCollections:
 
         Args:
             collection_name: Name to check.
-            uniqueness_retries: The number of attempts to make for creating a unique name..
+            uniqueness_retries: The number of attempts to make for creating a unique name.
                                 Unlikely to happen even once, but exists for handling edgecases.
 
         Returns:
