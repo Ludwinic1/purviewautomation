@@ -184,16 +184,19 @@ class PurviewCollections:
         ]
         return friendly_names
 
-    def _verify_collection_name(self, collection_name: str) -> str:
+    def _verify_collection_name(self, collection_name: str, uniqueness_retries: Optional[int] = 5) -> str:
         """Checks if the collection_name meets the Purview naming requirements.
 
         Args:
             collection_name: Name to check.
+            uniqueness_retries: The number of attempts to make for creating a unique name.
+                                Unlikely to happen even once, but exists for handling edgecases.
 
         Returns:
             The original collection_name or a random six character
                 lowercase string if requirements are not met.
         """
+        print(collection_name)
         pattern = "[a-zA-Z0-9]+"
         collection_check_pattern = re.search(pattern, collection_name)
         if collection_check_pattern:
@@ -203,6 +206,16 @@ class PurviewCollections:
                 collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
         else:
             collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
+        # Check if collection_name already in use, generate new if so
+        i = 0
+        existing_collection_names = self.list_collections(only_names=True).keys()
+        while collection_name in existing_collection_names and i < uniqueness_retries:
+            i += 1
+            collection_name = "".join(random.choices(string.ascii_lowercase, k=6))
+        if i == uniqueness_retries:
+            raise SystemError(f"Did not create unique name within {uniqueness_retries} attempts. Aborting.")
+        print(collection_name)
+        print("===")
         return collection_name
 
     def _return_updated_collection_name(
@@ -235,11 +248,15 @@ class PurviewCollections:
 
             elif len(friendly_list) > 1:
                 for collection in friendly_list:
+                    found_name = ""
                     if collection[1]["parentCollection"] == parent_collection.lower():
-                        name = collection[0]
-                    else:
-                        if collection[0] == name:
-                            name = "".join(random.choices(string.ascii_lowercase, k=6))
+                        found_name = collection[0]
+                        break
+                if found_name != "":
+                    name = found_name
+                else:
+                    name = self._verify_collection_name(name)
+
             else:
                 name = self._verify_collection_name(name)
         else:
